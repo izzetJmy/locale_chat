@@ -8,7 +8,6 @@ class MyLoginCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      constraints: BoxConstraints.tightForFinite(width: double.infinity),
       padding: padding,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(20),

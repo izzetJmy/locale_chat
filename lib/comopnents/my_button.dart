@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 
 class MyButton extends StatelessWidget {
-  void Function() onPressed;
-  String buttonText;
-  TextStyle textStyle;
-  Color buttonColor;
-  double width;
-  double height;
-  MyButton({
+  final void Function() onPressed;
+  final String buttonText;
+  final TextStyle textStyle;
+  final Color buttonColor;
+  final double width;
+  final double height;
+  const MyButton({
     super.key,
     required this.width,
     required this.height,
