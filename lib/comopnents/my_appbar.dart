@@ -6,7 +6,7 @@ class MyAppBar extends StatelessWidget implements PreferredSizeWidget {
   final List<Widget>? actions;
   MyAppBar(
       {super.key, required this.leading, required this.title, this.actions})
-      : preferredSize = Size.fromHeight(60);
+      : preferredSize = const Size.fromHeight(60);
 
   @override
   Widget build(BuildContext context) {
@@ -16,7 +16,7 @@ class MyAppBar extends StatelessWidget implements PreferredSizeWidget {
       title: title,
       actions: actions,
       elevation: 4,
-      shape: RoundedRectangleBorder(
+      shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.only(
               bottomLeft: Radius.circular(10),
               bottomRight: Radius.circular(10))),

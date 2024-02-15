@@ -9,13 +9,14 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-        title: 'Material App',
-        home: Scaffold(
-          appBar: MyAppBar(
-            leading: Icon(Icons.back_hand),
-            title: Text('dada'),
-          ),
-          body: Center(),
-        ));
+      title: 'Material App',
+      home: Scaffold(
+        appBar: MyAppBar(
+          leading: Icon(Icons.back_hand),
+          title: Text('dada'),
+        ),
+        body: Center(),
+      ),
+    );
   }
 }
