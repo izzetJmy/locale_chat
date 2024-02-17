@@ -23,7 +23,7 @@ class MyTextField extends StatelessWidget {
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
     return Container(
-      margin: EdgeInsets.symmetric(vertical: 10),
+      margin: const EdgeInsets.symmetric(vertical: 10),
       height: size.height * 0.052,
       child: TextFormField(
         controller: controller,
@@ -32,11 +32,11 @@ class MyTextField extends StatelessWidget {
         obscureText: obscureText,
         decoration: InputDecoration(
           prefixIcon: prefixIcon,
-          prefixIconColor: Color(0xffC4C4C4),
-          suffixIconColor: Color(0xffC4C4C4),
+          prefixIconColor: const Color(0xffC4C4C4),
+          suffixIconColor: const Color(0xffC4C4C4),
           suffixIcon: suffixIcon,
           hintText: hintText,
-          hintStyle: TextStyle(color: Color(0xffD3D3D3), fontSize: 18),
+          hintStyle: const TextStyle(color: Color(0xffD3D3D3), fontSize: 18),
           fillColor: Colors.white,
           filled: true,
           contentPadding: const EdgeInsets.all(0),
