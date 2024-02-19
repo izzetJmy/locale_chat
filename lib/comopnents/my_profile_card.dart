@@ -4,7 +4,7 @@ import 'package:locale_chat/constants/text_style.dart';
 class MyProfileCard extends StatelessWidget {
   final Widget leading;
   final Widget tittleText;
-  final Widget? SubtittleText;
+  final Widget? subtittleText;
   final Widget trailing;
   final double height;
   final void Function()? onTap;
@@ -13,7 +13,7 @@ class MyProfileCard extends StatelessWidget {
     super.key,
     required this.leading,
     required this.tittleText,
-    this.SubtittleText,
+    this.subtittleText,
     required this.trailing,
     required this.height,
     this.onTap,
@@ -44,7 +44,7 @@ class MyProfileCard extends StatelessWidget {
         leading: leading,
         title: tittleText,
         titleTextStyle: profileCardTittleTextStyle,
-        subtitle: SubtittleText,
+        subtitle: subtittleText,
         trailing: trailing,
         subtitleTextStyle: profileCardSubTittleTextStyle,
       ),
