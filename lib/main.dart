@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:locale_chat/pages/control_page.dart';
+import 'package:locale_chat/pages/onboarding_pages/onboarding_page.dart';
 
 void main() => runApp(const MyApp());
 
@@ -11,6 +11,6 @@ class MyApp extends StatelessWidget {
     return const MaterialApp(
         debugShowCheckedModeBanner: false,
         title: 'Material App',
-        home: ControlPage());
+        home: OnboardingPage());
   }
 }
