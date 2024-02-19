@@ -30,41 +30,56 @@ class ProfileInfo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            if (showCircleAvatar) //User's profile avatar
-              InkWell(
-                onTap: onTap,
-                child: Container(
-                  padding: const EdgeInsets.all(5),
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    border: Border.all(color: backgroundColor),
-                  ),
-                  child: CircleAvatar(
-                    radius: image_radius,
-                    backgroundColor: Colors.transparent,
-                    child: Image.asset(
-                      image_path,
-                      opacity: const AlwaysStoppedAnimation(0.3),
+    return showName && showDate
+        ? InkWell(
+            onTap: onTap,
+            child: Container(
+              padding: const EdgeInsets.all(5),
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                border: Border.all(color: backgroundColor),
+              ),
+              child: CircleAvatar(
+                radius: image_radius,
+                backgroundColor: Colors.transparent,
+                child: Image.asset(
+                  image_path,
+                  opacity: const AlwaysStoppedAnimation(0.3),
+                ),
+              ),
+            ),
+          )
+        : Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              if (showCircleAvatar) //User's profile avatar
+                InkWell(
+                  onTap: onTap,
+                  child: Container(
+                    padding: const EdgeInsets.all(5),
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      border: Border.all(color: backgroundColor),
+                    ),
+                    child: CircleAvatar(
+                      radius: image_radius,
+                      backgroundColor: Colors.transparent,
+                      child: Image.asset(
+                        image_path,
+                        opacity: const AlwaysStoppedAnimation(0.3),
+                      ),
                     ),
                   ),
                 ),
-              ),
-            const SizedBox(height: 10),
-            if (showName) //User name
-              Text(name, style: profileInfoNameTextStyle),
-            if (showDate) //Date the account was created
-              Text(
-                date,
-                style: profileInfoDateTextStyle,
-              )
-          ],
-        ),
-      ),
-    );
+              const SizedBox(height: 10),
+              if (showName) //User name
+                Text(name, style: profileInfoNameTextStyle),
+              if (showDate) //Date the account was created
+                Text(
+                  date,
+                  style: profileInfoDateTextStyle,
+                )
+            ],
+          );
   }
 }
