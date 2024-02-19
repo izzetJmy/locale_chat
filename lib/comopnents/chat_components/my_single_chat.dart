@@ -17,6 +17,11 @@ class MySingleChat extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    return contextImage();
+  }
+
+//Image part of the chat
+  Align contextImage() {
     return Align(
       alignment: leftOrRight ? Alignment.centerRight : Alignment.centerLeft,
       child: Column(
@@ -42,13 +47,13 @@ class MySingleChat extends StatelessWidget {
             ),
             child: Text(
               title,
-              style: singleChatCartTitleTextStyle,
+              style: singleChatCardTitleTextStyle,
             ),
           ),
           const SizedBox(height: 3),
           Text(
             time,
-            style: singleChatCartTimeTextStyle,
+            style: singleChatCardTimeTextStyle,
           )
         ],
       ),
