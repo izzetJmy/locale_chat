@@ -33,6 +33,7 @@ TextStyle profileCardSubTittleTextStyle = const TextStyle(
   fontFamily: 'Roboto',
   fontSize: 16,
   fontWeight: FontWeight.w100,
+  color: Color(0xff939393),
 );
 TextStyle singleChatCartTitleTextStyle = const TextStyle(
   fontFamily: 'Roboto',
