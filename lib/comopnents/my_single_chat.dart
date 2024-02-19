@@ -42,13 +42,13 @@ class MySingleChat extends StatelessWidget {
             ),
             child: Text(
               title,
-              style: singleChatCartTitleTextStyle,
+              style: singleChatCardTitleTextStyle,
             ),
           ),
           const SizedBox(height: 3),
           Text(
             time,
-            style: singleChatCartTimeTextStyle,
+            style: singleChatCardTimeTextStyle,
           )
         ],
       ),

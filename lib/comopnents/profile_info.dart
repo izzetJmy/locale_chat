@@ -10,8 +10,11 @@ class ProfileInfo extends StatelessWidget {
   final String image_path;
   final double? image_radius;
 
+  final double height;
   final String name;
   final String date;
+
+  final TextStyle? profileNameTextStyle;
 
   final bool showCircleAvatar;
   final bool showName;
@@ -26,7 +29,9 @@ class ProfileInfo extends StatelessWidget {
       this.date = '',
       this.showCircleAvatar = true,
       this.showName = false,
-      this.showDate = false});
+      this.showDate = false,
+      this.profileNameTextStyle,
+      this.height = 10});
 
   @override
   Widget build(BuildContext context) {
@@ -71,9 +76,9 @@ class ProfileInfo extends StatelessWidget {
                     ),
                   ),
                 ),
-              const SizedBox(height: 10),
+              SizedBox(height: height),
               if (showName) //User name
-                Text(name, style: profileInfoNameTextStyle),
+                Text(name, style: profileNameTextStyle),
               if (showDate) //Date the account was created
                 Text(
                   date,
