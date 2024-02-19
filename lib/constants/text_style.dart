@@ -34,3 +34,14 @@ TextStyle singleChatCartTimeTextStyle = const TextStyle(
   fontWeight: FontWeight.w600,
   color: Color(0xff939393),
 );
+
+TextStyle profileCardTittleTextStyle = const TextStyle(
+  fontFamily: 'Roboto',
+  fontSize: 20,
+  fontWeight: FontWeight.w600,
+  color: Color(0xff939393),
+);
+TextStyle profileCardSubTittleTextStyle = const TextStyle(
+  fontFamily: 'Roboto',
+  fontSize: 16,
+  fontWeight: FontWeight.w100,
