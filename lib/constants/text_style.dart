@@ -22,3 +22,15 @@ TextStyle onboardingPageButtonTextTextStyle = const TextStyle(
   fontWeight: FontWeight.w600,
   color: Colors.white,
 );
+
+TextStyle singleChatCartTitleTextStyle = const TextStyle(
+  fontFamily: 'Roboto',
+  fontSize: 18,
+  color: Colors.white,
+);
+TextStyle singleChatCartTimeTextStyle = const TextStyle(
+  fontFamily: 'Roboto',
+  fontSize: 10,
+  fontWeight: FontWeight.w600,
+  color: Color(0xff939393),
+);
