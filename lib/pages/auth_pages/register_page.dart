@@ -5,17 +5,20 @@ import 'package:flutter/material.dart';
 import 'package:locale_chat/comopnents/login_card.dart';
 import 'package:locale_chat/comopnents/my_button.dart';
 import 'package:locale_chat/comopnents/my_text_field.dart';
-import 'package:locale_chat/pages/auth_pages/register_page.dart';
+import 'package:locale_chat/pages/auth_pages/login_page.dart';
 
-class LoginPage extends StatelessWidget {
+class RegisterPage extends StatelessWidget {
+  RegisterPage({super.key});
+
+  final TextEditingController confirmPasswordController =
+      TextEditingController();
+
   final TextEditingController passwordController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
-
-  LoginPage({super.key});
-
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
+
     return Scaffold(
       body: Container(
         decoration: const BoxDecoration(
@@ -48,7 +51,7 @@ class LoginPage extends StatelessWidget {
                       Padding(
                         padding: const EdgeInsets.only(bottom: 15.0),
                         child: Text(
-                          'LOGIN',
+                          'REGISTER',
                           style: TextStyle(
                               fontSize: size.height * 0.04,
                               fontFamily: 'Roboto',
@@ -71,17 +74,14 @@ class LoginPage extends StatelessWidget {
                             onPressed: () {},
                             icon: const Icon(Icons.remove_red_eye)),
                       ),
-                      Align(
-                        alignment: Alignment.centerRight,
-                        child: TextButton(
-                          onPressed: () {},
-                          child: Text(
-                            'Forgot Password?',
-                            style: TextStyle(
-                                color: Color(0xffB7B7B7),
-                                fontSize: size.height * 0.020),
-                          ),
-                        ),
+                      MyTextField(
+                        controller: confirmPasswordController,
+                        prefixIcon: const Icon(CupertinoIcons.lock),
+                        hintText: 'Confirm Password',
+                        obscureText: true,
+                        suffixIcon: IconButton(
+                            onPressed: () {},
+                            icon: const Icon(Icons.remove_red_eye)),
                       ),
                       Padding(
                         padding: const EdgeInsets.all(8.0),
@@ -101,7 +101,7 @@ class LoginPage extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Text(
-                            'Don\'t have an account? ',
+                            'Already you have acoount ',
                             style: TextStyle(
                                 color: Color(0xffB7B7B7),
                                 fontSize: size.height * 0.015),
@@ -110,12 +110,12 @@ class LoginPage extends StatelessWidget {
                             onTap: () {
                               Navigator.of(context).push(
                                 MaterialPageRoute(
-                                  builder: (context) => RegisterPage(),
+                                  builder: (context) => LoginPage(),
                                 ),
                               );
                             },
                             child: Text(
-                              'Sign Up',
+                              'Sign In',
                               style: TextStyle(
                                   color: Color(0xff00A3FF),
                                   fontSize: size.height * 0.015),
@@ -127,70 +127,12 @@ class LoginPage extends StatelessWidget {
                   ),
                 ),
               ),
-              Column(
-                children: [
-                  Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Expanded(
-                        child: Divider(
-                          endIndent: size.width * 0.03,
-                          indent: size.width * 0.3,
-                          thickness: 2,
-                          color: const Color(0xffD7D7D7),
-                        ),
-                      ),
-                      Text(
-                        'OR',
-                        style: TextStyle(
-                            fontSize: size.height * 0.023,
-                            color: const Color(0xffD7D7D7),
-                            fontFamily: 'Roboto'),
-                      ),
-                      Expanded(
-                        child: Divider(
-                          endIndent: size.width * 0.3,
-                          indent: size.width * 0.03,
-                          thickness: 2,
-                          color: const Color(0xffD7D7D7),
-                        ),
-                      )
-                    ],
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      signIn_container(size, 'google_icon'),
-                      signIn_container(size, 'facebook_icon'),
-                    ],
-                  ),
-                ],
+              SizedBox(
+                height: size.height * 0.06,
               )
             ],
           ),
         ),
-      ),
-    );
-  }
-
-  Container signIn_container(Size size, String iconName) {
-    return Container(
-      margin:
-          const EdgeInsetsDirectional.symmetric(vertical: 10, horizontal: 17),
-      padding: const EdgeInsets.all(10),
-      height: size.height * 0.07,
-      width: size.width * 0.15,
-      decoration: BoxDecoration(boxShadow: const [
-        BoxShadow(
-            blurStyle: BlurStyle.inner,
-            color: Colors.black,
-            blurRadius: 20,
-            spreadRadius: 1),
-      ], borderRadius: BorderRadius.circular(20), color: Colors.white),
-      child: Image(
-        fit: BoxFit.fill,
-        color: const Color(0xff939393),
-        image: AssetImage('assets/images/$iconName.png'),
       ),
     );
   }
