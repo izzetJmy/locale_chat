@@ -13,13 +13,14 @@ class MyAppBar extends StatelessWidget implements PreferredSizeWidget {
       backgroundColor: Colors.white,
       leading: leading,
       title: title,
-      leadingWidth: 150,
       actions: actions,
       elevation: 4,
       shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.only(
-              bottomLeft: Radius.circular(10),
-              bottomRight: Radius.circular(10))),
+        borderRadius: BorderRadius.only(
+          bottomLeft: Radius.circular(10),
+          bottomRight: Radius.circular(10),
+        ),
+      ),
     );
   }
 

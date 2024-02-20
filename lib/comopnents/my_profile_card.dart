@@ -3,20 +3,22 @@ import 'package:locale_chat/constants/text_style.dart';
 
 class MyProfileCard extends StatelessWidget {
   final Widget leading;
-  final Widget tittleText;
+  final Widget? tittleText;
+  final TextStyle? profileCardTittleTextStyle;
   final Widget? subtittleText;
-  final Widget trailing;
+  final Widget? trailing;
   final double height;
   final void Function()? onTap;
 
   const MyProfileCard({
     super.key,
     required this.leading,
-    required this.tittleText,
+    this.tittleText,
     this.subtittleText,
-    required this.trailing,
+    this.trailing,
     required this.height,
     this.onTap,
+    this.profileCardTittleTextStyle,
   });
 
   @override
@@ -30,7 +32,7 @@ class MyProfileCard extends StatelessWidget {
         border: Border.all(width: 0, color: Colors.white),
         boxShadow: [
           BoxShadow(
-            blurRadius: 20,
+            blurRadius: 5,
             color: Colors.black.withOpacity(0.1),
             offset: const Offset(0, 4),
             spreadRadius: 0,

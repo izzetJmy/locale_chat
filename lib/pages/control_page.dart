@@ -9,6 +9,7 @@ import 'package:locale_chat/constants/colors.dart';
 import 'package:locale_chat/constants/text_style.dart';
 import 'package:locale_chat/model/nav_model.dart';
 import 'package:locale_chat/pages/home_page/home_page.dart';
+import 'package:locale_chat/pages/notification_pages/notification_page.dart';
 import 'package:locale_chat/pages/profile_page/profile_page.dart';
 import 'package:locale_chat/pages/search_page/search_page.dart';
 
@@ -64,7 +65,6 @@ class _ControlPageState extends State<ControlPage> {
             ? MyAppBar(
                 title: ListTile(
                   contentPadding: const EdgeInsets.all(10),
-                  titleAlignment: ListTileTitleAlignment.center,
                   leading: const ProfileInfo(
                     image_path: 'assets/images/user_avatar.png',
                     image_radius: 17,
@@ -77,9 +77,14 @@ class _ControlPageState extends State<ControlPage> {
                     'Günaydın',
                     style: appBarSubTitleTextStyle,
                   ),
-                  trailing: Icon(
-                    CupertinoIcons.bell_fill,
+                  trailing: IconButton(
                     color: backgroundColor,
+                    icon: Icon(CupertinoIcons.bell_fill),
+                    onPressed: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const NotificationPage(),
+                        )),
                   ),
                 ),
               )
