@@ -54,3 +54,15 @@ TextStyle profileCardSubTittleTextStyle = const TextStyle(
   fontWeight: FontWeight.w100,
   color: Color(0xff939393),
 );
+
+TextStyle appBarTitleTextStyle = const TextStyle(
+  fontFamily: 'Roboto',
+  fontSize: 18,
+  color: Color.fromARGB(255, 117, 116, 116),
+);
+TextStyle appBarSubTitleTextStyle = const TextStyle(
+  fontFamily: 'Roboto',
+  fontSize: 12,
+  fontWeight: FontWeight.w100,
+  color: Color(0xff939393),
+);

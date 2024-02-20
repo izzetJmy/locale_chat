@@ -35,7 +35,7 @@ class ProfileInfo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return showName && showDate
+    return !showName && !showDate
         ? InkWell(
             onTap: onTap,
             child: Container(

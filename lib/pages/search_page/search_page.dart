@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:locale_chat/comopnents/chat_components/my_single_chat_image.dart';
+import 'package:locale_chat/comopnents/chat_components/my_group_chat.dart';
 
 class SearchPage extends StatelessWidget {
   const SearchPage({super.key});
@@ -10,9 +10,9 @@ class SearchPage extends StatelessWidget {
       body: Center(
         child: Padding(
           padding: EdgeInsets.all(15.0),
-          child: MySingleChatImage(
+          child: MyGroupChat(
+            title: 'afafafdafsdfsdfsdfsdfdsfsdfsfsdfsfsdfsdfsd',
             leftOrRight: false,
-            imagePath: 'assets/images/first_onboarding_page_image.png',
             time: '12:24',
             userImage: 'assets/images/user_avatar.png',
             userName: 'İzzet Şef',

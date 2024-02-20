@@ -28,7 +28,7 @@ class MyGroupChat extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               contentText(size),
-              const SizedBox(width: 8),
+              const SizedBox(width: 10),
               profileInfo(),
             ],
           )
@@ -36,7 +36,7 @@ class MyGroupChat extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               profileInfo(),
-              const SizedBox(width: 8),
+              const SizedBox(width: 10),
               contentText(size),
             ],
           );
@@ -50,7 +50,7 @@ class MyGroupChat extends StatelessWidget {
           leftOrRight ? CrossAxisAlignment.start : CrossAxisAlignment.end,
       children: [
         Container(
-          width: size.width * 0.8,
+          width: size.width * 0.765,
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.only(
