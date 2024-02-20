@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:locale_chat/comopnents/login_card.dart';
 import 'package:locale_chat/comopnents/my_button.dart';
 import 'package:locale_chat/comopnents/my_text_field.dart';
+import 'package:locale_chat/pages/auth_pages/forgot_password_page.dart';
 import 'package:locale_chat/pages/auth_pages/register_page.dart';
 
 class LoginPage extends StatelessWidget {
@@ -74,7 +75,11 @@ class LoginPage extends StatelessWidget {
                       Align(
                         alignment: Alignment.centerRight,
                         child: TextButton(
-                          onPressed: () {},
+                          onPressed: () {
+                            Navigator.of(context).push(MaterialPageRoute(
+                              builder: (context) => ForgotPasswordPage(),
+                            ));
+                          },
                           child: Text(
                             'Forgot Password?',
                             style: TextStyle(
