@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 
 class MyAppBar extends StatelessWidget implements PreferredSizeWidget {
-  final Widget leading;
+  final Widget? leading;
   final Widget title;
   final List<Widget>? actions;
-  const MyAppBar(
-      {super.key, required this.leading, required this.title, this.actions})
+  const MyAppBar({super.key, this.leading, required this.title, this.actions})
       : preferredSize = const Size.fromHeight(60);
 
   @override
@@ -17,9 +16,11 @@ class MyAppBar extends StatelessWidget implements PreferredSizeWidget {
       actions: actions,
       elevation: 4,
       shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.only(
-              bottomLeft: Radius.circular(10),
-              bottomRight: Radius.circular(10))),
+        borderRadius: BorderRadius.only(
+          bottomLeft: Radius.circular(10),
+          bottomRight: Radius.circular(10),
+        ),
+      ),
     );
   }
 

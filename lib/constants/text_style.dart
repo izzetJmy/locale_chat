@@ -46,11 +46,41 @@ TextStyle profileCardTittleTextStyle = const TextStyle(
   fontFamily: 'Roboto',
   fontSize: 20,
   fontWeight: FontWeight.w600,
-  color: Color(0xff939393),
+  color: Color.fromARGB(255, 149, 146, 146),
 );
 TextStyle profileCardSubTittleTextStyle = const TextStyle(
   fontFamily: 'Roboto',
   fontSize: 16,
   fontWeight: FontWeight.w100,
+  color: Color(0xff939393),
+);
+
+TextStyle appBarTitleTextStyle = const TextStyle(
+  fontFamily: 'Roboto',
+  fontSize: 18,
+  color: Color.fromARGB(255, 117, 116, 116),
+);
+TextStyle appBarSubTitleTextStyle = const TextStyle(
+  fontFamily: 'Roboto',
+  fontSize: 12,
+  fontWeight: FontWeight.w100,
+  color: Color(0xff939393),
+);
+
+TextStyle homePageButtontitleTextStyle = const TextStyle(
+  fontFamily: 'Roboto',
+  fontSize: 20,
+  fontWeight: FontWeight.w600,
+  color: Color(0xff939393),
+);
+TextStyle homePageTitleTextStyle = const TextStyle(
+  fontFamily: 'Roboto',
+  fontSize: 20,
+  color: Color(0xff939393),
+);
+TextStyle homePageSubtitleTextStyle = const TextStyle(
+  fontFamily: 'Roboto',
+  fontSize: 20,
+  fontWeight: FontWeight.w600,
   color: Color(0xff939393),
 );
