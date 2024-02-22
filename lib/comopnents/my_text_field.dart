@@ -7,6 +7,11 @@ class MyTextField extends StatelessWidget {
   final Widget? suffixIcon;
   final String hintText;
   final bool obscureText;
+  final Color fillColor;
+  final Color prefixIconColor;
+  final Color suffixIconColor;
+  final Color borderSideColor;
+  final TextStyle hintStyle;
   final String? Function(String?)? validatorFunction;
 
   const MyTextField({
@@ -15,8 +20,13 @@ class MyTextField extends StatelessWidget {
     required this.prefixIcon,
     this.suffixIcon,
     required this.hintText,
-    required this.obscureText,
+    this.obscureText = false,
     this.validatorFunction,
+    this.fillColor = Colors.white,
+    this.prefixIconColor = const Color(0xffC4C4C4),
+    this.suffixIconColor = const Color(0xffC4C4C4),
+    this.borderSideColor = const Color(0xffD3D3D3),
+    this.hintStyle = const TextStyle(color: Color(0xffD3D3D3), fontSize: 18),
   }) : super(key: key);
 
   @override
@@ -25,6 +35,17 @@ class MyTextField extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 10),
       height: size.height * 0.052,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(15),
+        boxShadow: [
+          BoxShadow(
+              blurRadius: 8,
+              offset: const Offset(0, 3),
+              spreadRadius: 0,
+              color: const Color(0xff1C2E31).withOpacity(0.2)),
+          const BoxShadow(color: Colors.white)
+        ],
+      ),
       child: TextFormField(
         controller: controller,
         validator: validatorFunction,
@@ -32,23 +53,23 @@ class MyTextField extends StatelessWidget {
         obscureText: obscureText,
         decoration: InputDecoration(
           prefixIcon: prefixIcon,
-          prefixIconColor: const Color(0xffC4C4C4),
-          suffixIconColor: const Color(0xffC4C4C4),
+          prefixIconColor: prefixIconColor,
+          suffixIconColor: suffixIconColor,
           suffixIcon: suffixIcon,
           hintText: hintText,
-          hintStyle: const TextStyle(color: Color(0xffD3D3D3), fontSize: 18),
-          fillColor: Colors.white,
+          hintStyle: hintStyle,
+          fillColor: fillColor,
           filled: true,
           contentPadding: const EdgeInsets.all(0),
           enabledBorder: OutlineInputBorder(
-            borderSide: const BorderSide(
-              color: Color(0xffD3D3D3),
+            borderSide: BorderSide(
+              color: borderSideColor,
             ),
             borderRadius: BorderRadius.circular(15),
           ),
           focusedBorder: OutlineInputBorder(
-            borderSide: const BorderSide(
-              color: Color(0xffD3D3D3),
+            borderSide: BorderSide(
+              color: borderSideColor,
             ),
             borderRadius: BorderRadius.circular(15),
           ),

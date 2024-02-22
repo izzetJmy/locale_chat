@@ -84,3 +84,6 @@ TextStyle homePageSubtitleTextStyle = const TextStyle(
   fontWeight: FontWeight.w600,
   color: Color(0xff939393),
 );
+
+TextStyle myTextFieldTextStyle =
+    const TextStyle(color: Color(0xff939393), fontSize: 20);
