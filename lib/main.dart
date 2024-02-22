@@ -8,12 +8,14 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
+    return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Material App',
       home: Scaffold(
         body: Center(
-          child: ChatPage(),
+          child: ChatPage(
+            drop_down_menu_list: [],
+          ),
         ),
       ),
     );

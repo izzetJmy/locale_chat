@@ -12,8 +12,14 @@ class ChatPage extends StatefulWidget {
   final String? image_path;
 
   //Widget for drop down menu at the top right
-  final Widget? drop_down_menu;
-  const ChatPage({super.key, this.title, this.image_path, this.drop_down_menu});
+  final List<PopupMenuEntry<String>> drop_down_menu_list;
+  final void Function(String)? onSelected;
+  const ChatPage(
+      {super.key,
+      this.title,
+      this.image_path,
+      required this.drop_down_menu_list,
+      this.onSelected});
 
   @override
   State<ChatPage> createState() => _ChatPageState();
@@ -40,7 +46,10 @@ class _ChatPageState extends State<ChatPage> {
             'Günaydın',
             style: appBarSubTitleTextStyle,
           ),
-          trailing: const Icon(Icons.more_vert),
+          trailing: PopupMenuButton<String>(
+            onSelected: (value) => widget.onSelected,
+            itemBuilder: (context) => widget.drop_down_menu_list,
+          ),
         ),
       ),
       body: Padding(
