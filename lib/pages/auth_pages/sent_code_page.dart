@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:locale_chat/comopnents/login_card.dart';
 import 'package:locale_chat/comopnents/my_button.dart';
 import 'package:locale_chat/pages/auth_pages/reset_password.dart';
-/* import 'package:otp_text_field/otp_field.dart';
-import 'package:otp_text_field/style.dart'; */
 
 class SentCodePage extends StatelessWidget {
   const SentCodePage({super.key});
@@ -38,10 +36,6 @@ class SentCodePage extends StatelessWidget {
                           color: const Color(0xff828282),
                           fontSize: size.height * 0.024),
                     ),
-                    /* OTPTextField(
-                      fieldWidth: 15,
-                      length: 3,
-                    ), */
                     MyButton(
                       width: size.width * 0.5,
                       height: size.height * 0.05,
