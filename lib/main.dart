@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:locale_chat/pages/control_page.dart';
+import 'package:locale_chat/pages/chat_pages/chat_page.dart';
 
 void main() => runApp(const MyApp());
 
@@ -8,12 +8,14 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
+    return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Material App',
       home: Scaffold(
         body: Center(
-          child: ControlPage(),
+          child: ChatPage(
+            drop_down_menu_list: [],
+          ),
         ),
       ),
     );

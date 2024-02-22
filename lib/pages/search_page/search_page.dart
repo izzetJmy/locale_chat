@@ -15,8 +15,6 @@ class SearchPage extends StatefulWidget {
 }
 
 class _SearchPageState extends State<SearchPage> {
-  final listContainerNavKey = GlobalKey<NavigatorState>();
-  final mapContainerNavKey = GlobalKey<NavigatorState>();
   List<Widget> screens = [];
   @override
   void initState() {
