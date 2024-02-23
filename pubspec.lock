@@ -229,14 +229,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.6.0"
-  universal_platform:
-    dependency: transitive
-    description:
-      name: universal_platform
-      sha256: d315be0f6641898b280ffa34e2ddb14f3d12b1a37882557869646e0cc363d0cc
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.0.0+1"
   vector_math:
     dependency: transitive
     description:
