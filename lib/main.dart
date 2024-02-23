@@ -4,6 +4,7 @@ import 'package:locale_chat/firebase_options.dart';
 import 'package:locale_chat/pages/control_page.dart';
 
 void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
