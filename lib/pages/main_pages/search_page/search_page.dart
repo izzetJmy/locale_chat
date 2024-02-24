@@ -1,11 +1,13 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:locale_chat/comopnents/my_appbar.dart';
 import 'package:locale_chat/comopnents/my_button.dart';
 import 'package:locale_chat/comopnents/my_profile_card.dart';
 import 'package:locale_chat/comopnents/profile_info.dart';
 import 'package:locale_chat/constants/colors.dart';
 import 'package:locale_chat/constants/text_style.dart';
 import 'package:locale_chat/helper/ui_helper.dart';
+import 'package:locale_chat/pages/notification_pages/notification_page.dart';
 
 class SearchPage extends StatefulWidget {
   const SearchPage({super.key});
@@ -15,18 +17,67 @@ class SearchPage extends StatefulWidget {
 }
 
 class _SearchPageState extends State<SearchPage> {
-  List<Widget> screens = [];
+  late PageController _pageController;
+  int selectedIndex = 0;
   @override
   void initState() {
-    screens = [listScreen(), mapScreen()];
+    _pageController = PageController(initialPage: selectedIndex);
+
     super.initState();
   }
 
-  int selectedIndex = 0;
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
+  }
+
+  void navigateToPage(int index) {
+    if (index == selectedIndex) {
+      _pageController.animateToPage(
+        index,
+        duration: const Duration(milliseconds: 400),
+        curve: Curves.easeInOut,
+      );
+    } else {
+      _pageController.jumpToPage(index);
+      setState(() {
+        selectedIndex = index;
+      });
+    }
+  }
+
   bool isEmpty = false;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: MyAppBar(
+        title: ListTile(
+          contentPadding: const EdgeInsets.all(10),
+          leading: const ProfileInfo(
+            image_path: 'assets/images/user_avatar.png',
+            image_radius: 17,
+          ),
+          title: Text(
+            'İzzet Şef',
+            style: appBarTitleTextStyle,
+          ),
+          subtitle: Text(
+            'Günaydın',
+            style: appBarSubTitleTextStyle,
+          ),
+          trailing: IconButton(
+            color: backgroundColor,
+            icon: Icon(CupertinoIcons.bell_fill),
+            onPressed: () => Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const NotificationPage(),
+              ),
+            ),
+          ),
+        ),
+      ),
       body: Container(
         padding: const EdgeInsets.only(top: 20, left: 15, right: 15),
         child: Column(
@@ -43,7 +94,7 @@ class _SearchPageState extends State<SearchPage> {
                         : const Color(0xffDDF0E4),
                     onPressed: () {
                       setState(() {
-                        selectedIndex = 0;
+                        navigateToPage(0);
                       });
                     },
                     buttonText: 'Liste',
@@ -58,7 +109,7 @@ class _SearchPageState extends State<SearchPage> {
                         : const Color(0xffDDF0E4),
                     onPressed: () {
                       setState(() {
-                        selectedIndex = 1;
+                        navigateToPage(1);
                       });
                     },
                     buttonText: 'Harita',
@@ -74,19 +125,10 @@ class _SearchPageState extends State<SearchPage> {
             ),
             //Where the list and map were created
             Expanded(
-              child: IndexedStack(
-                index: selectedIndex,
-                children: screens
-                    .map(
-                      (page) => Navigator(
-                        onGenerateInitialRoutes: (navigator, initialRoute) {
-                          return [
-                            MaterialPageRoute(builder: (context) => page),
-                          ];
-                        },
-                      ),
-                    )
-                    .toList(),
+              child: PageView(
+                physics: const NeverScrollableScrollPhysics(),
+                controller: _pageController,
+                children: [listScreen(), mapScreen()],
               ),
             ),
           ],

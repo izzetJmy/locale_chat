@@ -2,7 +2,6 @@
 
 import 'package:flutter/material.dart';
 import 'package:locale_chat/constants/colors.dart';
-import 'package:locale_chat/constants/text_style.dart';
 
 class ProfileInfo extends StatelessWidget {
   final void Function()? onTap;
@@ -15,6 +14,7 @@ class ProfileInfo extends StatelessWidget {
   final String date;
 
   final TextStyle? profileNameTextStyle;
+  final TextStyle? profileInfoDateTextStyle;
 
   final bool showCircleAvatar;
   final bool showName;
@@ -31,7 +31,8 @@ class ProfileInfo extends StatelessWidget {
       this.showName = false,
       this.showDate = false,
       this.profileNameTextStyle,
-      this.height = 10});
+      this.height = 10,
+      this.profileInfoDateTextStyle});
 
   @override
   Widget build(BuildContext context) {

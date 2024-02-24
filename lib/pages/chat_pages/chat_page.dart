@@ -1,5 +1,6 @@
 // ignore_for_file: non_constant_identifier_names
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:locale_chat/comopnents/my_appbar.dart';
 import 'package:locale_chat/comopnents/my_text_field.dart';
@@ -33,7 +34,7 @@ class _ChatPageState extends State<ChatPage> {
     return Scaffold(
       appBar: MyAppBar(
         title: ListTile(
-          contentPadding: const EdgeInsets.all(10),
+          contentPadding: const EdgeInsets.all(0),
           leading: const ProfileInfo(
             image_path: 'assets/images/user_avatar.png',
             image_radius: 17,
