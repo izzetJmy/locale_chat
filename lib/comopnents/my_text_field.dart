@@ -13,7 +13,7 @@ class MyTextField extends StatelessWidget {
   final Color borderSideColor;
   final TextStyle hintStyle;
   final String? Function(String?)? validatorFunction;
-
+  final double borderRadius;
   const MyTextField({
     Key? key,
     required this.controller,
@@ -27,6 +27,7 @@ class MyTextField extends StatelessWidget {
     this.suffixIconColor = const Color(0xffC4C4C4),
     this.borderSideColor = const Color(0xffD3D3D3),
     this.hintStyle = const TextStyle(color: Color(0xffD3D3D3), fontSize: 18),
+    this.borderRadius = 15,
   }) : super(key: key);
 
   @override
@@ -36,13 +37,13 @@ class MyTextField extends StatelessWidget {
       margin: const EdgeInsets.symmetric(vertical: 10),
       height: size.height * 0.052,
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(15),
+        borderRadius: BorderRadius.circular(borderRadius),
         boxShadow: [
           BoxShadow(
               blurRadius: 8,
               offset: const Offset(0, 3),
               spreadRadius: 0,
-              color: const Color(0xff1C2E31).withOpacity(0.2)),
+              color: const Color(0xff1C2E31).withOpacity(0.1)),
           const BoxShadow(color: Colors.white)
         ],
       ),

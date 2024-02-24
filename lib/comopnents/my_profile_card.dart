@@ -9,6 +9,7 @@ class MyProfileCard extends StatelessWidget {
   final Widget? trailing;
   final double height;
   final void Function()? onTap;
+  final double containerRadius;
 
   const MyProfileCard({
     super.key,
@@ -19,6 +20,7 @@ class MyProfileCard extends StatelessWidget {
     required this.height,
     this.onTap,
     this.profileCardTittleTextStyle,
+    this.containerRadius = 20,
   });
 
   @override
@@ -28,7 +30,7 @@ class MyProfileCard extends StatelessWidget {
       alignment: Alignment.center,
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(containerRadius),
         border: Border.all(width: 0, color: Colors.white),
         boxShadow: [
           BoxShadow(

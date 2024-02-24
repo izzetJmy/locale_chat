@@ -87,3 +87,14 @@ TextStyle homePageSubtitleTextStyle = const TextStyle(
 
 TextStyle myTextFieldTextStyle =
     const TextStyle(color: Color(0xff939393), fontSize: 20);
+
+TextStyle profilePageListTileTextStyle = const TextStyle(
+  fontFamily: 'Roboto',
+  fontSize: 20,
+  color: Color(0xff939393),
+);
+TextStyle exitTitleTextStyle = TextStyle(
+  fontFamily: 'Roboto',
+  fontSize: 20,
+  color: Colors.red.withOpacity(0.8),
+);

@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:locale_chat/comopnents/my_appbar.dart';
 import 'package:locale_chat/comopnents/my_button.dart';
 import 'package:locale_chat/comopnents/my_profile_card.dart';
 import 'package:locale_chat/comopnents/profile_info.dart';
@@ -7,6 +8,8 @@ import 'package:locale_chat/constants/colors.dart';
 import 'package:locale_chat/constants/image_path.dart';
 import 'package:locale_chat/constants/text_style.dart';
 import 'package:locale_chat/helper/ui_helper.dart';
+import 'package:locale_chat/pages/chat_pages/chat_page.dart';
+import 'package:locale_chat/pages/notification_pages/notification_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -16,20 +19,68 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  final listContainerNavKey = GlobalKey<NavigatorState>();
-  final mapContainerNavKey = GlobalKey<NavigatorState>();
-  List<Widget> screens = [];
+  late PageController _pageController;
+  int selectedIndex = 0;
+
   @override
   void initState() {
-    screens = [chatScreen(), groupScreen()];
+    _pageController = PageController(initialPage: selectedIndex);
+
     super.initState();
   }
 
-  int selectedIndex = 0;
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
+  }
+
+  void navigateToPage(int index) {
+    if (index == selectedIndex) {
+      _pageController.animateToPage(
+        index,
+        duration: const Duration(milliseconds: 400),
+        curve: Curves.easeInOut,
+      );
+    } else {
+      _pageController.jumpToPage(index);
+      setState(() {
+        selectedIndex = index;
+      });
+    }
+  }
+
   bool isEmpty = false;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: MyAppBar(
+        title: ListTile(
+          contentPadding: const EdgeInsets.all(10),
+          leading: const ProfileInfo(
+            image_path: 'assets/images/user_avatar.png',
+            image_radius: 17,
+          ),
+          title: Text(
+            'İzzet Şef',
+            style: appBarTitleTextStyle,
+          ),
+          subtitle: Text(
+            'Günaydın',
+            style: appBarSubTitleTextStyle,
+          ),
+          trailing: IconButton(
+            color: backgroundColor,
+            icon: const Icon(CupertinoIcons.bell_fill),
+            onPressed: () => Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const NotificationPage(),
+              ),
+            ),
+          ),
+        ),
+      ),
       body: Container(
         padding: const EdgeInsets.only(top: 20, left: 15, right: 15),
         child: Column(
@@ -46,7 +97,7 @@ class _HomePageState extends State<HomePage> {
                         : const Color(0xffDDF0E4),
                     onPressed: () {
                       setState(() {
-                        selectedIndex = 0;
+                        navigateToPage(0);
                       });
                     },
                     buttonText: 'Chat',
@@ -60,9 +111,11 @@ class _HomePageState extends State<HomePage> {
                         ? backgroundColor
                         : const Color(0xffDDF0E4),
                     onPressed: () {
-                      setState(() {
-                        selectedIndex = 1;
-                      });
+                      setState(
+                        () {
+                          navigateToPage(1);
+                        },
+                      );
                     },
                     buttonText: 'Grup',
                     textStyle: homePageButtontitleTextStyle)
@@ -77,19 +130,10 @@ class _HomePageState extends State<HomePage> {
             ),
             //Where the chat and group were created
             Expanded(
-              child: IndexedStack(
-                index: selectedIndex,
-                children: screens
-                    .map(
-                      (page) => Navigator(
-                        onGenerateInitialRoutes: (navigator, initialRoute) {
-                          return [
-                            MaterialPageRoute(builder: (context) => page),
-                          ];
-                        },
-                      ),
-                    )
-                    .toList(),
+              child: PageView(
+                physics: const NeverScrollableScrollPhysics(),
+                controller: _pageController,
+                children: [chatScreen(), groupScreen()],
               ),
             ),
           ],
@@ -126,14 +170,23 @@ class _HomePageState extends State<HomePage> {
                 padding:
                     const EdgeInsets.symmetric(vertical: 10, horizontal: 5),
                 child: MyProfileCard(
-                    leading: ProfileInfo(image_path: ImagePath.user_avatar),
-                    tittleText: Text('Asım Şef'),
-                    subtittleText: Text('selam'),
-                    trailing: Icon(
-                      Icons.arrow_forward_ios,
-                      color: backgroundColor,
+                  leading: ProfileInfo(image_path: ImagePath.user_avatar),
+                  tittleText: const Text('Asım Şef'),
+                  subtittleText: const Text('selam'),
+                  trailing: Icon(
+                    Icons.arrow_forward_ios,
+                    color: backgroundColor,
+                  ),
+                  height: 80,
+                  onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const ChatPage(
+                        drop_down_menu_list: [],
+                      ),
                     ),
-                    height: 80),
+                  ),
+                ),
               );
             },
           );
@@ -169,7 +222,7 @@ class _HomePageState extends State<HomePage> {
                 child: MyProfileCard(
                     leading: const ProfileInfo(
                         image_path: 'assets/images/user_avatar.png'),
-                    tittleText: Text('Grup Adı'),
+                    tittleText: const Text('Grup Adı'),
                     subtittleText: const Text('4 kişi var'),
                     trailing: Icon(
                       Icons.arrow_forward_ios,
