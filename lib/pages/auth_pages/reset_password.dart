@@ -48,7 +48,8 @@ class ResetPasswordPage extends StatelessWidget {
                         hintText: 'New password',
                         obscureText: false,
                         suffixIcon: IconButton(
-                            onPressed: () {}, icon: Icon(Icons.remove_red_eye)),
+                            onPressed: () {},
+                            icon: const Icon(Icons.remove_red_eye)),
                       ),
                     ),
                     Padding(
@@ -59,13 +60,14 @@ class ResetPasswordPage extends StatelessWidget {
                         hintText: 'Confirm password',
                         obscureText: false,
                         suffixIcon: IconButton(
-                            onPressed: () {}, icon: Icon(Icons.remove_red_eye)),
+                            onPressed: () {},
+                            icon: const Icon(Icons.remove_red_eye)),
                       ),
                     ),
                     MyButton(
                       width: size.width * 0.5,
                       height: size.height * 0.05,
-                      buttonColor: Color(0xffAAD9BB),
+                      buttonColor: const Color(0xffAAD9BB),
                       onPressed: () {},
                       buttonText: 'Update',
                       textStyle: TextStyle(

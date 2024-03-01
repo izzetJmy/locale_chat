@@ -101,7 +101,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(
-              builder: (context) => ControlPage(),
+              builder: (context) => const ControlPage(),
             ),
           );
         } else {

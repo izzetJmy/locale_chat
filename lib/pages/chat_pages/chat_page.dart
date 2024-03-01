@@ -1,6 +1,5 @@
 // ignore_for_file: non_constant_identifier_names
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:locale_chat/comopnents/my_appbar.dart';
 import 'package:locale_chat/comopnents/my_text_field.dart';

@@ -7,7 +7,7 @@ import 'package:locale_chat/pages/auth_pages/sent_code_page.dart';
 
 class ForgotPasswordPage extends StatelessWidget {
   ForgotPasswordPage({super.key});
-  final TextEditingController emailController = new TextEditingController();
+  final TextEditingController emailController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -43,7 +43,7 @@ class ForgotPasswordPage extends StatelessWidget {
                       padding: const EdgeInsets.symmetric(vertical: 10.0),
                       child: MyTextField(
                         controller: emailController,
-                        prefixIcon: Icon(CupertinoIcons.mail),
+                        prefixIcon: const Icon(CupertinoIcons.mail),
                         hintText: 'Email',
                         obscureText: false,
                       ),
@@ -51,7 +51,7 @@ class ForgotPasswordPage extends StatelessWidget {
                     MyButton(
                       width: size.width * 0.5,
                       height: size.height * 0.05,
-                      buttonColor: Color(0xffAAD9BB),
+                      buttonColor: const Color(0xffAAD9BB),
                       onPressed: () {
                         Navigator.of(context).push(
                           MaterialPageRoute(

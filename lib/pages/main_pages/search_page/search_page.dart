@@ -68,7 +68,7 @@ class _SearchPageState extends State<SearchPage> {
           ),
           trailing: IconButton(
             color: backgroundColor,
-            icon: Icon(CupertinoIcons.bell_fill),
+            icon: const Icon(CupertinoIcons.bell_fill),
             onPressed: () => Navigator.push(
               context,
               MaterialPageRoute(
@@ -167,8 +167,8 @@ class _SearchPageState extends State<SearchPage> {
                 child: MyProfileCard(
                     leading: const ProfileInfo(
                         image_path: 'assets/images/user_avatar.png'),
-                    tittleText: Text('Asım Şef'),
-                    subtittleText: Text('selam'),
+                    tittleText: const Text('Asım Şef'),
+                    subtittleText: const Text('selam'),
                     trailing: Icon(
                       Icons.arrow_forward_ios,
                       color: backgroundColor,

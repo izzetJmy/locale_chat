@@ -39,11 +39,11 @@ class SentCodePage extends StatelessWidget {
                           color: const Color(0xff828282),
                           fontSize: size.height * 0.024),
                     ),
-                    PinPut(),
+                    const PinPut(),
                     MyButton(
                       width: size.width * 0.5,
                       height: size.height * 0.05,
-                      buttonColor: Color(0xffAAD9BB),
+                      buttonColor: const Color(0xffAAD9BB),
                       onPressed: () {
                         Navigator.of(context).push(
                           MaterialPageRoute(

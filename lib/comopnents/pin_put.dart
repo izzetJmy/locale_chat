@@ -1,3 +1,5 @@
+// ignore_for_file: depend_on_referenced_packages
+
 import 'package:flutter/material.dart';
 import 'package:pinput/pinput.dart';
 
@@ -32,7 +34,7 @@ class _PinPutState extends State<PinPut> {
       ),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: Color(0xffD3D3D3)),
+        border: Border.all(color: const Color(0xffD3D3D3)),
       ),
     );
     return Padding(
@@ -54,7 +56,9 @@ class _PinPutState extends State<PinPut> {
                     decoration: defaultPinTheme.decoration!
                         .copyWith(color: Colors.white)),
                 separatorBuilder: (index) => const SizedBox(width: 8),
-                validator: (value) {},
+                validator: (value) {
+                  return null;
+                },
                 hapticFeedbackType: HapticFeedbackType.lightImpact,
                 onCompleted: (pin) {},
                 onChanged: (value) {},
@@ -65,7 +69,7 @@ class _PinPutState extends State<PinPut> {
                       margin: const EdgeInsets.only(bottom: 9),
                       width: 22,
                       height: 1,
-                      color: Color(0xffD3D3D3),
+                      color: const Color(0xffD3D3D3),
                     ),
                   ],
                 ),
@@ -73,7 +77,7 @@ class _PinPutState extends State<PinPut> {
                   decoration: defaultPinTheme.decoration!.copyWith(
                       borderRadius: BorderRadius.circular(10),
                       border: Border.all(
-                        color: Color(0xffD3D3D3),
+                        color: const Color(0xffD3D3D3),
                       ),
                       color: Colors.white),
                 ),
@@ -82,7 +86,7 @@ class _PinPutState extends State<PinPut> {
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(10),
                     border: Border.all(
-                      color: Color(0xffD3D3D3),
+                      color: const Color(0xffD3D3D3),
                     ),
                   ),
                 ),

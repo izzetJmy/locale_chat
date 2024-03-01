@@ -9,7 +9,7 @@ import 'package:locale_chat/constants/text_style.dart';
 import 'package:locale_chat/helper/ui_helper.dart';
 
 class CreateGroupPage extends StatefulWidget {
-  CreateGroupPage({super.key});
+  const CreateGroupPage({super.key});
 
   @override
   State<CreateGroupPage> createState() => _CreateGroupPageState();
