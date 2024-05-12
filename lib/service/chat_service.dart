@@ -6,50 +6,79 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:locale_chat/model/message_model.dart';
+import 'package:locale_chat/model/single_chat_model.dart';
 import 'package:uuid/uuid.dart';
 
-class ChatService {
+class SingleChatService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  final Uuid uuid = const Uuid();
-  DateTime nowTime = DateTime.now();
+  final Uuid _uuid = const Uuid();
+  final DateTime _nowTime = DateTime.now();
+
+  //CREATE CHAT
+  Future<void> createChat(SingleChatModel chatModel, String chatId) async {
+    await _firestore
+        .collection("chat_rooms")
+        .doc(chatId)
+        .set(chatModel.toJson());
+  }
 
   //SEND MESSAGE
-  Future<void> sendMessage(MessageModel message) async {
-    final String currentUserEmail = _auth.currentUser!.email!;
+  Future<void> sendMessage(MessageModel message, String chatId) async {
+    final User currentUser = _auth.currentUser!;
+
     MessageModel newMessage = MessageModel(
-        chatId: message.chatId,
         content: message.content,
-        createdTime: nowTime,
-        senderId: currentUserEmail,
+        createdTime: _nowTime,
+        senderId: currentUser.uid,
         messageId: message.messageId,
         receiverId: message.receiverId,
         type: message.type);
 
     await _firestore
         .collection("chat_rooms")
-        .doc(message.chatId)
+        .doc(chatId)
         .collection("messages")
-        .add(newMessage.toJson());
+        .doc(message.messageId)
+        .set(newMessage.toJson());
   }
 
   //GET MESSAGE
-  Stream<QuerySnapshot> getMessage(MessageModel message) {
+  Stream<QuerySnapshot> getMessage(String chatId) {
     return _firestore
         .collection("chat_rooms")
-        .doc(message.chatId)
+        .doc(chatId)
         .collection("messages")
-        .orderBy(message.createdTime, descending: false)
+        .orderBy("createdTime", descending: false)
         .snapshots();
   }
 
+  //GET CHATS
+  Stream<QuerySnapshot<Map<String, dynamic>>?> getChat() {
+    try {
+      return _firestore
+          .collection("chat_rooms")
+          .where("members", arrayContains: _auth.currentUser!.uid)
+          .snapshots();
+    } catch (e) {
+      debugPrint("Error getting chattrem $e");
+    }
+    return const Stream.empty();
+  }
+
+  //DELETE CHAT
+  Future<void> deleteChat(String chatId) async {
+    await _firestore.collection("chat_rooms").doc(chatId).delete();
+  }
+
   //UPLOAD IMAGE
-  Future<String?> uploadImage(MessageModel message, File imageFile) async {
+  Future<String?> uploadImage(
+      MessageModel message, File imageFile, String chatId) async {
     final String currentUserEmail = _auth.currentUser!.email!;
     final String downloadUrl;
 
     final Reference storageRef =
-        FirebaseStorage.instance.ref().child("images").child(uuid.v4());
+        FirebaseStorage.instance.ref().child("images").child(_uuid.v4());
     final UploadTask uploadTask = storageRef.putFile(imageFile);
 
     try {
@@ -57,9 +86,8 @@ class ChatService {
       downloadUrl = await storageRef.getDownloadURL();
 
       MessageModel newMessage = MessageModel(
-          chatId: message.chatId,
           content: downloadUrl,
-          createdTime: nowTime,
+          createdTime: _nowTime,
           senderId: currentUserEmail,
           messageId: message.messageId,
           receiverId: message.receiverId,
@@ -67,9 +95,10 @@ class ChatService {
 
       await _firestore
           .collection("chat_rooms")
-          .doc(message.chatId)
+          .doc(chatId)
           .collection("messages")
-          .add(newMessage.toJson());
+          .doc(message.messageId)
+          .set(newMessage.toJson());
 
       return downloadUrl;
     } catch (e) {
@@ -88,20 +117,5 @@ class ChatService {
       debugPrint("Error picking image: $e");
     }
     return null;
-  }
-
-  //GET CHATS
-  Stream<DocumentSnapshot<Map<String, dynamic>>?> getChat(String chatId) {
-    try {
-      return _firestore.collection("chat_rooms").doc(chatId).snapshots();
-    } catch (e) {
-      debugPrint("Error getting chattrem $e");
-    }
-    return const Stream.empty();
-  }
-
-  //DELETE CHAT
-  Future<void> deleteChat(String chatId) async {
-    await _firestore.collection("chat_rooms").doc(chatId).delete();
   }
 }

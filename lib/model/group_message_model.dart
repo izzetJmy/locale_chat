@@ -24,7 +24,7 @@ class GroupMessageModel {
         content: map['content'],
         senderId: map['senderId'],
         createdTime: map['createdTime'],
-        type: map['type']);
+        type: MessageType.values[map['type']]);
   }
 
   Map<String, dynamic> toJson() {
@@ -34,7 +34,7 @@ class GroupMessageModel {
       'content': content,
       'senderId': senderId,
       'createdTime': createdTime,
-      'type': type,
+      'type': type.index,
     };
   }
 }
