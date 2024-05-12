@@ -39,7 +39,7 @@ class AuthService {
         profilePhoto: "",
         isOnline: false);
 
-    await _firestore.collection('Users').doc(user.uid).set(userModel.toMap());
+    await _firestore.collection('Users').doc(user.uid).set(userModel.toJson());
 
     return userModel;
   }

@@ -2,43 +2,39 @@ enum MessageType { PHOTO, TEXT }
 
 class MessageModel {
   String messageId;
-  String chatId;
   String content;
-  String to;
-  String from;
+  String senderId;
+  String receiverId;
   DateTime createdTime;
   MessageType type;
 
   MessageModel({
-    required this.chatId,
     required this.content,
     required this.createdTime,
-    required this.from,
+    required this.senderId,
     required this.messageId,
-    required this.to,
+    required this.receiverId,
     required this.type,
   });
 
   MessageModel fromJson(Map<String, dynamic> map) {
     return MessageModel(
-        chatId: map["chatId"],
         content: map["content"],
         createdTime: map["createdTime"],
-        from: map["from"],
+        senderId: map["senderId"],
         messageId: map["messageId"],
-        to: map["to"],
-        type: map["type"]);
+        receiverId: map["receiverId"],
+        type: MessageType.values[map["type"]]);
   }
 
-  Map<String, dynamic> toJson(MessageModel model) {
+  Map<String, dynamic> toJson() {
     return {
-      "chatID": model.chatId,
-      "content": model.content,
-      "createdTime": model.createdTime,
-      "from": model.from,
-      "messageId": model.messageId,
-      "to": model.to,
-      "type": model.type
+      "content": content,
+      "createdTime": createdTime,
+      "senderId": senderId,
+      "messageId": messageId,
+      "receiverId": receiverId,
+      "type": type.index
     };
   }
 }

@@ -1,20 +1,56 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:locale_chat/model/chat_model.dart';
 
 class GroupChatModel extends ChatModel {
-  String id;
+  String groupId;
+  String groupName;
   List members;
   String? groupPhoto;
+  DateTime createdTime;
   String createdId;
+  String adminEmail;
 
-  GroupChatModel(this.id, this.members, this.groupPhoto, this.createdId);
+  GroupChatModel({
+    required this.groupId,
+    required this.groupName,
+    required this.members,
+    this.groupPhoto,
+    required this.createdTime,
+    required this.createdId,
+    required this.adminEmail,
+  });
 
   @override
   String getId() {
-    return this.id;
+    return this.groupId;
   }
 
   @override
   List getMembers() {
     return this.members;
+  }
+
+  GroupChatModel fromJson(Map<String, dynamic> map) {
+    return GroupChatModel(
+      groupId: map['groupId'],
+      groupName: map['groupName'],
+      members: [],
+      groupPhoto: map['groupPhoto'] != null ? map['groupPhoto'] : null,
+      createdTime: map['createdTime'],
+      createdId: map['createdId'],
+      adminEmail: map['adminEmail'],
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return <String, dynamic>{
+      'groupId': groupId,
+      'groupName': groupName,
+      'members': members,
+      'groupPhoto': groupPhoto,
+      'createdTime': createdTime,
+      'createdId': createdId,
+      'adminEmail': adminEmail,
+    };
   }
 }
