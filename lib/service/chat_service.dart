@@ -5,8 +5,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:locale_chat/model/message_model.dart';
-import 'package:locale_chat/model/single_chat_model.dart';
+import 'package:locale_chat/model/messages_models/message_model.dart';
+import 'package:locale_chat/model/messages_models/single_chat_model.dart';
 import 'package:uuid/uuid.dart';
 
 class SingleChatService {

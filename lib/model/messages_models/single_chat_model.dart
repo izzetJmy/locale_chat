@@ -1,4 +1,4 @@
-import 'package:locale_chat/model/chat_model.dart';
+import 'package:locale_chat/model/messages_models/chat_model.dart';
 
 class SingleChatModel extends ChatModel {
   String chatId;
