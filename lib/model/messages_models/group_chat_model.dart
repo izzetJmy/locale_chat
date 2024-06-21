@@ -1,5 +1,5 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
-import 'package:locale_chat/model/chat_model.dart';
+import 'package:locale_chat/model/messages_models/chat_model.dart';
 
 class GroupChatModel extends ChatModel {
   String groupId;

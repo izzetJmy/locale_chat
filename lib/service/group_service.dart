@@ -5,8 +5,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:locale_chat/model/group_chat_model.dart';
-import 'package:locale_chat/model/group_message_model.dart';
+import 'package:locale_chat/model/messages_models/group_chat_model.dart';
+import 'package:locale_chat/model/messages_models/group_message_model.dart';
 import 'package:locale_chat/model/user_model.dart';
 import 'package:uuid/uuid.dart';
 
