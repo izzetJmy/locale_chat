@@ -14,7 +14,7 @@ class LocationService {
   Timer? timer;
 
   //LOCATION PERMISSIONS
-  Future<bool> _handleLocationPermissions() async {
+  Future<bool> handleLocationPermissions() async {
     try {
       LocationPermission permission;
 
@@ -54,19 +54,20 @@ class LocationService {
   }
 
   //GET CURRENT LOCATION
-  Future<Position?> getCurrentLocaiton() async {
+  Future<PositionModel?> getCurrentLocaiton() async {
     try {
-      bool hasPermision = await _handleLocationPermissions();
-      if (!hasPermision) {
-        return null;
-      } else {
-        Position currentPosition = await Geolocator.getCurrentPosition(
-            desiredAccuracy: LocationAccuracy
-                .high); //high olması konumu daha net düzgün dikkatli almasına yarar.
-        debugPrint(
-            "Current Position: ${currentPosition.latitude}, ${currentPosition.longitude}");
-        return currentPosition;
-      }
+      Position currentPosition1 = await Geolocator.getCurrentPosition(
+          desiredAccuracy: LocationAccuracy
+              .high); //high olması konumu daha net düzgün dikkatli almasına yarar.
+      debugPrint(
+          "Current Position: ${currentPosition1.latitude}, ${currentPosition1.longitude}");
+      PositionModel currentPosition = PositionModel(
+          id: _auth.currentUser!.uid,
+          latitude: currentPosition1.latitude,
+          longitude: currentPosition1.longitude,
+          timestamp: _nowTime);
+
+      return currentPosition;
     } catch (e) {
       Future.error(e); //error showDialog gösterilecek
       return null;
@@ -81,7 +82,7 @@ class LocationService {
         .set(locationModel.toJson());
   }
 
-  //START TIMER
+  /*  //START TIMER
   Future<Set<Marker>> startTimer(int updateSecond) async {
     Set<Marker> markers = {};
     timer = Timer.periodic(
@@ -89,7 +90,7 @@ class LocationService {
       Duration(seconds: updateSecond),
       (timer) async {
         try {
-          Position? currentPosition = await getCurrentLocaiton();
+          PositionModel? currentPosition = await getCurrentLocaiton();
           if (currentPosition != null) {
             LocationModel? locationModel = await getLocationModel();
             markers = await addMarker(locationModel!);
@@ -102,13 +103,13 @@ class LocationService {
     );
     return markers;
   }
-
-  //STOP TIMER
+ */
+  /*  //STOP TIMER
   Future<void> stopTimer() async {
     timer?.cancel();
-  }
+  } */
 
-  //ADD MARKER
+  /*  //ADD MARKER
   Future<Set<Marker>> addMarker(LocationModel locationModel) async {
     //haritada kullanacağımız markerlerde google_maps_flutter paketinde Marker classından nesneler üretmemizi istiyor bende burda üretiyorum
     Set<Marker> newMarkers = {
@@ -134,7 +135,7 @@ class LocationService {
     );
     return newMarkers;
   }
-
+ */
   //GET OTHER LOCATION
   Future<List<LocationModel>> getOtherLocations() async {
     List<LocationModel> otherLocations = [];
@@ -212,11 +213,11 @@ class LocationService {
     }
   }
 
-//CREATE LOCATION MODEL LOCATION AND SAVE FIREBASE
+/* //CREATE LOCATION MODEL LOCATION AND SAVE FIREBASE
   Future<LocationModel?> getLocationModel() async {
     String userID = _auth.currentUser != null ? _auth.currentUser!.uid : "";
     try {
-      Position? currentPosition = await getCurrentLocaiton();
+      PositionModel? currentPosition = await getCurrentLocaiton();
 
       //CURRENT USERS LOCATION INFO
       PositionModel currentPositionModel = PositionModel(
@@ -239,5 +240,5 @@ class LocationService {
       Future.error(e); //error showDialog gösterilecek
       return null;
     }
-  }
+  } */
 }
