@@ -17,7 +17,7 @@ class GroupMessageModel {
     required this.type,
   });
 
-  GroupMessageModel fromJson(Map<String, dynamic> map) {
+  static GroupMessageModel fromJson(Map<String, dynamic> map) {
     return GroupMessageModel(
         messageId: map['messageId'],
         groupId: map['groupId'],

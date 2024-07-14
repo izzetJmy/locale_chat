@@ -30,7 +30,7 @@ class GroupChatModel extends ChatModel {
     return this.members;
   }
 
-  GroupChatModel fromJson(Map<String, dynamic> map) {
+  static GroupChatModel fromJson(Map<String, dynamic> map) {
     return GroupChatModel(
       groupId: map['groupId'],
       groupName: map['groupName'],
