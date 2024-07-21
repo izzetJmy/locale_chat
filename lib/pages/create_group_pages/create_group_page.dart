@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:locale_chat/comopnents/my_appbar.dart';
 import 'package:locale_chat/comopnents/my_button.dart';
 import 'package:locale_chat/comopnents/my_profile_card.dart';
 import 'package:locale_chat/comopnents/my_text_field.dart';
@@ -22,7 +23,7 @@ class _CreateGroupPageState extends State<CreateGroupPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
+      appBar: MyAppBar(
         leading: IconButton(
           icon: Icon(
             Icons.arrow_back_ios,
@@ -31,9 +32,7 @@ class _CreateGroupPageState extends State<CreateGroupPage> {
           onPressed: () => Navigator.pop(context),
         ),
         title: Text('Grup Oluştur', style: homePageTitleTextStyle),
-        backgroundColor: Colors.transparent,
         elevation: 0,
-        toolbarHeight: 60,
       ),
       body: Center(
         child: Padding(

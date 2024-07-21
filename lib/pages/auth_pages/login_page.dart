@@ -18,6 +18,7 @@ class LoginPage extends StatelessWidget {
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
     return Scaffold(
+      resizeToAvoidBottomInset: false,//klavye
       body: Container(
         decoration: const BoxDecoration(
           image: DecorationImage(

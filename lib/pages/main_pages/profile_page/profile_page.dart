@@ -31,10 +31,13 @@ class _ProfilePageState extends State<ProfilePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: MyAppBar(
-        title: Text('Profile', style: homePageTitleTextStyle),
+        title: Text(
+          'Profile',
+          style: homePageTitleTextStyle,
+        ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.edit),
+            icon: const Icon(CupertinoIcons.create),
             color: backgroundColor,
             onPressed: () {
               showEditModalBottomSheetFunction(context, controoler1);
@@ -142,16 +145,19 @@ Future<dynamic> showEditModalBottomSheetFunction(
   return showModalBottomSheet(
     useRootNavigator: true,
     shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(20), topRight: Radius.circular(20))),
+      borderRadius: BorderRadius.only(
+        topLeft: Radius.circular(20),
+        topRight: Radius.circular(20),
+      ),
+    ),
     context: context,
     builder: (BuildContext context) {
       return SizedBox(
-        height: UIHelper.getDeviceHeight(context) * 0.5,
+        height: UIHelper.getDeviceHeight(context) * 0.6,
         child: Padding(
           padding: EdgeInsets.symmetric(
               horizontal: UIHelper.getDeviceWith(context) * 0.05,
-              vertical: UIHelper.getDeviceWith(context) * 0.06),
+              vertical: UIHelper.getDeviceWith(context) * 0.05),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
