@@ -53,40 +53,40 @@ class MyTextField extends StatelessWidget {
         cursorColor: Colors.grey,
         obscureText: obscureText,
         decoration: InputDecoration(
-          prefixIcon: prefixIcon,
-          prefixIconColor: prefixIconColor,
-          suffixIconColor: suffixIconColor,
-          suffixIcon: suffixIcon,
-          hintText: hintText,
-          hintStyle: hintStyle,
-          fillColor: fillColor,
-          filled: true,
-          contentPadding: const EdgeInsets.all(0),
-          enabledBorder: OutlineInputBorder(
-            borderSide: BorderSide(
-              color: borderSideColor,
+            prefixIcon: prefixIcon,
+            prefixIconColor: prefixIconColor,
+            suffixIconColor: suffixIconColor,
+            suffixIcon: suffixIcon,
+            hintText: hintText,
+            hintStyle: hintStyle,
+            fillColor: fillColor,
+            filled: true,
+            contentPadding: const EdgeInsets.all(0),
+            enabledBorder: OutlineInputBorder(
+              borderSide: BorderSide(
+                color: borderSideColor,
+              ),
+              borderRadius: BorderRadius.circular(15),
             ),
-            borderRadius: BorderRadius.circular(15),
-          ),
-          focusedBorder: OutlineInputBorder(
-            borderSide: BorderSide(
-              color: borderSideColor,
+            focusedBorder: OutlineInputBorder(
+              borderSide: BorderSide(
+                color: borderSideColor,
+              ),
+              borderRadius: BorderRadius.circular(15),
             ),
-            borderRadius: BorderRadius.circular(15),
-          ),
-          errorBorder: OutlineInputBorder(
-            borderSide: const BorderSide(
-              color: Colors.red,
+            errorBorder: OutlineInputBorder(
+              borderSide: const BorderSide(
+                color: Colors.red,
+              ),
+              borderRadius: BorderRadius.circular(15),
             ),
-            borderRadius: BorderRadius.circular(15),
-          ),
-          focusedErrorBorder: OutlineInputBorder(
-            borderSide: const BorderSide(
-              color: Colors.red,
+            focusedErrorBorder: OutlineInputBorder(
+              borderSide: const BorderSide(
+                color: Colors.red,
+              ),
+              borderRadius: BorderRadius.circular(15),
             ),
-            borderRadius: BorderRadius.circular(15),
-          ),
-        ),
+            errorStyle: const TextStyle(fontSize: 0.01)),
       ),
     );
   }

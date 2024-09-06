@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:locale_chat/mixin/error_holder.dart';
 import 'package:locale_chat/model/async_change_notifier.dart';
 import 'package:locale_chat/model/error_model.dart';
@@ -12,6 +14,27 @@ class AuthChangeNotifier extends AsyncChangeNotifier with ErrorHolder {
     notifyListeners();
   }
 
+  bool _isOtpVerified = false;
+  bool get isOtpVerified => _isOtpVerified;
+  set isOtpVerified(bool value) {
+    _isOtpVerified = value;
+    notifyListeners();
+  }
+
+  String _otpEmailController = '';
+  String get otpEmailController => _otpEmailController;
+  set otpEmailController(String value) {
+    _otpEmailController = value;
+    notifyListeners();
+  }
+
+  String _otpEmailVerifyController = '';
+  String get otpEmailVerifyController => _otpEmailVerifyController;
+  set otpEmailVerifyController(String value) {
+    _otpEmailVerifyController = value;
+    notifyListeners();
+  }
+
   @override
   AsyncChangeNotifierState state = AsyncChangeNotifierState.idle;
   final AuthService _authService = AuthService();
@@ -19,26 +42,63 @@ class AuthChangeNotifier extends AsyncChangeNotifier with ErrorHolder {
 //Listens to sign in in firebase
   Future<UserModel?> signIn(
       {required String email, required String password}) async {
-    await wrapAsync(() async {
-      user = await _authService.signIn(email: email, password: password);
-      errors.clear();
-      notifyListeners();
-    },
-        ErrorModel(
-            id: user?.userName ?? 'Anonymous', message: 'Failed to sign in'));
+    await wrapAsync(
+      () async {
+        try {
+          user = await _authService.signIn(email: email, password: password);
+          notifyListeners();
+        } on FirebaseAuthException catch (error) {
+          String errorMessage;
+          if (error.code == 'user-not-found') {
+            errorMessage = 'User not found for that email';
+          } else if (error.code == 'invalid-email') {
+            errorMessage = 'This email is invalid';
+          } else if (error.code == 'wrong-password') {
+            errorMessage = 'Wrong password. Please try again';
+          } else if (error.code == 'invalid-credential') {
+            errorMessage = 'Wrong email or password';
+          } else {
+            errorMessage = 'Something went wrong, try again';
+          }
+          errors.clear();
+          addError(ErrorModel(id: 'firebaseAuth', message: errorMessage));
+          errors.clear();
+
+          notifyListeners();
+        }
+      },
+      ErrorModel(
+          id: user?.userName ?? 'Anonymous', message: 'Failed to sign in'),
+    );
     return user;
   }
 
 //Listens to register new users in firebase
   Future<UserModel?> register(
       {required String email, required String password}) async {
-    await wrapAsync(() async {
-      user = await _authService.register(email: email, password: password);
-      errors.clear();
-      notifyListeners();
-    },
-        ErrorModel(
-            id: user?.userName ?? 'Anonymous', message: 'Failed to register'));
+    await wrapAsync(
+      () async {
+        try {
+          user = await _authService.register(email: email, password: password);
+          notifyListeners();
+        } on FirebaseAuthException catch (error) {
+          String errorMessage;
+          if (error.code == 'email-already-in-use') {
+            errorMessage = 'This email is already in use';
+          } else if (error.code == 'invalid-email') {
+            errorMessage = 'This email is invalid';
+          } else if (error.code == 'weak-password') {
+            errorMessage = 'The password provided is too weak';
+          } else {
+            errorMessage = 'Something went wrong, try again';
+          }
+          errors.clear();
+          addError(ErrorModel(id: 'firebaseAuth', message: errorMessage));
+        }
+      },
+      ErrorModel(
+          id: user?.userName ?? 'Anonymous', message: 'Failed to register'),
+    );
     return user;
   }
 
@@ -46,6 +106,8 @@ class AuthChangeNotifier extends AsyncChangeNotifier with ErrorHolder {
   Future<void> signOut() async {
     await wrapAsync(() async {
       await _authService.signOut();
+      notifyListeners();
+
       errors.clear();
       user = null;
     },
@@ -65,11 +127,27 @@ class AuthChangeNotifier extends AsyncChangeNotifier with ErrorHolder {
   }
 
 //Listens for the link emailed to the user to reset password
-  Future<void> forgotPassword({required String email}) async {
+  Future<void> updatePassword(
+      {required String email, required String password}) async {
+    String errorMessage;
     await wrapAsync(
       () async {
-        await _authService.forgotPassword(email: email);
-        errors.clear();
+        try {
+          await _authService.updatePassword(
+              email: email, newPassword: password);
+
+          notifyListeners();
+        } on FirebaseAuthException catch (error) {
+          if (error.code == 'wrong-password') {
+            errorMessage = 'Current password is incorrect.';
+          } else {
+            errorMessage = 'Failed to change password';
+          }
+          errors.clear();
+          addError(ErrorModel(id: 'firebaseAuth', message: errorMessage));
+          notifyListeners();
+          throw Exception(errorMessage);
+        }
       },
       ErrorModel(
           id: user?.userName ?? 'Anonymous',
@@ -81,9 +159,23 @@ class AuthChangeNotifier extends AsyncChangeNotifier with ErrorHolder {
   Future<UserModel?> authWithGoogle() async {
     await wrapAsync(
       () async {
-        user = await _authService.authWithGoogle();
-        errors.clear();
-        notifyListeners();
+        try {
+          user = await _authService.authWithGoogle();
+          notifyListeners();
+        } on FirebaseAuthException catch (error) {
+          String errorMessage;
+          if (error.code == 'account-exists-with-different-credential') {
+            errorMessage = 'Account already exists with different credentials';
+          } else if (error.code == 'invalid-credential') {
+            errorMessage = 'Invalid credentials';
+          } else {
+            errorMessage = 'Error signing in with Google: ${error.message}';
+          }
+
+          errors.clear();
+          addError(ErrorModel(id: 'firebaseAuth', message: errorMessage));
+          notifyListeners();
+        }
       },
       ErrorModel(
           id: user?.userName ?? 'Anonymous',
@@ -96,9 +188,22 @@ class AuthChangeNotifier extends AsyncChangeNotifier with ErrorHolder {
   Future<UserModel?> authWithFacebook() async {
     await wrapAsync(
       () async {
-        user = await _authService.authWithFacebook();
-        errors.clear();
-        notifyListeners();
+        try {
+          user = await _authService.authWithFacebook();
+          notifyListeners();
+        } on FirebaseAuthException catch (error) {
+          String errorMessage;
+          if (error.code == 'account-exists-with-different-credential') {
+            errorMessage = 'Account already exists with different credentials';
+          } else if (error.code == 'invalid-credential') {
+            errorMessage = 'Invalid credentials';
+          } else {
+            errorMessage = 'Error signing in with Facebook: ${error.message}';
+          }
+          errors.clear();
+          addError(ErrorModel(id: 'firebaseAuth', message: errorMessage));
+          notifyListeners();
+        }
       },
       ErrorModel(
           id: user?.userName ?? 'Anonymous',
@@ -120,5 +225,55 @@ class AuthChangeNotifier extends AsyncChangeNotifier with ErrorHolder {
           message: 'Failed to authentication state changes'),
     );
     return user;
+  }
+
+  List<ErrorModel> getFirebaseAuthErrors() {
+    return errors.where((error) => error.id == 'firebaseAuth').toList();
+  }
+
+  Future<void> sendOtp() async {
+    String errorMessages;
+
+    await wrapAsync(
+      () async {
+        try {
+          final QuerySnapshot result = await FirebaseFirestore.instance
+              .collection('Users')
+              .where('email', isEqualTo: otpEmailController)
+              .limit(1)
+              .get();
+          final List<DocumentSnapshot> document = result.docs;
+          if (document.isNotEmpty) {
+            await _authService.sendOtp(otpEmailController);
+          } else {
+            errorMessages = 'Email not found';
+            addError(ErrorModel(id: 'firebaseAuth', message: errorMessages));
+            notifyListeners();
+          }
+        } catch (e) {
+          errorMessages = e.toString();
+          addError(ErrorModel(id: 'firebaseAuth', message: errorMessages));
+          notifyListeners();
+        }
+      },
+      ErrorModel(id: 'otp', message: 'Failed to send OTP'),
+    );
+  }
+
+  Future<void> verifyOtp() async {
+    await wrapAsync(
+      () async {
+        try {
+          isOtpVerified =
+              await _authService.verifyOtp(otpEmailVerifyController);
+          notifyListeners();
+        } catch (e) {
+          addError(
+              ErrorModel(id: 'firebaseAuth', message: 'Failed to verify OTP'));
+          notifyListeners();
+        }
+      },
+      ErrorModel(id: 'otp', message: 'Failed to verify OTP'),
+    );
   }
 }

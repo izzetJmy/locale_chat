@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 Color backgroundColor = const Color(0xffAAD9BB);
+Color buttonColor = const Color(0xffAAD9BB);
 
 Gradient backgroundGradientColor = LinearGradient(
   colors: [

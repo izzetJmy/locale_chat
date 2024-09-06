@@ -1,3 +1,4 @@
+import 'package:email_otp/email_otp.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:locale_chat/model/user_model.dart';
@@ -5,8 +6,9 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 
 class AuthService {
-  FirebaseAuth _auth = FirebaseAuth.instance;
-  FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  User? currentUser = FirebaseAuth.instance.currentUser;
 
 //Sign In function
   Future<UserModel?> signIn(
@@ -57,9 +59,8 @@ class AuthService {
   }
 
 //Send to user email a link to reset password
-  Future<void> forgotPassword({required String email}) async {
-    await _auth.sendPasswordResetEmail(email: email);
-  }
+  Future<void> updatePassword(
+      {required String email, required String newPassword}) async {}
 
 //Provide Google authenticate
   Future<UserModel?> authWithGoogle() async {
@@ -79,8 +80,10 @@ class AuthService {
         userName: "",
         isAnonymousName: user.isAnonymous,
         email: user.email!,
-        profilePhoto: "",
+        profilePhoto: user.phoneNumber!,
         isOnline: false);
+
+    await _firestore.collection('Users').doc(user.uid).set(userModel.toJson());
 
     return userModel;
   }
@@ -99,7 +102,7 @@ class AuthService {
         userName: "",
         isAnonymousName: user.isAnonymous,
         email: user.email!,
-        profilePhoto: "",
+        profilePhoto: user.photoURL!,
         isOnline: false);
 
     return userModel;
@@ -124,5 +127,28 @@ class AuthService {
       }
     });
     return userModel1;
+  }
+
+  Future<bool> sendOtp(String email) async {
+    EmailOTP.config(
+        appEmail: 'localechatapp@gmail.com',
+        appName: 'Locale Chat',
+        otpType: OTPType.numeric,
+        otpLength: 6,
+        emailTheme: EmailTheme.v2);
+
+    return EmailOTP.sendOTP(email: email);
+  }
+
+  Future<bool> verifyOtp(String email) async {
+    EmailOTP.config(
+        appEmail: 'localechatapp@gmail.com',
+        appName: 'Locale Chat',
+        otpType: OTPType.numeric,
+        otpLength: 6,
+        emailTheme: EmailTheme.v2);
+    return EmailOTP.verifyOTP(
+      otp: email,
+    );
   }
 }

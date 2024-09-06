@@ -1,3 +1,4 @@
+
 plugins {
     id "com.android.application"
     id "kotlin-android"
@@ -64,4 +65,8 @@ flutter {
     source '../..'
 }
 
-dependencies {}
+dependencies {
+     implementation 'com.facebook.android:facebook-login:latest.release'
+     implementation 'com.google.firebase:firebase-appcheck-playintegrity:16.0.0'
+
+}

@@ -1,3 +1,5 @@
+// ignore_for_file: unnecessary_this
+
 import 'package:locale_chat/model/messages_models/chat_model.dart';
 
 class SingleChatModel extends ChatModel {

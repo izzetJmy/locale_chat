@@ -22,12 +22,12 @@ class GroupChatModel extends ChatModel {
 
   @override
   String getId() {
-    return this.groupId;
+    return groupId;
   }
 
   @override
   List getMembers() {
-    return this.members;
+    return members;
   }
 
   static GroupChatModel fromJson(Map<String, dynamic> map) {
@@ -35,7 +35,7 @@ class GroupChatModel extends ChatModel {
       groupId: map['groupId'],
       groupName: map['groupName'],
       members: [],
-      groupPhoto: map['groupPhoto'] != null ? map['groupPhoto'] : null,
+      groupPhoto: map['groupPhoto'],
       createdTime: map['createdTime'],
       createdId: map['createdId'],
       adminEmail: map['adminEmail'],

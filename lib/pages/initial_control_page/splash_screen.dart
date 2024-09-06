@@ -8,7 +8,7 @@ class SplashScreen extends StatelessWidget {
     return Scaffold(
       body: Center(
         child: Padding(
-          padding: EdgeInsets.all(100),
+          padding: const EdgeInsets.all(100),
           child: Image.asset('assets/images/user_avatar.png'),
         ),
       ),
