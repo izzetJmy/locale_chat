@@ -47,24 +47,26 @@ class _ControlPageState extends State<ControlPage> {
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
-    return Stack(
-      children: [
-        PageView(
-          controller: _pageController,
-          physics: const NeverScrollableScrollPhysics(),
-          onPageChanged: (value) {
-            setState(() {
-              selectedTap = value;
-            });
-          },
-          children: const [
-            SearchPage(),
-            HomePage(),
-            ProfilePage(),
-          ],
-        ),
-        bottomNavigatorBar(size)
-      ],
+    return Scaffold(
+      body: Stack(
+        children: [
+          PageView(
+            controller: _pageController,
+            physics: const NeverScrollableScrollPhysics(),
+            onPageChanged: (value) {
+              setState(() {
+                selectedTap = value;
+              });
+            },
+            children: const [
+              SearchPage(),
+              HomePage(),
+              ProfilePage(),
+            ],
+          ),
+          bottomNavigatorBar(size)
+        ],
+      ),
     );
   }
 

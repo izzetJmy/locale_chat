@@ -1,3 +1,5 @@
+// ignore_for_file: prefer_final_fields, avoid_function_literals_in_foreach_calls
+
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -9,7 +11,7 @@ import 'package:locale_chat/model/messages_models/message_model.dart';
 import 'package:locale_chat/model/messages_models/single_chat_model.dart';
 import 'package:locale_chat/service/chat_service.dart';
 
-class ChatNotifier extends AsyncChangeNotifier with ErrorHolder {
+class ChatChangeNotifier extends AsyncChangeNotifier with ErrorHolder {
   SingleChatService _singleChatService = SingleChatService();
 
   List<MessageModel>? _messages;

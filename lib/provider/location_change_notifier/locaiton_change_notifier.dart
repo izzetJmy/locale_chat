@@ -8,7 +8,7 @@ import 'package:locale_chat/model/location_model.dart';
 import 'package:locale_chat/service/location_service.dart';
 
 class LocationChangeNotifier extends AsyncChangeNotifier with ErrorHolder {
-  LocationService _locationService = LocationService();
+  final LocationService _locationService = LocationService();
   Timer? timer;
 
   bool? _isValidPermission;

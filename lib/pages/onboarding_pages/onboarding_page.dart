@@ -1,9 +1,15 @@
+// ignore_for_file: use_build_context_synchronously
+
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:locale_chat/comopnents/my_button.dart';
+import 'package:locale_chat/comopnents/my_circular_progress_Indicator.dart';
 import 'package:locale_chat/constants/colors.dart';
 import 'package:locale_chat/constants/text_style.dart';
 import 'package:locale_chat/model/onboarding_model.dart';
+import 'package:locale_chat/pages/auth_pages/login_page.dart';
 import 'package:locale_chat/pages/control_page.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class OnboardingPage extends StatefulWidget {
   const OnboardingPage({super.key});
@@ -96,12 +102,28 @@ class _OnboardingPageState extends State<OnboardingPage> {
       buttonText:
           currentIndex == onboardingContent.length - 1 ? 'Devam et' : 'Sonraki',
       textStyle: onboardingPageButtonTextTextStyle,
-      onPressed: () {
+      onPressed: () async {
         if (currentIndex == onboardingContent.length - 1) {
+          SharedPreferences prefs = await SharedPreferences.getInstance();
+          await prefs.setBool("seenOnboarding", false);
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(
-              builder: (context) => const ControlPage(),
+              builder: (context) {
+                return StreamBuilder(
+                  stream: FirebaseAuth.instance.authStateChanges(),
+                  builder:
+                      (BuildContext context, AsyncSnapshot<User?> snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return MyCircularProgressIndicator();
+                    } else if (snapshot.hasData && snapshot.data != null) {
+                      return const ControlPage();
+                    } else {
+                      return LoginPage();
+                    }
+                  },
+                );
+              },
             ),
           );
         } else {

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="fb_login_protocol_scheme">fb1234</string>
+    <string name="facebook_client_token">3089658f0ac5094317ce97c35b3fb4dd</string>
+    <string name="app_name">"LocaleChat"</string>
+    <string name="facebook_app_id">844898107597990</string>
+</resources>
