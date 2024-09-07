@@ -1,8 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:locale_chat/comopnents/my_circular_progress_Indicator.dart';
+import 'package:locale_chat/pages/auth_pages/auth_control_page.dart';
 import 'package:locale_chat/pages/auth_pages/login_page.dart';
-import 'package:locale_chat/pages/control_page.dart';
 import 'package:locale_chat/pages/onboarding_pages/onboarding_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -37,7 +37,7 @@ class InitialControlPage extends StatelessWidget {
                 User? currentUser = FirebaseAuth.instance.currentUser;
                 if (currentUser != null) {
                   if (currentUser.emailVerified) {
-                    return const ControlPage();
+                    return const AuthControlPage();
                   } else {
                     return LoginPage();
                   }
