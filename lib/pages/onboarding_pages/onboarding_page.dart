@@ -46,13 +46,13 @@ class _OnboardingPageState extends State<OnboardingPage> {
           children: [
             //All pages created here
             allPages(size),
-            const SizedBox(height: 60),
+            const SizedBox(height: 20),
             //Button to go to next page
             nextButton(size, context),
-            const SizedBox(height: 30),
+            const SizedBox(height: 20),
             //Indicator showing which page you are on
             indicatorLines(),
-            const SizedBox(height: 40),
+            const SizedBox(height: 20),
           ],
         ),
       ),
@@ -105,7 +105,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
       onPressed: () async {
         if (currentIndex == onboardingContent.length - 1) {
           SharedPreferences prefs = await SharedPreferences.getInstance();
-          await prefs.setBool("seenOnboarding", false);
+          await prefs.setBool("seenOnboarding", true);
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(

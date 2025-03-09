@@ -21,7 +21,7 @@ class AuthControlPage extends StatelessWidget {
       builder: (context, chats, groups, locations, child) {
         if (chats.state != AsyncChangeNotifierState.idle ||
             groups.state != AsyncChangeNotifierState.idle ||
-            locations != AsyncChangeNotifierState.idle) {
+            locations.state != AsyncChangeNotifierState.idle) {
           return Scaffold(
             body: Center(
               child: MyCircularProgressIndicator(),

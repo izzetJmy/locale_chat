@@ -8,6 +8,7 @@ class ProfileInfo extends StatelessWidget {
 
   final String image_path;
   final double? image_radius;
+  final bool isNetworkImage;
 
   final double height;
   final String name;
@@ -32,6 +33,7 @@ class ProfileInfo extends StatelessWidget {
       this.showDate = false,
       this.profileNameTextStyle,
       this.height = 10,
+      this.isNetworkImage = false,
       this.profileInfoDateTextStyle});
 
   @override
@@ -45,14 +47,7 @@ class ProfileInfo extends StatelessWidget {
                 shape: BoxShape.circle,
                 border: Border.all(color: backgroundColor),
               ),
-              child: CircleAvatar(
-                radius: image_radius,
-                backgroundColor: Colors.transparent,
-                child: Image.asset(
-                  image_path,
-                  opacity: const AlwaysStoppedAnimation(0.3),
-                ),
-              ),
+              child: _buildProfileAvatar(),
             ),
           )
         : Column(
@@ -67,14 +62,7 @@ class ProfileInfo extends StatelessWidget {
                       shape: BoxShape.circle,
                       border: Border.all(color: backgroundColor),
                     ),
-                    child: CircleAvatar(
-                      radius: image_radius,
-                      backgroundColor: Colors.transparent,
-                      child: Image.asset(
-                        image_path,
-                        opacity: const AlwaysStoppedAnimation(0.3),
-                      ),
-                    ),
+                    child: _buildProfileAvatar(),
                   ),
                 ),
               SizedBox(height: height),
@@ -87,5 +75,37 @@ class ProfileInfo extends StatelessWidget {
                 )
             ],
           );
+  }
+
+  Widget _buildProfileAvatar() {
+    // Check if the image path is a Firebase Storage URL or if isNetworkImage flag is set
+    bool isFirebaseUrl =
+        image_path.startsWith('https://firebasestorage.googleapis.com');
+    bool shouldUseNetworkImage = isFirebaseUrl || isNetworkImage;
+
+    debugPrint('ProfileInfo: image_path = $image_path');
+    debugPrint(
+        'ProfileInfo: isNetworkImage = $isNetworkImage, isFirebaseUrl = $isFirebaseUrl');
+
+    if (shouldUseNetworkImage && image_path.isNotEmpty) {
+      // For network images (including Firebase Storage)
+      return CircleAvatar(
+        radius: image_radius,
+        backgroundColor: Colors.grey[200],
+        backgroundImage: NetworkImage(
+          image_path,
+        ),
+        onBackgroundImageError: (exception, stackTrace) {
+          debugPrint('Error loading profile image: $exception');
+        },
+      );
+    } else {
+      // For asset images
+      return CircleAvatar(
+        radius: image_radius,
+        backgroundColor: Colors.transparent,
+        backgroundImage: AssetImage(image_path),
+      );
+    }
   }
 }

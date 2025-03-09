@@ -1,6 +1,11 @@
+import 'dart:io';
+
 import 'package:email_otp/email_otp.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:locale_chat/model/user_model.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
@@ -16,11 +21,37 @@ class AuthService {
     var userCredential = await _auth.signInWithEmailAndPassword(
         email: email, password: password);
     User user = userCredential.user!;
+
+    try {
+      // Firestore'dan kullanıcı verilerini al
+      DocumentSnapshot userDoc =
+          await _firestore.collection('Users').doc(user.uid).get();
+
+      if (userDoc.exists) {
+        Map<String, dynamic> userData = userDoc.data() as Map<String, dynamic>;
+
+        return UserModel(
+          id: user.uid,
+          userName: userData['userName'] ?? 'Anonymous',
+          isAnonymousName: userData['isAnonymousName'] ?? user.isAnonymous,
+          email: userData['email'] ?? user.email!,
+          createdAt:
+              userData['createdAt'] ?? user.metadata.creationTime.toString(),
+          profilePhoto: userData['profilePhoto'] ?? '',
+          isOnline: userData['isOnline'] ?? false,
+        );
+      }
+    } catch (e) {
+      debugPrint('Error fetching user data during sign in: $e');
+    }
+
+    // Firestore'dan veri alınamazsa veya hata oluşursa, temel model döndür
     UserModel userModel = UserModel(
         id: user.uid,
-        userName: user.uid,
+        userName: 'Anonymous',
         isAnonymousName: user.isAnonymous,
         email: user.email!,
+        createdAt: user.metadata.creationTime.toString(),
         profilePhoto: '',
         isOnline: false);
 
@@ -35,9 +66,10 @@ class AuthService {
     User user = userCredential.user!;
     UserModel? userModel = UserModel(
         id: user.uid,
-        userName: user.uid,
+        userName: '',
         isAnonymousName: user.isAnonymous,
         email: user.email!,
+        createdAt: user.metadata.creationTime.toString(),
         profilePhoto: "",
         isOnline: false);
 
@@ -77,9 +109,10 @@ class AuthService {
 
     UserModel userModel = UserModel(
         id: user.uid,
-        userName: "",
+        userName: '',
         isAnonymousName: user.isAnonymous,
         email: user.email!,
+        createdAt: user.metadata.creationTime.toString(),
         profilePhoto: user.phoneNumber!,
         isOnline: false);
 
@@ -99,9 +132,10 @@ class AuthService {
 
     UserModel userModel = UserModel(
         id: user.uid,
-        userName: "",
+        userName: '',
         isAnonymousName: user.isAnonymous,
         email: user.email!,
+        createdAt: user.metadata.creationTime.toString(),
         profilePhoto: user.photoURL!,
         isOnline: false);
 
@@ -109,26 +143,68 @@ class AuthService {
   }
 
 //Follow is there any user or not
-  UserModel? authStateChanges() {
-    var userc = _auth.authStateChanges();
-    UserModel? userModel1;
-    userc.map((event) {
-      if (event != null) {
-        UserModel userModel = UserModel(
-            id: event.uid,
-            userName: event.uid,
-            isAnonymousName: event.isAnonymous,
-            email: event.email!,
-            profilePhoto: "",
-            isOnline: false);
-        userModel1 = userModel;
-      } else {
-        userModel1 = null;
+  Future<UserModel?> authStateChanges() async {
+    User? currentUser = _auth.currentUser;
+    if (currentUser != null) {
+      try {
+        // Firestore'dan kullanıcı verilerini al
+        DocumentSnapshot userDoc =
+            await _firestore.collection('Users').doc(currentUser.uid).get();
+
+        if (userDoc.exists) {
+          Map<String, dynamic> userData =
+              userDoc.data() as Map<String, dynamic>;
+
+          UserModel userModel = UserModel(
+            id: currentUser.uid,
+            userName: userData['userName'] ?? '',
+            isAnonymousName:
+                userData['isAnonymousName'] ?? currentUser.isAnonymous,
+            email: userData['email'] ?? currentUser.email ?? '',
+            createdAt: userData['createdAt'] ??
+                currentUser.metadata.creationTime.toString(),
+            profilePhoto: userData['profilePhoto'] ?? '',
+            isOnline: userData['isOnline'] ?? false,
+          );
+          return userModel;
+        } else {
+          // Firestore'da kullanıcı belgesi yoksa, temel bilgilerle oluştur
+          UserModel userModel = UserModel(
+            id: currentUser.uid,
+            userName: '',
+            isAnonymousName: currentUser.isAnonymous,
+            email: currentUser.email ?? '',
+            createdAt: currentUser.metadata.creationTime.toString(),
+            profilePhoto: currentUser.photoURL ?? '',
+            isOnline: false,
+          );
+
+          // Yeni kullanıcı belgesini Firestore'a ekle
+          await _firestore
+              .collection('Users')
+              .doc(currentUser.uid)
+              .set(userModel.toJson());
+          return userModel;
+        }
+      } catch (e) {
+        debugPrint('Error fetching user data from Firestore: $e');
+        // Hata durumunda temel kullanıcı bilgileriyle devam et
+        return UserModel(
+          id: currentUser.uid,
+          userName: '',
+          isAnonymousName: currentUser.isAnonymous,
+          email: currentUser.email ?? '',
+          createdAt: currentUser.metadata.creationTime.toString(),
+          profilePhoto: currentUser.photoURL ?? '',
+          isOnline: false,
+        );
       }
-    });
-    return userModel1;
+    }
+    debugPrint('No authenticated user found');
+    return null;
   }
 
+//Send otp to user email
   Future<bool> sendOtp(String email) async {
     EmailOTP.config(
         appEmail: 'localechatapp@gmail.com',
@@ -140,6 +216,7 @@ class AuthService {
     return EmailOTP.sendOTP(email: email);
   }
 
+//Verify otp from user email
   Future<bool> verifyOtp(String email) async {
     EmailOTP.config(
         appEmail: 'localechatapp@gmail.com',
@@ -150,5 +227,93 @@ class AuthService {
     return EmailOTP.verifyOTP(
       otp: email,
     );
+  }
+
+//Update user name
+  Future<UserModel?> updateUserName(String newUserName) async {
+    User? currentUser = _auth.currentUser;
+    if (currentUser == null) {
+      throw Exception('No authenticated user found');
+    }
+
+    // Kullanıcı verilerini Firestore'dan al
+    DocumentSnapshot userDoc =
+        await _firestore.collection('Users').doc(currentUser.uid).get();
+
+    // Firestore'da kullanıcı adını güncelle
+    await _firestore.collection('Users').doc(currentUser.uid).update({
+      'userName': newUserName,
+    });
+
+    // Kullanıcı modeli oluştur
+    UserModel userModel;
+
+    if (userDoc.exists) {
+      // Eğer belge varsa, mevcut verileri kullan
+      Map<String, dynamic> userData = userDoc.data() as Map<String, dynamic>;
+      userModel = UserModel(
+        id: currentUser.uid,
+        userName: newUserName,
+        isAnonymousName: userData['isAnonymousName'] ?? currentUser.isAnonymous,
+        email: userData['email'] ?? currentUser.email ?? '',
+        createdAt: userData['createdAt'] ??
+            currentUser.metadata.creationTime.toString(),
+        profilePhoto:
+            userData['profilePhoto'] ?? '', // Mevcut profil fotoğrafını koru
+        isOnline: userData['isOnline'] ?? false,
+      );
+    } else {
+      // Eğer belge yoksa, temel bir model oluştur
+      userModel = UserModel(
+        id: currentUser.uid,
+        userName: newUserName,
+        isAnonymousName: currentUser.isAnonymous,
+        email: currentUser.email ?? '',
+        createdAt: currentUser.metadata.creationTime.toString(),
+        profilePhoto: '', // Profil fotoğrafı yok
+        isOnline: false,
+      );
+    }
+
+    return userModel;
+  }
+
+//Upload user profile photo to firebase storage
+  Future<String?> uploadImage(File imageFile) async {
+    var imageName = DateTime.now().millisecondsSinceEpoch.toString();
+    final storageRef = FirebaseStorage.instance.ref();
+    final imageRef = storageRef.child('profilePhotos/$imageName');
+    final uploadTask = imageRef.putFile(imageFile);
+    final TaskSnapshot taskSnapshot = await uploadTask;
+    final String downloadURL = await taskSnapshot.ref.getDownloadURL();
+
+    await _firestore
+        .collection('Users')
+        .doc(FirebaseAuth.instance.currentUser!.uid)
+        .update({
+      'profilePhoto': downloadURL,
+    });
+    return downloadURL;
+  }
+
+//Get image from user device
+  Future<File?> getImage(ImageSource source) async {
+    debugPrint(_auth.currentUser?.email);
+    final picker = ImagePicker();
+    try {
+      final pickedFile = await picker.pickImage(
+          source: source, maxWidth: 800, maxHeight: 800, imageQuality: 80);
+
+      if (pickedFile == null) {
+        debugPrint('Resim seçilmedi veya seçim iptal edildi');
+        return null;
+      }
+
+      debugPrint('pickedFile: ${pickedFile.path}');
+      return File(pickedFile.path);
+    } catch (e) {
+      debugPrint("Error picking image: $e");
+      return null;
+    }
   }
 }

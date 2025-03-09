@@ -1,10 +1,14 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:locale_chat/mixin/error_holder.dart';
 import 'package:locale_chat/model/async_change_notifier.dart';
 import 'package:locale_chat/model/error_model.dart';
 import 'package:locale_chat/model/user_model.dart';
 import 'package:locale_chat/service/auth_service.dart';
+import 'package:flutter/foundation.dart';
 
 class AuthChangeNotifier extends AsyncChangeNotifier with ErrorHolder {
   UserModel? _user;
@@ -45,6 +49,8 @@ class AuthChangeNotifier extends AsyncChangeNotifier with ErrorHolder {
     await wrapAsync(
       () async {
         try {
+          errors.clear();
+
           user = await _authService.signIn(email: email, password: password);
           notifyListeners();
         } on FirebaseAuthException catch (error) {
@@ -60,10 +66,8 @@ class AuthChangeNotifier extends AsyncChangeNotifier with ErrorHolder {
           } else {
             errorMessage = 'Something went wrong, try again';
           }
-          errors.clear();
-          addError(ErrorModel(id: 'firebaseAuth', message: errorMessage));
-          errors.clear();
 
+          addError(ErrorModel(id: 'firebaseAuthLogin', message: errorMessage));
           notifyListeners();
         }
       },
@@ -93,7 +97,8 @@ class AuthChangeNotifier extends AsyncChangeNotifier with ErrorHolder {
             errorMessage = 'Something went wrong, try again';
           }
           errors.clear();
-          addError(ErrorModel(id: 'firebaseAuth', message: errorMessage));
+          addError(
+              ErrorModel(id: 'firebaseAuthRegister', message: errorMessage));
         }
       },
       ErrorModel(
@@ -106,10 +111,9 @@ class AuthChangeNotifier extends AsyncChangeNotifier with ErrorHolder {
   Future<void> signOut() async {
     await wrapAsync(() async {
       await _authService.signOut();
-      notifyListeners();
-
-      errors.clear();
       user = null;
+      errors.clear();
+      notifyListeners();
     },
         ErrorModel(
             id: user?.userName ?? 'Anonymous', message: 'Failed to sign out'));
@@ -144,7 +148,8 @@ class AuthChangeNotifier extends AsyncChangeNotifier with ErrorHolder {
             errorMessage = 'Failed to change password';
           }
           errors.clear();
-          addError(ErrorModel(id: 'firebaseAuth', message: errorMessage));
+          addError(ErrorModel(
+              id: 'firebaseAuthUpdatePassword', message: errorMessage));
           notifyListeners();
           throw Exception(errorMessage);
         }
@@ -173,7 +178,7 @@ class AuthChangeNotifier extends AsyncChangeNotifier with ErrorHolder {
           }
 
           errors.clear();
-          addError(ErrorModel(id: 'firebaseAuth', message: errorMessage));
+          addError(ErrorModel(id: 'firebaseAuthGoogle', message: errorMessage));
           notifyListeners();
         }
       },
@@ -201,7 +206,8 @@ class AuthChangeNotifier extends AsyncChangeNotifier with ErrorHolder {
             errorMessage = 'Error signing in with Facebook: ${error.message}';
           }
           errors.clear();
-          addError(ErrorModel(id: 'firebaseAuth', message: errorMessage));
+          addError(
+              ErrorModel(id: 'firebaseAuthFacebook', message: errorMessage));
           notifyListeners();
         }
       },
@@ -216,19 +222,30 @@ class AuthChangeNotifier extends AsyncChangeNotifier with ErrorHolder {
   Future<UserModel?> authStateChanges() async {
     await wrapAsync(
       () async {
-        user = _authService.authStateChanges();
-        errors.clear();
-        notifyListeners();
+        try {
+          // Kullanıcı bilgilerini auth_service üzerinden al
+          UserModel? userModel = await _authService.authStateChanges();
+          if (userModel != null) {
+            user = userModel;
+          } else {
+            user = null;
+          }
+          errors.clear();
+          notifyListeners();
+        } catch (e) {
+          debugPrint('Error in authStateChanges: $e');
+          // Hata durumunda mevcut kullanıcı bilgilerini koruyalım
+          errors.clear();
+          addError(ErrorModel(
+              id: 'authStateChanges', message: 'Failed to load user data'));
+          notifyListeners();
+        }
       },
       ErrorModel(
           id: user?.userName ?? 'Anonymous',
           message: 'Failed to authentication state changes'),
     );
     return user;
-  }
-
-  List<ErrorModel> getFirebaseAuthErrors() {
-    return errors.where((error) => error.id == 'firebaseAuth').toList();
   }
 
   Future<void> sendOtp() async {
@@ -247,12 +264,12 @@ class AuthChangeNotifier extends AsyncChangeNotifier with ErrorHolder {
             await _authService.sendOtp(otpEmailController);
           } else {
             errorMessages = 'Email not found';
-            addError(ErrorModel(id: 'firebaseAuth', message: errorMessages));
+            addError(ErrorModel(id: 'firebaseAuthOTP', message: errorMessages));
             notifyListeners();
           }
         } catch (e) {
           errorMessages = e.toString();
-          addError(ErrorModel(id: 'firebaseAuth', message: errorMessages));
+          addError(ErrorModel(id: 'firebaseAuthOTP', message: errorMessages));
           notifyListeners();
         }
       },
@@ -275,5 +292,78 @@ class AuthChangeNotifier extends AsyncChangeNotifier with ErrorHolder {
       },
       ErrorModel(id: 'otp', message: 'Failed to verify OTP'),
     );
+  }
+
+  // Mevcut getFirebaseAuthErrors metodu
+  List<ErrorModel> getFirebaseAuthErrors(String errorName) {
+    notifyListeners();
+    return errors.where((error) => error.id == errorName).toList();
+  }
+
+  //Clear error list
+  void errorListClean() {
+    errors.clear();
+    notifyListeners();
+  }
+
+  //Update user name
+  Future<void> updateUserName(String newUserName) async {
+    await wrapAsync(
+      () async {
+        try {
+          // Service katmanında username güncelleme işlemini yap
+          UserModel? updatedUser =
+              await _authService.updateUserName(newUserName);
+
+          if (updatedUser != null) {
+            user = updatedUser;
+          }
+          notifyListeners();
+        } catch (e) {
+          debugPrint('Error updating username: $e');
+          rethrow;
+        }
+      },
+      ErrorModel(
+          id: user?.userName ?? 'Anonymous',
+          message: 'Failed to update user name'),
+    );
+  }
+
+  //Upload user profile photo to firebase storage
+  Future<void> uploadImage(File imageFile) async {
+    await wrapAsync(
+      () async {
+        try {
+          String? imageUrl = await _authService.uploadImage(imageFile);
+          if (imageUrl != null && imageUrl.isNotEmpty) {
+            UserModel? updatedUser = await _authService.authStateChanges();
+            if (updatedUser != null) {
+              user = updatedUser;
+            }
+          }
+          notifyListeners();
+        } catch (e) {
+          debugPrint('Error in AuthChangeNotifier.uploadImage: $e');
+          rethrow; // Rethrow to allow the UI to handle the error
+        }
+      },
+      ErrorModel(
+          id: user?.userName ?? 'Anonymous', message: 'Failed to upload image'),
+    );
+  }
+
+  //Get image from user device
+  Future<File?> getImage(ImageSource source) async {
+    File? imagePath;
+    await wrapAsync(
+      () async {
+        imagePath = await _authService.getImage(source);
+        notifyListeners();
+      },
+      ErrorModel(id: "getImage", message: "Resim seçme işlemi başarısız oldu"),
+    );
+
+    return imagePath;
   }
 }

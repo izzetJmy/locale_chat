@@ -186,35 +186,36 @@ class _RegisterPageState extends State<RegisterPage> {
                                       password: passwordController.text,
                                     );
                                     //Firebase Auth Exception Control
-                                    if (authChangeNotifier
-                                        .getFirebaseAuthErrors()
-                                        .isNotEmpty) {
-                                      MySanckbar.mySnackbar(
-                                          context,
-                                          authChangeNotifier
-                                              .getFirebaseAuthErrors()
-                                              .first
-                                              .message,
-                                          2);
-                                    }
-                                    //New user is directed to email verification
-                                    if (user != null) {
-                                      User? currentUser =
-                                          FirebaseAuth.instance.currentUser;
-                                      if (currentUser != null) {
-                                        Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                            builder: (context) =>
-                                                EmailVerificationPage(),
-                                          ),
-                                        );
-                                      }
-                                    }
-                                    setState(() {
-                                      _isLoading = false;
-                                    });
+                                    authChangeNotifier
+                                            .getFirebaseAuthErrors(
+                                                'firebaseAuthRegister')
+                                            .isNotEmpty
+                                        ? MySanckbar.mySnackbar(
+                                            context,
+                                            authChangeNotifier
+                                                .getFirebaseAuthErrors(
+                                                    'firebaseAuthRegister')
+                                                .first
+                                                .message,
+                                            2)
+                                        : user != null &&
+                                                FirebaseAuth
+                                                        .instance.currentUser !=
+                                                    null
+                                            ? Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      EmailVerificationPage(),
+                                                ),
+                                              )
+                                            : null;
                                   }
+                                  setState(
+                                    () {
+                                      _isLoading = false;
+                                    },
+                                  );
                                 },
                                 buttonText: 'Register',
                                 textStyle: TextStyle(

@@ -1,8 +1,9 @@
 class UserModel {
   String id;
   String userName;
-  bool isAnonymousName;
   String email;
+  String createdAt;
+  bool isAnonymousName;
   String profilePhoto;
   bool isOnline;
   UserModel({
@@ -12,6 +13,7 @@ class UserModel {
     required this.email,
     required this.profilePhoto,
     required this.isOnline,
+    required this.createdAt,
   });
 
   Map<String, dynamic> toJson() {
@@ -20,6 +22,7 @@ class UserModel {
       'userName': userName,
       'isAnonymousName': isAnonymousName,
       'email': email,
+      'createdAt': createdAt,
       'profilePhoto': profilePhoto,
       'isOnline': isOnline,
     };
@@ -31,6 +34,7 @@ class UserModel {
       userName: map['userName'],
       isAnonymousName: map['isAnonymousName'],
       email: map['email'],
+      createdAt: map['createdAt'],
       profilePhoto: map['profilePhoto'],
       isOnline: map['isOnline'],
     );

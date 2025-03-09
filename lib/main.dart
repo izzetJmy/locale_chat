@@ -15,13 +15,8 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-
-  //Firebase App Check
   await FirebaseAppCheck.instance.activate(
-    webProvider:
-        ReCaptchaV3Provider('6Ldidx0qAAAAAGI0-TJLuAN1g-_AZCqaH1qIU977'),
-    androidProvider: AndroidProvider.playIntegrity,
-    appleProvider: AppleProvider.deviceCheck,
+    androidProvider: AndroidProvider.debug, // Android için Debug Provider
   );
 
   runApp(MyApp());

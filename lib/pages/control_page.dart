@@ -5,6 +5,8 @@ import 'package:locale_chat/constants/colors.dart';
 import 'package:locale_chat/pages/main_pages/home_page/home_page.dart';
 import 'package:locale_chat/pages/main_pages/profile_page/profile_page.dart';
 import 'package:locale_chat/pages/main_pages/search_page/search_page.dart';
+import 'package:provider/provider.dart';
+import 'package:locale_chat/provider/auth_change_notifier/auth_change_notifier.dart';
 
 class ControlPage extends StatefulWidget {
   const ControlPage({super.key});
@@ -20,6 +22,13 @@ class _ControlPageState extends State<ControlPage> {
   @override
   void initState() {
     _pageController = PageController(initialPage: selectedTap);
+
+    // Load user data from Firestore when the control page is initialized
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Provider.of<AuthChangeNotifier>(context, listen: false)
+          .authStateChanges();
+    });
+
     super.initState();
   }
 

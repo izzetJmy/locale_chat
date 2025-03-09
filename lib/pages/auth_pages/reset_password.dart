@@ -33,7 +33,8 @@ class ResetPasswordPage extends StatelessWidget {
         child: Consumer<AuthChangeNotifier>(
           builder: (BuildContext context, AuthChangeNotifier authChangeNotifier,
               Widget? child) {
-            var firebaseAuthErrors = authChangeNotifier.getFirebaseAuthErrors();
+            var firebaseAuthErrors = authChangeNotifier
+                .getFirebaseAuthErrors('firebaseAuthUpdatePassword');
             return Form(
               key: _formKey,
               child: Column(

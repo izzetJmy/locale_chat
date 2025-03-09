@@ -20,6 +20,7 @@ class ForgotPasswordPage extends StatefulWidget {
 
 class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
   final TextEditingController emailController = TextEditingController();
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   bool _isLoading = false;
 
   @override
@@ -36,8 +37,6 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
         child: Consumer<AuthChangeNotifier>(
           builder: (BuildContext context, AuthChangeNotifier authChangeNotifier,
               Widget? child) {
-            var firebaseAuthErrors = authChangeNotifier.getFirebaseAuthErrors();
-
             return Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -46,88 +45,111 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                   child: MyLoginCard(
                     padding: const EdgeInsets.symmetric(
                         horizontal: 30, vertical: 30),
-                    column: Column(
-                      children: [
-                        Text(
-                          'Enter the email you want to change your password',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                              fontFamily: 'Roboto',
-                              fontWeight: FontWeight.bold,
-                              color: const Color(0xff828282),
-                              fontSize: size.height * 0.024),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 10.0),
-                          child: MyTextField(
-                            controller: emailController,
-                            prefixIcon: const Icon(CupertinoIcons.mail),
-                            hintText: 'Email',
-                            obscureText: false,
-                            validatorFunction: (value) {
-                              if (value != null) {
-                                if (value.length > 5 &&
-                                    value.contains('@') &&
-                                    value.endsWith('.com')) {
-                                  return null;
-                                }
-                                return 'Enter valid email';
-                              }
-                              return null;
-                            },
+                    column: Form(
+                      key: _formKey,
+                      child: Column(
+                        children: [
+                          Text(
+                            'Enter the email you want to change your password',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                                fontFamily: 'Roboto',
+                                fontWeight: FontWeight.bold,
+                                color: const Color(0xff828282),
+                                fontSize: size.height * 0.024),
                           ),
-                        ),
-                        MyButton(
-                          button: _isLoading
-                              ? MyCircularProgressIndicator(
-                                  height: 20,
-                                  width: 20,
-                                  progressIndicatorColor: Colors.white,
-                                )
-                              : Text(
-                                  'Sent Code',
-                                  style: TextStyle(
-                                      fontSize: size.height * 0.028,
-                                      color: Colors.white,
-                                      fontFamily: 'Roboto',
-                                      fontWeight: FontWeight.bold),
-                                ),
-                          width: size.width * 0.5,
-                          height: size.height * 0.05,
-                          buttonColor: const Color(0xffAAD9BB),
-                          onPressed: () async {
-                            setState(() {
-                              _isLoading = true;
-                            });
-                            FocusScope.of(context).unfocus();
+                          Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 10.0),
+                            child: MyTextField(
+                              controller: emailController,
+                              prefixIcon: const Icon(CupertinoIcons.mail),
+                              hintText: 'Email',
+                              obscureText: false,
+                              validatorFunction: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Email is required';
+                                }
+                                // More comprehensive email validation
+                                final emailRegex = RegExp(
+                                    r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$');
+                                if (!emailRegex.hasMatch(value)) {
+                                  return 'Enter a valid email address';
+                                }
+                                return null;
+                              },
+                            ),
+                          ),
+                          MyButton(
+                            button: _isLoading
+                                ? MyCircularProgressIndicator(
+                                    height: 20,
+                                    width: 20,
+                                    progressIndicatorColor: Colors.white,
+                                  )
+                                : Text(
+                                    'Send Code',
+                                    style: TextStyle(
+                                        fontSize: size.height * 0.028,
+                                        color: Colors.white,
+                                        fontFamily: 'Roboto',
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                            width: size.width * 0.5,
+                            height: size.height * 0.05,
+                            buttonColor: const Color(0xffAAD9BB),
+                            onPressed: () async {
+                              // Validate form first
+                              if (!_formKey.currentState!.validate()) {
+                                return;
+                              }
 
-                            authChangeNotifier.otpEmailController =
-                                emailController.text.trim();
-                            await authChangeNotifier.sendOtp();
-                            if (firebaseAuthErrors.isNotEmpty) {
-                              MySanckbar.mySnackbar(
-                                  context, firebaseAuthErrors.first.message, 2);
-                            }
-                            MySanckbar.mySnackbar(
-                                context, 'OTP has been send', 2);
+                              setState(() {
+                                _isLoading = true;
+                              });
 
-                            Navigator.of(context).push(
-                              MaterialPageRoute(
-                                builder: (context) => const SentCodePage(),
-                              ),
-                            );
-                            setState(() {
-                              _isLoading = false;
-                            });
-                          },
-                          buttonText: 'Sent Code',
-                          textStyle: TextStyle(
-                              color: Colors.white,
-                              fontSize: size.height * 0.028,
-                              fontFamily: 'Roboto',
-                              fontWeight: FontWeight.bold),
-                        )
-                      ],
+                              try {
+                                authChangeNotifier.otpEmailController =
+                                    emailController.text.trim();
+                                await authChangeNotifier.sendOtp();
+
+                                var firebaseAuthErrors = authChangeNotifier
+                                    .getFirebaseAuthErrors('firebaseAuthOTP');
+
+                                if (firebaseAuthErrors.isNotEmpty) {
+                                  // Show error message if there are errors
+                                  MySanckbar.mySnackbar(context,
+                                      firebaseAuthErrors.first.message, 2);
+                                } else {
+                                  // Only show success message and navigate if no errors
+                                  MySanckbar.mySnackbar(
+                                      context, 'OTP has been sent', 2);
+
+                                  Navigator.of(context).push(
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          const SentCodePage(),
+                                    ),
+                                  );
+                                }
+                              } catch (e) {
+                                // Handle any unexpected errors
+                                MySanckbar.mySnackbar(context,
+                                    'Failed to send OTP: ${e.toString()}', 2);
+                              } finally {
+                                setState(() {
+                                  _isLoading = false;
+                                });
+                              }
+                            },
+                            buttonText: 'Send Code',
+                            textStyle: TextStyle(
+                                color: Colors.white,
+                                fontSize: size.height * 0.028,
+                                fontFamily: 'Roboto',
+                                fontWeight: FontWeight.bold),
+                          )
+                        ],
+                      ),
                     ),
                   ),
                 ),

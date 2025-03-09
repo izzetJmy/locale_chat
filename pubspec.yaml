@@ -42,8 +42,8 @@ dependencies:
   uuid: ^4.4.0
   google_sign_in: ^6.2.1
   flutter_facebook_auth: ^6.2.0
-  firebase_storage: ^11.7.4
-  image_picker: ^1.1.0
+  firebase_storage: ^11.7.7
+  image_picker: ^1.1.2
   firebase_messaging: ^14.9.4
   google_maps_flutter: ^2.6.1
   google_maps: ^7.1.0

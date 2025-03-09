@@ -32,6 +32,8 @@ class _LoginPageState extends State<LoginPage> {
 
   bool _isLoading = false;
   bool _obscureText = true;
+  bool _isGoogleLoading = false;
+  bool _isFacebookLoading = false;
 
   @override
   Widget build(BuildContext context) {
@@ -47,7 +49,6 @@ class _LoginPageState extends State<LoginPage> {
         ),
         child: Consumer<AuthChangeNotifier>(
           builder: (context, authChangeNotifier, child) {
-            var firebaseAuthErrors = authChangeNotifier.getFirebaseAuthErrors();
             return SizedBox(
               height: size.height,
               width: size.width,
@@ -170,38 +171,53 @@ class _LoginPageState extends State<LoginPage> {
                                   setState(() {
                                     _isLoading = true;
                                   });
-                                  FocusScope.of(context).unfocus();
-
                                   if (_formKey.currentState!.validate()) {
-                                    //User Login
+                                    // User Login
                                     UserModel? user =
                                         await authChangeNotifier.signIn(
                                       email: emailController.text.trim(),
                                       password: passwordController.text.trim(),
                                     );
-                                    //Firebase Auth Exception Control
-                                    if (firebaseAuthErrors.isNotEmpty) {
-                                      MySanckbar.mySnackbar(context,
-                                          firebaseAuthErrors.first.message, 2);
-                                    }
-                                    if (user != null) {
-                                      bool isVerified = FirebaseAuth
-                                          .instance.currentUser!.emailVerified;
-                                      if (isVerified) {
-                                        MySanckbar.mySnackbar(
-                                            context, 'Login succesfull', 1);
-                                        Navigator.of(context).pushReplacement(
-                                          MaterialPageRoute(
-                                              builder: (context) =>
-                                                  const ControlPage()),
-                                        );
-                                      } else {
-                                        MySanckbar.mySnackbar(context,
-                                            'Please verify your email', 2);
-                                        authChangeNotifier.signOut();
-                                      }
-                                    }
+
+                                    // Hata kontrolü - tek satırda
+                                    authChangeNotifier
+                                            .getFirebaseAuthErrors(
+                                                'firebaseAuthLogin')
+                                            .isNotEmpty
+                                        ? MySanckbar.mySnackbar(
+                                            context,
+                                            authChangeNotifier
+                                                .getFirebaseAuthErrors(
+                                                    'firebaseAuthLogin')
+                                                .first
+                                                .message,
+                                            2)
+                                        : user != null
+                                            ? FirebaseAuth.instance.currentUser!
+                                                    .emailVerified
+                                                ? (
+                                                    MySanckbar.mySnackbar(
+                                                        context,
+                                                        'Login succesfull',
+                                                        1),
+                                                    Navigator.of(context)
+                                                        .pushReplacement(
+                                                      MaterialPageRoute(
+                                                        builder: (context) =>
+                                                            const ControlPage(),
+                                                      ),
+                                                    ),
+                                                  )
+                                                : (
+                                                    MySanckbar.mySnackbar(
+                                                        context,
+                                                        'Please verify your email',
+                                                        2),
+                                                    authChangeNotifier.signOut()
+                                                  )
+                                            : null;
                                   }
+
                                   setState(() {
                                     _isLoading = false;
                                   });
@@ -249,43 +265,89 @@ class _LoginPageState extends State<LoginPage> {
                             size,
                             'google_icon',
                             () async {
+                              // Google loading durumunu başlat
+                              setState(() {
+                                _isGoogleLoading = true;
+                              });
+
                               UserModel? user =
                                   await authChangeNotifier.authWithGoogle();
-                              if (firebaseAuthErrors.isNotEmpty) {
-                                MySanckbar.mySnackbar(context,
-                                    firebaseAuthErrors.first.message, 2);
-                                if (user != null) {
-                                  MySanckbar.mySnackbar(
-                                      context, 'Google login succesfull', 1);
-                                  Navigator.of(context).pushReplacement(
-                                    MaterialPageRoute(
-                                        builder: (context) =>
-                                            const ControlPage()),
-                                  );
-                                }
-                              }
+
+                              // Tek satırda hata kontrolü ve yönlendirme
+                              authChangeNotifier
+                                      .getFirebaseAuthErrors(
+                                          'firebaseAuthGoogle')
+                                      .isNotEmpty
+                                  ? MySanckbar.mySnackbar(
+                                      context,
+                                      authChangeNotifier
+                                          .getFirebaseAuthErrors(
+                                              'firebaseAuthGoogle')
+                                          .first
+                                          .message,
+                                      2)
+                                  : user != null
+                                      ? (
+                                          MySanckbar.mySnackbar(context,
+                                              'Google login succesfull', 1),
+                                          Navigator.of(context).pushReplacement(
+                                            MaterialPageRoute(
+                                                builder: (context) =>
+                                                    const ControlPage()),
+                                          )
+                                        )
+                                      : null;
+
+                              // Google loading durumunu bitir
+                              setState(() {
+                                _isGoogleLoading = false;
+                              });
                             },
+                            isLoading: _isGoogleLoading,
                           ),
                           signIn_container(
                             size,
                             'facebook_icon',
                             () async {
+                              // Facebook loading durumunu başlat
+                              setState(() {
+                                _isFacebookLoading = true;
+                              });
+
                               UserModel? user =
                                   await authChangeNotifier.authWithFacebook();
-                              if (firebaseAuthErrors.isNotEmpty) {
-                                MySanckbar.mySnackbar(context,
-                                    firebaseAuthErrors.first.message, 2);
-                                if (user != null) {
-                                  MySanckbar.mySnackbar(
-                                      context, 'Facebook login succesfull', 1);
-                                  Navigator.of(context).pushReplacement(
-                                    MaterialPageRoute(
-                                        builder: (context) =>
-                                            const ControlPage()),
-                                  );
-                                }
-                              }
+
+                              // Tek satırda hata kontrolü ve yönlendirme
+                              authChangeNotifier
+                                      .getFirebaseAuthErrors(
+                                          'firebaseAuthFacebook')
+                                      .isNotEmpty
+                                  ? MySanckbar.mySnackbar(
+                                      context,
+                                      authChangeNotifier
+                                          .getFirebaseAuthErrors(
+                                              'firebaseAuthFacebook')
+                                          .first
+                                          .message,
+                                      2)
+                                  : user != null
+                                      ? (
+                                          MySanckbar.mySnackbar(context,
+                                              'Facebook login succesfull', 1),
+                                          Navigator.of(context).pushReplacement(
+                                            MaterialPageRoute(
+                                                builder: (context) =>
+                                                    const ControlPage()),
+                                          )
+                                        )
+                                      : null;
+
+                              // Facebook loading durumunu bitir
+                              setState(() {
+                                _isFacebookLoading = false;
+                              });
                             },
+                            isLoading: _isFacebookLoading,
                           ),
                         ],
                       ),
@@ -300,9 +362,10 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  InkWell signIn_container(Size size, String iconName, Function() onTap) {
+  InkWell signIn_container(Size size, String iconName, Function() onTap,
+      {bool isLoading = false}) {
     return InkWell(
-      onTap: onTap,
+      onTap: isLoading ? null : onTap,
       highlightColor: Colors.transparent,
       splashColor: Colors.transparent,
       child: Container(
@@ -318,11 +381,17 @@ class _LoginPageState extends State<LoginPage> {
               blurRadius: 20,
               spreadRadius: 1),
         ], borderRadius: BorderRadius.circular(20), color: Colors.white),
-        child: Image(
-          fit: BoxFit.fill,
-          color: const Color(0xff939393),
-          image: AssetImage('assets/images/$iconName.png'),
-        ),
+        child: isLoading
+            ? MyCircularProgressIndicator(
+                height: 20,
+                width: 20,
+                progressIndicatorColor: const Color(0xff939393),
+              )
+            : Image(
+                fit: BoxFit.fill,
+                color: const Color(0xff939393),
+                image: AssetImage('assets/images/$iconName.png'),
+              ),
       ),
     );
   }
