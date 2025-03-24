@@ -10,9 +10,13 @@ import 'package:locale_chat/model/error_model.dart';
 import 'package:locale_chat/model/messages_models/message_model.dart';
 import 'package:locale_chat/model/messages_models/single_chat_model.dart';
 import 'package:locale_chat/service/chat_service.dart';
+import 'package:uuid/uuid.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class ChatChangeNotifier extends AsyncChangeNotifier with ErrorHolder {
   SingleChatService _singleChatService = SingleChatService();
+  final Uuid _uuid = Uuid();
+  final FirebaseAuth _auth = FirebaseAuth.instance;
 
   List<MessageModel>? _messages;
   List<MessageModel>? get messages => _messages;
@@ -45,6 +49,10 @@ class ChatChangeNotifier extends AsyncChangeNotifier with ErrorHolder {
   @override
   AsyncChangeNotifierState state = AsyncChangeNotifierState.idle;
 
+  Stream<QuerySnapshot<Map<String, dynamic>>> getAllUsers() {
+    return _singleChatService.getAllUsers();
+  }
+
   void createChat(SingleChatModel chatModel, String chatId) {
     wrapAsync(
       () async {
@@ -54,8 +62,8 @@ class ChatChangeNotifier extends AsyncChangeNotifier with ErrorHolder {
     );
   }
 
-  void sendMessage(MessageModel message, String chatId) {
-    wrapAsync(
+  Future<void> sendMessage(MessageModel message, String chatId) async {
+    await wrapAsync(
       () async {
         await _singleChatService.sendMessage(message, chatId);
       },
@@ -114,24 +122,64 @@ class ChatChangeNotifier extends AsyncChangeNotifier with ErrorHolder {
     );
   }
 
-  void uploadImage(MessageModel message, File imageFile, String chatId) {
-    wrapAsync(
+  Future<String?> uploadImage(
+      MessageModel message, File imageFile, String chatId) async {
+    return await wrapAsync(
       () async {
-        imageDownloadUrl =
+        final url =
             await _singleChatService.uploadImage(message, imageFile, chatId);
+        imageDownloadUrl = url;
         notifyListeners();
+        return url;
       },
       ErrorModel(id: "id", message: "message"),
     );
   }
 
-  void getImage(ImageSource source) {
-    wrapAsync(
+  Future<File?> getImage(ImageSource source) async {
+    return await wrapAsync(
       () async {
-        imageFile = await _singleChatService.getImage(source);
+        final file = await _singleChatService.getImage(source);
+        imageFile = file;
         notifyListeners();
+        return file;
       },
       ErrorModel(id: "id", message: "message"),
+    );
+  }
+
+  Future<void> sendImageMessage({
+    required File imageFile,
+    required String receiverId,
+    required String chatId,
+  }) async {
+    final String messageId = _uuid.v4();
+    final String currentUserId = _auth.currentUser!.uid;
+
+    final MessageModel message = MessageModel(
+      content: '', // Resim mesajları için content boş olabilir
+      createdTime: DateTime.now(),
+      senderId: currentUserId,
+      messageId: messageId,
+      receiverId: receiverId,
+      type: MessageType.PHOTO,
+    );
+
+    await wrapAsync(
+      () async {
+        final String? imageUrl = await _singleChatService.uploadImage(
+          message,
+          imageFile,
+          chatId,
+        );
+
+        if (imageUrl != null) {
+          message.content = imageUrl; // Resim URL'ini content olarak kaydet
+          await _singleChatService.sendMessage(message, chatId);
+        }
+      },
+      ErrorModel(
+          id: "sendImageMessage", message: "Failed to send image message"),
     );
   }
 }

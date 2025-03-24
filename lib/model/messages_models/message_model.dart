@@ -1,5 +1,7 @@
 // ignore_for_file: constant_identifier_names
 
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 enum MessageType { PHOTO, TEXT }
 
 class MessageModel {
@@ -19,10 +21,10 @@ class MessageModel {
     required this.type,
   });
 
-  MessageModel fromJson(Map<String, dynamic> map) {
+  static MessageModel fromJson(Map<String, dynamic> map) {
     return MessageModel(
         content: map["content"],
-        createdTime: map["createdTime"],
+        createdTime: (map["createdTime"] as Timestamp).toDate(),
         senderId: map["senderId"],
         messageId: map["messageId"],
         receiverId: map["receiverId"],

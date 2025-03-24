@@ -12,18 +12,24 @@ class ImagePickerHelper {
   static Future<void> showImageSourceSelectionDialog({
     required BuildContext context,
     required Function(ImageSource) onImageSourceSelected,
+    String dialogTitle = 'Profil Resmi Seç',
+    String galleryOptionText = 'Galeriden Seç',
+    String cameraOptionText = 'Kamera ile Çek',
+    Color? iconColor,
+    Color? titleColor,
+    double borderRadius = 15,
   }) async {
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(15),
+            borderRadius: BorderRadius.circular(borderRadius),
           ),
           title: Text(
-            'Profil Resmi Seç',
+            dialogTitle,
             style: TextStyle(
-              color: backgroundColor,
+              color: titleColor ?? backgroundColor,
               fontWeight: FontWeight.bold,
             ),
           ),
@@ -31,16 +37,18 @@ class ImagePickerHelper {
             mainAxisSize: MainAxisSize.min,
             children: [
               ListTile(
-                leading: Icon(Icons.photo_library, color: backgroundColor),
-                title: const Text('Galeriden Seç'),
+                leading: Icon(Icons.photo_library,
+                    color: iconColor ?? backgroundColor),
+                title: Text(galleryOptionText),
                 onTap: () {
                   Navigator.pop(context);
                   onImageSourceSelected(ImageSource.gallery);
                 },
               ),
               ListTile(
-                leading: Icon(Icons.camera_alt, color: backgroundColor),
-                title: const Text('Kamera ile Çek'),
+                leading:
+                    Icon(Icons.camera_alt, color: iconColor ?? backgroundColor),
+                title: Text(cameraOptionText),
                 onTap: () {
                   Navigator.pop(context);
                   onImageSourceSelected(ImageSource.camera);
@@ -54,11 +62,14 @@ class ImagePickerHelper {
   }
 
   /// Resim seçme ve yükleme işlemini gerçekleştirir
-  static Future<void> pickAndUploadProfileImage({
+  static Future<void> pickAndUploadImage({
     required BuildContext context,
     required ImageSource source,
-    String successMessage = 'Profil resmi başarıyla güncellendi',
-    String errorMessage = 'Profil resmi yüklenirken hata oluştu',
+    String successMessage = 'Resim başarıyla yüklendi',
+    String errorMessage = 'Resim yüklenirken hata oluştu',
+    String? loadingMessage,
+    bool showLoadingIndicator = true,
+    bool showSnackbar = true,
   }) async {
     final authChangeNotifier =
         Provider.of<AuthChangeNotifier>(context, listen: false);
@@ -70,16 +81,30 @@ class ImagePickerHelper {
       return;
     }
 
-    // Show loading indicator
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (BuildContext context) {
-        return Center(
-          child: MyCircularProgressIndicator(),
-        );
-      },
-    );
+    // Show loading indicator if enabled
+    if (showLoadingIndicator) {
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context) {
+          return Center(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                MyCircularProgressIndicator(),
+                if (loadingMessage != null) ...[
+                  const SizedBox(height: 16),
+                  Text(
+                    loadingMessage,
+                    style: const TextStyle(color: Colors.white),
+                  ),
+                ],
+              ],
+            ),
+          );
+        },
+      );
+    }
 
     try {
       // Upload the image to Firebase
@@ -89,26 +114,29 @@ class ImagePickerHelper {
       // Refresh user data to get updated profile picture
       await authChangeNotifier.authStateChanges();
 
-      // Close loading dialog
-      if (context.mounted) {
+      // Close loading dialog if it was shown
+      if (showLoadingIndicator && context.mounted) {
         Navigator.of(context).pop();
       }
 
-      // Show success message
-      if (context.mounted) {
+      // Show success message if enabled
+      if (showSnackbar && context.mounted) {
         MySanckbar.mySnackbar(context, successMessage, 2);
       }
     } catch (e) {
-      // Close loading dialog
-      if (context.mounted) {
+      // Close loading dialog if it was shown
+      if (showLoadingIndicator && context.mounted) {
         Navigator.of(context).pop();
       }
 
-      // Show error message
-      if (context.mounted) {
+      // Show error message if enabled
+      if (showSnackbar && context.mounted) {
         MySanckbar.mySnackbar(context, errorMessage, 2);
       }
-      debugPrint('Error uploading profile image: $e');
+      debugPrint('Error uploading image: $e');
     }
   }
+
+  static pickAndUploadProfileImage(
+      {required BuildContext context, required ImageSource source}) {}
 }

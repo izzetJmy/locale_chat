@@ -27,16 +27,20 @@ mixin ErrorHolder on AsyncChangeNotifier {
     }
   }
 
-  wrapAsync(Future Function() toWrapped, ErrorModel error) async {
+  Future<T> wrapAsync<T>(
+      Future<T> Function() toWrapped, ErrorModel error) async {
     try {
       state = AsyncChangeNotifierState.busy;
       notifyListeners();
-      await toWrapped();
+      final result = await toWrapped();
+      return result;
     } catch (e) {
       addError(error);
       notifyListeners();
+      rethrow;
+    } finally {
+      state = AsyncChangeNotifierState.idle;
+      notifyListeners();
     }
-    state = AsyncChangeNotifierState.idle;
-    notifyListeners();
   }
 }

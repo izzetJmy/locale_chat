@@ -83,6 +83,12 @@ class AuthService {
     await _auth.signOut();
   }
 
+  //Get user info from firestore
+  Future<UserModel?> getUserInfo(String userId) async {
+    final user = await _firestore.collection('Users').doc(userId).get();
+    return UserModel.fromJson(user.data() as Map<String, dynamic>);
+  }
+
 //Is user's email verified control it
   Future<void> autehntiacate() async {
     if (_auth.currentUser != null && !_auth.currentUser!.emailVerified) {
