@@ -7,13 +7,22 @@ import 'package:flutter/foundation.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:locale_chat/model/messages_models/message_model.dart';
 import 'package:locale_chat/model/messages_models/single_chat_model.dart';
-import 'package:uuid/uuid.dart';
 
 class SingleChatService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  final Uuid _uuid = const Uuid();
   final DateTime _nowTime = DateTime.now();
+
+  Stream<QuerySnapshot<Map<String, dynamic>>> getAllUsers() {
+    try {
+      return _firestore
+          .collection("Users")
+          .snapshots(); // Fixed collection name to match other code
+    } catch (e) {
+      debugPrint('Error getting all users: $e');
+      return const Stream.empty();
+    }
+  }
 
   //CREATE CHAT
   Future<void> createChat(SingleChatModel chatModel, String chatId) async {
@@ -23,13 +32,20 @@ class SingleChatService {
         .set(chatModel.toJson());
   }
 
+  Stream<QuerySnapshot> getUserChats(String userID) {
+    return _firestore
+        .collection("chat_rooms")
+        .where("members", arrayContains: userID)
+        .snapshots();
+  }
+
   //SEND MESSAGE
   Future<void> sendMessage(MessageModel message, String chatId) async {
     final User currentUser = _auth.currentUser!;
 
     MessageModel newMessage = MessageModel(
         content: message.content,
-        createdTime: _nowTime,
+        createdTime: DateTime.now(),
         senderId: currentUser.uid,
         messageId: message.messageId,
         receiverId: message.receiverId,
@@ -41,6 +57,13 @@ class SingleChatService {
         .collection("messages")
         .doc(message.messageId)
         .set(newMessage.toJson());
+
+    //Update last message and last message time
+    await _firestore.collection("chat_rooms").doc(chatId).update({
+      "lastMessage":
+          message.type == MessageType.PHOTO ? "Photo" : message.content,
+      "lastMessageTime": _nowTime
+    });
   }
 
   //GET MESSAGE
@@ -74,45 +97,46 @@ class SingleChatService {
   //UPLOAD IMAGE
   Future<String?> uploadImage(
       MessageModel message, File imageFile, String chatId) async {
+    var imageName = DateTime.now().millisecondsSinceEpoch.toString();
     final String currentUserEmail = _auth.currentUser!.email!;
-    final String downloadUrl;
 
-    final Reference storageRef =
-        FirebaseStorage.instance.ref().child("images").child(_uuid.v4());
-    final UploadTask uploadTask = storageRef.putFile(imageFile);
+    final storageRef = FirebaseStorage.instance.ref();
+    final imageRef = storageRef.child('chats/$chatId/images/$imageName');
+    final uploadTask = imageRef.putFile(imageFile);
+    final TaskSnapshot taskSnapshot = await uploadTask;
+    final String downloadURL = await taskSnapshot.ref.getDownloadURL();
 
-    try {
-      await uploadTask;
-      downloadUrl = await storageRef.getDownloadURL();
+    MessageModel newMessage = MessageModel(
+        content: downloadURL,
+        createdTime: DateTime.now(),
+        senderId: currentUserEmail,
+        messageId: message.messageId,
+        receiverId: message.receiverId,
+        type: message.type);
 
-      MessageModel newMessage = MessageModel(
-          content: downloadUrl,
-          createdTime: _nowTime,
-          senderId: currentUserEmail,
-          messageId: message.messageId,
-          receiverId: message.receiverId,
-          type: message.type);
+    await _firestore
+        .collection("chat_rooms")
+        .doc(chatId)
+        .collection("messages")
+        .doc(message.messageId)
+        .set(newMessage.toJson());
 
-      await _firestore
-          .collection("chat_rooms")
-          .doc(chatId)
-          .collection("messages")
-          .doc(message.messageId)
-          .set(newMessage.toJson());
-
-      return downloadUrl;
-    } catch (e) {
-      debugPrint("Error adding image: $e");
-    }
-    return null;
+    return downloadURL;
   }
 
   //GET IMAGE
   Future<File?> getImage(ImageSource source) async {
+    debugPrint(_auth.currentUser?.email);
     final picker = ImagePicker();
     try {
-      final pickedFile = await picker.pickImage(source: source);
-      return File(pickedFile!.path);
+      final pickedFile = await picker.pickImage(
+          source: source, maxWidth: 800, maxHeight: 800, imageQuality: 80);
+      if (pickedFile == null) {
+        debugPrint('Resim seçilmedi veya seçim iptal edildi');
+        return null;
+      }
+      debugPrint('pickedFile: ${pickedFile.path}');
+      return File(pickedFile.path);
     } catch (e) {
       debugPrint("Error picking image: $e");
     }

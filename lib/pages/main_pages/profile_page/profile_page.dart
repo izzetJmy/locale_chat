@@ -43,7 +43,7 @@ class _ProfilePageState extends State<ProfilePage> {
 
   // Method to pick and upload profile image
   Future<void> _pickProfileImage(ImageSource source) async {
-    await ImagePickerHelper.pickAndUploadProfileImage(
+    await ImagePickerHelper.pickAndUploadImage(
       context: context,
       source: source,
     );

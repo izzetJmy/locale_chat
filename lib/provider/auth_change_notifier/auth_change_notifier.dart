@@ -119,6 +119,17 @@ class AuthChangeNotifier extends AsyncChangeNotifier with ErrorHolder {
             id: user?.userName ?? 'Anonymous', message: 'Failed to sign out'));
   }
 
+  Future<UserModel?> getUserInfo(String userId) async {
+    await wrapAsync(() async {
+      user = await _authService.getUserInfo(userId);
+      notifyListeners();
+    },
+        ErrorModel(
+            id: user?.userName ?? 'Anonymous',
+            message: 'Failed to get user info'));
+    return null;
+  }
+
 //Listens to if the user's email is verified
   Future<void> autehntiacate() async {
     await wrapAsync(() async {

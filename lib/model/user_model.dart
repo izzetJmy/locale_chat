@@ -28,7 +28,7 @@ class UserModel {
     };
   }
 
-  UserModel fromJson(Map<String, dynamic> map) {
+  static UserModel fromJson(Map<String, dynamic> map) {
     return UserModel(
       id: map['id'],
       userName: map['userName'],

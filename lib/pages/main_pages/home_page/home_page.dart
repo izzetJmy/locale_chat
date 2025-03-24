@@ -2,14 +2,14 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:locale_chat/comopnents/my_appbar.dart';
 import 'package:locale_chat/comopnents/my_button.dart';
-import 'package:locale_chat/comopnents/my_profile_card.dart';
 import 'package:locale_chat/comopnents/profile_info.dart';
 import 'package:locale_chat/constants/colors.dart';
-import 'package:locale_chat/constants/image_path.dart';
 import 'package:locale_chat/constants/text_style.dart';
 import 'package:locale_chat/helper/ui_helper.dart';
-import 'package:locale_chat/pages/chat_pages/chat_page.dart';
+import 'package:locale_chat/pages/main_pages/home_page/chat_screen_widget.dart';
+import 'package:locale_chat/pages/main_pages/home_page/group_screen_widget.dart';
 import 'package:locale_chat/pages/notification_pages/notification_page.dart';
+import 'package:locale_chat/provider/chat_change_notifier/chat_change_notifier.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -21,12 +21,27 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   late PageController _pageController;
   int selectedIndex = 0;
+  late ChatChangeNotifier _chatChangeNotifier;
 
   @override
   void initState() {
     _pageController = PageController(initialPage: selectedIndex);
-
     super.initState();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _chatChangeNotifier = ChatChangeNotifier();
+    _loadChats();
+  }
+
+  void _loadChats() {
+    // Initialize chats list if null
+    _chatChangeNotifier.chats ??= [];
+
+    // Load chats from service
+    _chatChangeNotifier.getChat('');
   }
 
   @override
@@ -50,7 +65,6 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
-  bool isEmpty = false;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -133,104 +147,15 @@ class _HomePageState extends State<HomePage> {
               child: PageView(
                 physics: const NeverScrollableScrollPhysics(),
                 controller: _pageController,
-                children: [chatScreen(), groupScreen()],
+                children: const [
+                  ChatScreenWidget(),
+                  GroupScreenWidget(),
+                ],
               ),
             ),
           ],
         ),
       ),
     );
-  }
-
-  Widget chatScreen() {
-    return isEmpty
-        ? Padding(
-            padding: const EdgeInsets.only(bottom: 100),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Text(
-                  'Henüz biriyle tanışmadın',
-                  style: homePageTitleTextStyle,
-                ),
-                Text(
-                  'Hemen arama yap!',
-                  style: homePageSubtitleTextStyle,
-                )
-              ],
-            ),
-          )
-        : ListView.builder(
-            scrollDirection: Axis.vertical,
-            shrinkWrap: true,
-            itemCount: 10,
-            itemBuilder: (context, index) {
-              return Padding(
-                padding:
-                    const EdgeInsets.symmetric(vertical: 10, horizontal: 5),
-                child: MyProfileCard(
-                  leading: ProfileInfo(image_path: ImagePath.user_avatar),
-                  tittleText: const Text('Asım Şef'),
-                  subtittleText: const Text('selam'),
-                  trailing: Icon(
-                    Icons.arrow_forward_ios,
-                    color: backgroundColor,
-                  ),
-                  height: 80,
-                  onTap: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const ChatPage(
-                        drop_down_menu_list: [],
-                      ),
-                    ),
-                  ),
-                ),
-              );
-            },
-          );
-  }
-
-  Widget groupScreen() {
-    return isEmpty
-        ? Padding(
-            padding: const EdgeInsets.only(bottom: 100),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Text(
-                  'Henüz bir grupta değilsin',
-                  style: homePageTitleTextStyle,
-                ),
-                Text(
-                  'hemen yeni bir grup oluştur.',
-                  style: homePageSubtitleTextStyle,
-                )
-              ],
-            ),
-          )
-        : ListView.builder(
-            scrollDirection: Axis.vertical,
-            shrinkWrap: true,
-            itemCount: 10,
-            itemBuilder: (context, index) {
-              return Padding(
-                padding:
-                    const EdgeInsets.symmetric(vertical: 10, horizontal: 5),
-                child: MyProfileCard(
-                    leading: const ProfileInfo(
-                        image_path: 'assets/images/user_avatar.png'),
-                    tittleText: const Text('Grup Adı'),
-                    subtittleText: const Text('4 kişi var'),
-                    trailing: Icon(
-                      Icons.arrow_forward_ios,
-                      color: backgroundColor,
-                    ),
-                    height: 80),
-              );
-            },
-          );
   }
 }
