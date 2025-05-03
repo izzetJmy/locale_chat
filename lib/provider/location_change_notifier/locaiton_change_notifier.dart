@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:locale_chat/mixin/error_holder.dart';
 import 'package:locale_chat/model/async_change_notifier.dart';
@@ -8,9 +9,6 @@ import 'package:locale_chat/model/location_model.dart';
 import 'package:locale_chat/service/location_service.dart';
 
 class LocationChangeNotifier extends AsyncChangeNotifier with ErrorHolder {
-  final LocationService _locationService = LocationService();
-  Timer? timer;
-
   bool? _isValidPermission;
   bool? get isValidPermission => _isValidPermission;
   set isValidPermission(bool? value) {
@@ -22,7 +20,8 @@ class LocationChangeNotifier extends AsyncChangeNotifier with ErrorHolder {
   PositionModel? get currentPosition => _currentPosition;
   set currentPosition(PositionModel? value) {
     _currentPosition = value;
-    notifyListeners();
+    debugPrint("currentPosition güncellendi: $_currentPosition");
+    notifyListeners(); // Notify listeners when currentPosition changes
   }
 
   Set<Marker>? _markers;
@@ -53,39 +52,68 @@ class LocationChangeNotifier extends AsyncChangeNotifier with ErrorHolder {
     notifyListeners();
   }
 
+  LocationChangeNotifier() {
+    handleLocaitonPermission();
+  }
+
   @override
   AsyncChangeNotifierState state = AsyncChangeNotifierState.idle;
+  final LocationService _locationService = LocationService();
+  Timer? timer;
 
   void handleLocaitonPermission() {
     wrapAsync(
       () async {
-        isValidPermission = await _locationService.handleLocationPermissions();
+        _isValidPermission = await _locationService.handleLocationPermissions();
+        if (!_isValidPermission!) {
+          ErrorModel(
+            id: "locationError",
+            message: "Konum izinleri verilmedi.",
+          );
+        }
         notifyListeners();
       },
-      ErrorModel(id: "Locaiton error ID", message: "Can not handle permission"),
+      ErrorModel(
+        id: "locationError",
+        message: "Konum izinleri kontrol edilirken bir hata oluştu.",
+      ),
     );
   }
 
-  void getCurrentLocaiton() {
-    wrapAsync(
+  Future<void> getCurrentLocaiton() {
+    return wrapAsync(
       () async {
-        if (isValidPermission!) {
-          currentPosition = await _locationService.getCurrentLocaiton();
-          notifyListeners();
+        if (_isValidPermission == true) {
+          _currentPosition = await _locationService.getCurrentLocaiton();
+
+          debugPrint(
+            "Current position: ${currentPosition?.latitude}, ${currentPosition?.longitude}",
+          );
+          if (currentPosition == null) {
+            ErrorModel(
+              id: "locationError",
+              message: "Konum alınamadı.",
+            );
+          }
         } else {
-          return null;
+          ErrorModel(
+            id: "locationError",
+            message: "Konum izinleri verilmedi.",
+          );
         }
+        notifyListeners();
       },
-      ErrorModel(id: "id", message: ""),
+      ErrorModel(
+        id: "locationError",
+        message: "Konum alınırken bir hata oluştu.",
+      ),
     );
   }
 
-  void saveLocaitonToFirebase() {
-    LocationModel locationModel = LocationModel(
-        currentPosition: currentPosition!, locations: locationsMap!);
+  void saveLocaitonToFirebase(LocationModel locationModel) {
     wrapAsync(
       () async {
-        await _locationService.saveLocationFirebase(locationModel);
+        _locationService.saveLocationFirebase(locationModel);
       },
       ErrorModel(id: "id", message: "message"),
     );
@@ -100,6 +128,61 @@ class LocationChangeNotifier extends AsyncChangeNotifier with ErrorHolder {
       ErrorModel(id: "", message: ""),
     );
   } */
+
+  Future<void> getNearUsersLocation() async {
+    return wrapAsync(
+      () async {
+        _nearUsersLocaiton = await _locationService.getNearUsersLocations(
+            _currentPosition!, _otherLocations!);
+        debugPrint(
+            "Yakındaki kullanıcılarGKLJGLKJGKJDF : $nearUsersLocaiton.toString()");
+      },
+      ErrorModel(id: "locationError", message: "message"),
+    );
+  }
+
+  Future<void> listConvertToMap() async {
+    Map<String, PositionModel> _positionMap = {};
+    try {
+      await getNearUsersLocation();
+      if (_nearUsersLocaiton == null || _nearUsersLocaiton!.isEmpty) {
+        debugPrint("Yakındaki kullanıcı verisi bulunamadı.");
+        return;
+      }
+
+      _positionMap =
+          await _locationService.listConvertToMap(_nearUsersLocaiton!);
+      _locationsMap = _positionMap;
+      notifyListeners();
+    } catch (e) {
+      debugPrint("Error in listConvertToMap: $e");
+    }
+  }
+
+  Future<void> getOtherLocaitons() {
+    return wrapAsync(
+      () async {
+        _otherLocations = await _locationService.getOtherLocations();
+        notifyListeners();
+      },
+      ErrorModel(id: "locationError", message: "message"),
+    );
+  }
+
+  void addMarker() {
+    LocationModel locationModel = LocationModel(
+        currentPosition: currentPosition!, locations: locationsMap!);
+    markers!.add(
+      Marker(
+          markerId: MarkerId(
+            locationModel.currentPosition.id,
+          ),
+          position: LatLng(locationModel.currentPosition.latitude,
+              locationModel.currentPosition.longitude),
+          icon: BitmapDescriptor.defaultMarker),
+    );
+    notifyListeners();
+  }
 
   Future<void> startTimer(int updateSecond, LocationModel locationModel) async {
     timer = Timer.periodic(
@@ -117,53 +200,7 @@ class LocationChangeNotifier extends AsyncChangeNotifier with ErrorHolder {
     notifyListeners();
   }
 
-  void getOtherLocaitons() {
-    wrapAsync(
-      () async {
-        otherLocations = await _locationService.getOtherLocations();
-        notifyListeners();
-      },
-      ErrorModel(id: "", message: "message"),
-    );
-  }
-
-  void getNearUsersLocation() {
-    wrapAsync(
-      () async {
-        nearUsersLocaiton =
-            await _locationService.getNearUsersLocations(currentPosition!);
-      },
-      ErrorModel(id: "id", message: "message"),
-    );
-  }
-
-  Future<void> listConvertToMap(PositionModel currentPositionModel) async {
-    Map<String, PositionModel> positionMap = {};
-    try {
-      getNearUsersLocation();
-      for (var position in nearUsersLocaiton!) {
-        positionMap[position.id] = position;
-      }
-      locationsMap = positionMap;
-      notifyListeners();
-    } catch (e) {
-      Future.error(e); //error showDialog gösterilecek
-      return;
-    }
-  }
-
-  void addMarker() {
-    LocationModel locationModel = LocationModel(
-        currentPosition: currentPosition!, locations: locationsMap!);
-    markers!.add(
-      Marker(
-          markerId: MarkerId(
-            locationModel.currentPosition.id,
-          ),
-          position: LatLng(locationModel.currentPosition.latitude,
-              locationModel.currentPosition.longitude),
-          icon: BitmapDescriptor.defaultMarker),
-    );
-    notifyListeners();
+  List<ErrorModel> getLocationErrors(String errorName) {
+    return errors.where((error) => error.id == errorName).toList();
   }
 }

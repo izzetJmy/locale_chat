@@ -1,4 +1,6 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class LocationModel {
   PositionModel currentPosition;
   Map<String, PositionModel> locations;
@@ -6,13 +8,23 @@ class LocationModel {
     required this.currentPosition,
     required this.locations,
   });
-
   factory LocationModel.fromJson(Map<String, dynamic> map) {
-    var locations = map['locations']
-        .map((key, value) => MapEntry(key, PositionModel.fromJson(value)));
+    var locations = (map['locations'] as Map<String, dynamic>?)?.map(
+          (key, value) => MapEntry(key, PositionModel.fromJson(value)),
+        ) ??
+        {}; // Null ise boş bir map döndürün
+
     return LocationModel(
-        currentPosition: PositionModel.fromJson(map['currentPosition']),
-        locations: locations);
+      currentPosition: map['currentPosition'] != null
+          ? PositionModel.fromJson(map['currentPosition'])
+          : PositionModel(
+              id: '',
+              latitude: 0.0,
+              longitude: 0.0,
+              timestamp: DateTime.now(),
+            ), // Null ise varsayılan bir PositionModel döndürün
+      locations: locations,
+    );
   }
 
   Map<String, dynamic> toJson() {
@@ -27,13 +39,13 @@ class PositionModel {
   final String id;
   final double latitude;
   final double longitude;
-  final DateTime? timestamp;
+  final DateTime timestamp;
 
   PositionModel({
     required this.id,
     required this.latitude,
     required this.longitude,
-    this.timestamp,
+    required this.timestamp,
   });
 
   Map<String, dynamic> toJson() {
@@ -47,10 +59,13 @@ class PositionModel {
 
   factory PositionModel.fromJson(Map<String, dynamic> map) {
     return PositionModel(
-      id: map['id'],
-      latitude: map['latitude'],
-      longitude: map['longitude'],
-      timestamp: map['timestamp'],
+      id: map['id'] ?? '', // Varsayılan değer ekleyin
+      latitude:
+          (map['latitude'] as num?)?.toDouble() ?? 0.0, // Null ise 0.0 döndürün
+      longitude: (map['longitude'] as num?)?.toDouble() ??
+          0.0, // Null ise 0.0 döndürün
+      timestamp: (map['timestamp'] as Timestamp?)?.toDate() ??
+          DateTime.now(), // Null ise şu anki zamanı döndürün
     );
   }
 }

@@ -62,6 +62,10 @@ class ChatChangeNotifier extends AsyncChangeNotifier with ErrorHolder {
     );
   }
 
+  Stream<QuerySnapshot> getUserChats() {
+    return _singleChatService.getUserChats(_auth.currentUser!.uid);
+  }
+
   Future<void> sendMessage(MessageModel message, String chatId) async {
     await wrapAsync(
       () async {
