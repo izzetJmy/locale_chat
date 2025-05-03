@@ -21,33 +21,33 @@ class LocationService {
       bool isLocationServiceEnabled =
           await Geolocator.isLocationServiceEnabled();
       if (!isLocationServiceEnabled) {
-        Future.error(
-            "Location service are disabled"); //error showDialog gösterilecek
+        debugPrint("Location services are disabled.");
         return false;
       }
 
       // Check the current permission status
       permission = await Geolocator.checkPermission();
+      debugPrint("Current permission: $permission");
+
       if (permission == LocationPermission.denied) {
         permission = await Geolocator.requestPermission();
+        debugPrint("Requested permission: $permission");
+
         if (permission == LocationPermission.denied) {
-          Future.error(
-              "Location permissions are denied."); //error showDialog gösterilecek
+          debugPrint("Location permissions are denied.");
           return false;
         }
       }
 
-      // Permissions are denied forever
       if (permission == LocationPermission.deniedForever) {
-        Future.error(
-            'Location permissions are permanently denied, we cannot request permissions.'); //error showDialog gösterilecek
+        debugPrint("Location permissions are permanently denied.");
         return false;
       }
 
-      // Permissions are granted
+      debugPrint("Location permissions granted.");
       return true;
     } catch (e) {
-      Future.error(e); //error showDialog gösterilecek
+      debugPrint("Error in handleLocationPermissions: $e");
       return false;
     }
   }
@@ -56,8 +56,7 @@ class LocationService {
   Future<PositionModel?> getCurrentLocaiton() async {
     try {
       Position currentPosition1 = await Geolocator.getCurrentPosition(
-          desiredAccuracy: LocationAccuracy
-              .high); //high olması konumu daha net düzgün dikkatli almasına yarar.
+          desiredAccuracy: LocationAccuracy.high);
       debugPrint(
           "Current Position: ${currentPosition1.latitude}, ${currentPosition1.longitude}");
       PositionModel currentPosition = PositionModel(
@@ -68,7 +67,7 @@ class LocationService {
 
       return currentPosition;
     } catch (e) {
-      Future.error(e); //error showDialog gösterilecek
+      debugPrint(e.toString());
       return null;
     }
   }
@@ -81,60 +80,6 @@ class LocationService {
         .set(locationModel.toJson());
   }
 
-  /*  //START TIMER
-  Future<Set<Marker>> startTimer(int updateSecond) async {
-    Set<Marker> markers = {};
-    timer = Timer.periodic(
-      //verdiğimiz saniye aralığında burdaki methodaları çağıracak
-      Duration(seconds: updateSecond),
-      (timer) async {
-        try {
-          PositionModel? currentPosition = await getCurrentLocaiton();
-          if (currentPosition != null) {
-            LocationModel? locationModel = await getLocationModel();
-            markers = await addMarker(locationModel!);
-          }
-        } catch (e) {
-          Future.error(
-              "Error updating location: $e"); //error showDialog gösterilecek
-        }
-      },
-    );
-    return markers;
-  }
- */
-  /*  //STOP TIMER
-  Future<void> stopTimer() async {
-    timer?.cancel();
-  } */
-
-  /*  //ADD MARKER
-  Future<Set<Marker>> addMarker(LocationModel locationModel) async {
-    //haritada kullanacağımız markerlerde google_maps_flutter paketinde Marker classından nesneler üretmemizi istiyor bende burda üretiyorum
-    Set<Marker> newMarkers = {
-      Marker(
-        markerId: MarkerId(
-          locationModel.currentPosition.id.toString(),
-        ),
-        position: LatLng(locationModel.currentPosition.latitude,
-            locationModel.currentPosition.longitude),
-        icon: BitmapDescriptor.defaultMarker,
-      ),
-    };
-    locationModel.locations.forEach(
-      (id, poition) {
-        newMarkers.add(
-          Marker(
-            markerId: MarkerId(id),
-            position: LatLng(poition.latitude, poition.longitude),
-            icon: BitmapDescriptor.defaultMarkerWithHue(2),
-          ),
-        );
-      },
-    );
-    return newMarkers;
-  }
- */
   //GET OTHER LOCATION
   Future<List<LocationModel>> getOtherLocations() async {
     List<LocationModel> otherLocations = [];
@@ -146,18 +91,18 @@ class LocationService {
       }
       return otherLocations;
     } catch (e) {
-      Future.error(e); //error showDialog gösterilecek
+      debugPrint(e.toString()); //error showDialog gösterilecek
       return [];
     }
   }
 
   //GET NEAR USERS
   Future<List<PositionModel>> getNearUsersLocations(
-      PositionModel currentPosition) async {
+      PositionModel currentPosition, List<LocationModel> otherLocations) async {
     List<PositionModel> nearUsersPositions = [];
     double radiusInMeters = 100.0;
     try {
-      List<LocationModel> allUsers = await getOtherLocations();
+      List<LocationModel> allUsers = otherLocations;
       //burda yapılan işlemin amacı filtirelemyi daha kısa mesafeye indirerek performansı artırmak
       allUsers = allUsers
           .where((location) =>
@@ -183,6 +128,7 @@ class LocationService {
           if (distance <= radiusInMeters) {
             nearUsersPositions.add(PositionModel(
                 id: location.currentPosition.id,
+                timestamp: DateTime.now(),
                 latitude: location.currentPosition.latitude,
                 longitude: location.currentPosition.longitude));
           }
@@ -190,24 +136,22 @@ class LocationService {
       }
       return nearUsersPositions;
     } catch (e) {
-      Future.error(e); //error showDialog gösterilecek
+      debugPrint(e.toString()); //error showDialog gösterilecek
       return [];
     }
   }
 
 //CONVERT LIST TO MAP
   Future<Map<String, PositionModel>> listConvertToMap(
-      PositionModel currentPositionModel) async {
+      List<PositionModel> nearUsersLocations) async {
     Map<String, PositionModel> positionMap = {};
     try {
-      List<PositionModel> nearUsersLocations =
-          await getNearUsersLocations(currentPositionModel);
       for (var position in nearUsersLocations) {
         positionMap[position.id] = position;
       }
       return positionMap;
     } catch (e) {
-      Future.error(e); //error showDialog gösterilecek
+      debugPrint(e.toString()); //error showDialog gösterilecek
       return {};
     }
   }
@@ -240,4 +184,60 @@ class LocationService {
       return null;
     }
   } */
+
+  /*  //START TIMER
+  Future<Set<Marker>> startTimer(int updateSecond) async {
+    Set<Marker> markers = {};
+    timer = Timer.periodic(
+      //verdiğimiz saniye aralığında burdaki methodaları çağıracak
+      Duration(seconds: updateSecond),
+      (timer) async {
+        try {
+          PositionModel? currentPosition = await getCurrentLocaiton();
+          if (currentPosition != null) {
+            LocationModel? locationModel = await getLocationModel();
+            markers = await addMarker(locationModel!);
+          }
+        } catch (e) {
+          Future.error(
+              "Error updating location: $e"); //error showDialog gösterilecek
+        }
+      },
+    );
+    return markers;
+  }
+ */
+
+  /*  //STOP TIMER
+  Future<void> stopTimer() async {
+    timer?.cancel();
+  } */
+
+  /*  //ADD MARKER
+  Future<Set<Marker>> addMarker(LocationModel locationModel) async {
+    //haritada kullanacağımız markerlerde google_maps_flutter paketinde Marker classından nesneler üretmemizi istiyor bende burda üretiyorum
+    Set<Marker> newMarkers = {
+      Marker(
+        markerId: MarkerId(
+          locationModel.currentPosition.id.toString(),
+        ),
+        position: LatLng(locationModel.currentPosition.latitude,
+            locationModel.currentPosition.longitude),
+        icon: BitmapDescriptor.defaultMarker,
+      ),
+    };
+    locationModel.locations.forEach(
+      (id, poition) {
+        newMarkers.add(
+          Marker(
+            markerId: MarkerId(id),
+            position: LatLng(poition.latitude, poition.longitude),
+            icon: BitmapDescriptor.defaultMarkerWithHue(2),
+          ),
+        );
+      },
+    );
+    return newMarkers;
+  }
+ */
 }
