@@ -119,15 +119,17 @@ class AuthChangeNotifier extends AsyncChangeNotifier with ErrorHolder {
             id: user?.userName ?? 'Anonymous', message: 'Failed to sign out'));
   }
 
-  Future<UserModel?> getUserInfo(String userId) async {
-    await wrapAsync(() async {
-      user = await _authService.getUserInfo(userId);
-      notifyListeners();
-    },
-        ErrorModel(
-            id: user?.userName ?? 'Anonymous',
-            message: 'Failed to get user info'));
-    return null;
+  Future<void> getUserInfo(String userId) async {
+    try {
+      final userDoc = await _authService.getUserInfo(userId);
+      if (userDoc != null) {
+        final userData = userDoc.toJson();
+        user = UserModel.fromJson(userData);
+        notifyListeners();
+      }
+    } catch (e) {
+      debugPrint('Error getting user info: $e');
+    }
   }
 
 //Listens to if the user's email is verified
@@ -376,5 +378,17 @@ class AuthChangeNotifier extends AsyncChangeNotifier with ErrorHolder {
     );
 
     return imagePath;
+  }
+
+  String getTimeOfDay() {
+    double nowTime = DateTime.now().hour.toDouble();
+    if (nowTime >= 6 && nowTime < 11) {
+      return 'Good Morning';
+    } else if (nowTime >= 11 && nowTime < 16) {
+      return 'Good Afternoon';
+    } else if (nowTime >= 16 && nowTime < 22) {
+      return 'Good Evening';
+    }
+    return 'Good Night';
   }
 }

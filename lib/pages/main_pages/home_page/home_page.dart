@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:locale_chat/comopnents/my_appbar.dart';
@@ -9,7 +10,9 @@ import 'package:locale_chat/helper/ui_helper.dart';
 import 'package:locale_chat/pages/main_pages/home_page/chat_screen_widget.dart';
 import 'package:locale_chat/pages/main_pages/home_page/group_screen_widget.dart';
 import 'package:locale_chat/pages/notification_pages/notification_page.dart';
+import 'package:locale_chat/provider/auth_change_notifier/auth_change_notifier.dart';
 import 'package:locale_chat/provider/chat_change_notifier/chat_change_notifier.dart';
+import 'package:provider/provider.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -22,31 +25,28 @@ class _HomePageState extends State<HomePage> {
   late PageController _pageController;
   int selectedIndex = 0;
   late ChatChangeNotifier _chatChangeNotifier;
+  final String? currentUserId = FirebaseAuth.instance.currentUser?.uid;
 
   @override
   void initState() {
     _pageController = PageController(initialPage: selectedIndex);
+    _chatChangeNotifier = ChatChangeNotifier();
+    _loadChats();
     super.initState();
   }
 
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    _chatChangeNotifier = ChatChangeNotifier();
-    _loadChats();
-  }
-
-  void _loadChats() {
-    // Initialize chats list if null
+  Future<void> _loadChats() async {
     _chatChangeNotifier.chats ??= [];
-
-    // Load chats from service
     _chatChangeNotifier.getChat('');
+    final authChangeNotifier =
+        Provider.of<AuthChangeNotifier>(context, listen: false);
+    await authChangeNotifier.getUserInfo(currentUserId!);
   }
 
   @override
   void dispose() {
     _pageController.dispose();
+    _chatChangeNotifier.dispose();
     super.dispose();
   }
 
@@ -67,77 +67,92 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    double hegiht = UIHelper.getDeviceHeight(context).toDouble();
+    double width = UIHelper.getDeviceWith(context).toDouble();
+
     return Scaffold(
-      appBar: MyAppBar(
-        title: ListTile(
-          contentPadding: const EdgeInsets.all(10),
-          leading: const ProfileInfo(
-            image_path: 'assets/images/user_avatar.png',
-            image_radius: 17,
-          ),
-          title: Text(
-            'İzzet Şef',
-            style: appBarTitleTextStyle,
-          ),
-          subtitle: Text(
-            'Günaydın',
-            style: appBarSubTitleTextStyle,
-          ),
-          trailing: IconButton(
-            color: backgroundColor,
-            icon: const Icon(CupertinoIcons.bell_fill),
-            onPressed: () => Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => const NotificationPage(),
+      appBar: PreferredSize(
+        preferredSize: Size.fromHeight(hegiht * 0.08),
+        child: Consumer<AuthChangeNotifier>(
+          builder: (context, authChangeNotifier, child) {
+            return MyAppBar(
+              title: ListTile(
+                contentPadding: const EdgeInsets.all(10),
+                leading: ProfileInfo(
+                  image_path: authChangeNotifier.user?.profilePhoto ??
+                      'assets/images/user_avatar.png',
+                  image_radius: 17,
+                ),
+                title: Text(
+                  authChangeNotifier.user?.userName ?? 'Anonymus',
+                  style: appBarTitleTextStyle,
+                ),
+                subtitle: Text(
+                  authChangeNotifier.getTimeOfDay(),
+                  style: appBarSubTitleTextStyle,
+                ),
+                trailing: IconButton(
+                  color: backgroundColor,
+                  icon: const Icon(CupertinoIcons.bell_fill),
+                  onPressed: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const NotificationPage(),
+                    ),
+                  ),
+                ),
               ),
-            ),
-          ),
+            );
+          },
         ),
       ),
       body: Container(
-        padding: const EdgeInsets.only(top: 20, left: 15, right: 15),
+        padding: EdgeInsets.only(top: hegiht * 0.02),
         child: Column(
           children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                //List Button
-                MyButton(
-                    width: UIHelper.getDeviceWith(context) * 0.42,
-                    height: UIHelper.getDeviceHeight(context) * 0.048,
-                    buttonColor: selectedIndex == 0
-                        ? backgroundColor
-                        : const Color(0xffDDF0E4),
-                    onPressed: () {
-                      setState(() {
-                        navigateToPage(0);
-                      });
-                    },
-                    buttonText: 'Chat',
-                    textStyle: homePageButtontitleTextStyle),
-                const Spacer(),
-                //Map Button
-                MyButton(
-                    width: UIHelper.getDeviceWith(context) * 0.42,
-                    height: UIHelper.getDeviceHeight(context) * 0.048,
-                    buttonColor: selectedIndex == 1
-                        ? backgroundColor
-                        : const Color(0xffDDF0E4),
-                    onPressed: () {
-                      setState(
-                        () {
-                          navigateToPage(1);
-                        },
-                      );
-                    },
-                    buttonText: 'Grup',
-                    textStyle: homePageButtontitleTextStyle)
-              ],
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: width * 0.05),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  //List Button
+                  MyButton(
+                      width: width * 0.42,
+                      height: hegiht * 0.048,
+                      buttonColor: selectedIndex == 0
+                          ? backgroundColor
+                          : const Color(0xffDDF0E4),
+                      onPressed: () {
+                        setState(() {
+                          navigateToPage(0);
+                        });
+                      },
+                      buttonText: 'Chat',
+                      textStyle: homePageButtontitleTextStyle),
+                  const Spacer(),
+                  //Map Button
+                  MyButton(
+                      width: width * 0.42,
+                      height: hegiht * 0.048,
+                      buttonColor: selectedIndex == 1
+                          ? backgroundColor
+                          : const Color(0xffDDF0E4),
+                      onPressed: () {
+                        setState(
+                          () {
+                            navigateToPage(1);
+                          },
+                        );
+                      },
+                      buttonText: 'Group',
+                      textStyle: homePageButtontitleTextStyle)
+                ],
+              ),
             ),
-            const Padding(
-              padding: EdgeInsets.symmetric(vertical: 15),
-              child: Divider(
+            Padding(
+              padding: EdgeInsets.symmetric(
+                  vertical: hegiht * 0.01, horizontal: width * 0.05),
+              child: const Divider(
                 thickness: 1,
                 color: Color(0xffCBCBCB),
               ),
@@ -147,9 +162,12 @@ class _HomePageState extends State<HomePage> {
               child: PageView(
                 physics: const NeverScrollableScrollPhysics(),
                 controller: _pageController,
-                children: const [
-                  ChatScreenWidget(),
-                  GroupScreenWidget(),
+                children: [
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: width * 0.02),
+                    child: const ChatScreenWidget(),
+                  ),
+                  const GroupScreenWidget(),
                 ],
               ),
             ),

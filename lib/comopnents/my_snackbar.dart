@@ -4,6 +4,8 @@ import 'package:locale_chat/helper/ui_helper.dart';
 class MySanckbar {
   static Future<void> mySnackbar(
       BuildContext context, String text, int duration) async {
+    if (!context.mounted) return;
+
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(

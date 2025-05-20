@@ -112,7 +112,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         Icons.group,
                         color: backgroundColor,
                       ),
-                      tittleText: const Text('Grup Oluştur'),
+                      tittleText: const Text('Create Group'),
                       profileCardTittleTextStyle: profilePageListTileTextStyle,
                       trailing: Icon(
                         Icons.arrow_forward_ios,
@@ -134,7 +134,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         CupertinoIcons.settings,
                         color: backgroundColor,
                       ),
-                      tittleText: const Text('Ayarlar'),
+                      tittleText: const Text('Settings'),
                       profileCardTittleTextStyle: profilePageListTileTextStyle,
                       trailing: Icon(
                         Icons.arrow_forward_ios,
@@ -151,7 +151,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         Icons.exit_to_app,
                         color: Colors.red.withOpacity(0.8),
                       ),
-                      tittleText: const Text('Çıkış yap'),
+                      tittleText: const Text('Sign Out'),
                       profileCardTittleTextStyle: exitTitleTextStyle,
                       trailing: Icon(
                         Icons.arrow_forward_ios,
@@ -227,9 +227,7 @@ class _ProfilePageState extends State<ProfilePage> {
       if (context.mounted) {
         Navigator.of(context).pop();
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-              content:
-                  Text('Çıkış yapılırken bir hata oluştu: ${e.toString()}')),
+          SnackBar(content: Text('Something went wrong: ${e.toString()}')),
         );
       }
     }

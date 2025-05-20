@@ -142,7 +142,7 @@ class LocationChangeNotifier extends AsyncChangeNotifier with ErrorHolder {
   }
 
   Future<void> listConvertToMap() async {
-    Map<String, PositionModel> _positionMap = {};
+    Map<String, PositionModel> positionMap = {};
     try {
       await getNearUsersLocation();
       if (_nearUsersLocaiton == null || _nearUsersLocaiton!.isEmpty) {
@@ -150,9 +150,9 @@ class LocationChangeNotifier extends AsyncChangeNotifier with ErrorHolder {
         return;
       }
 
-      _positionMap =
+      positionMap =
           await _locationService.listConvertToMap(_nearUsersLocaiton!);
-      _locationsMap = _positionMap;
+      _locationsMap = positionMap;
       notifyListeners();
     } catch (e) {
       debugPrint("Error in listConvertToMap: $e");

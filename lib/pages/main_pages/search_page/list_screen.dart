@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -62,7 +64,7 @@ class _ListScreenState extends State<ListScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final List<String> _userIDs = [];
+    //final List<String> _userIDs = [];
     String createChatId(String userId1, String userId2) {
       List<String> ids = [userId1, userId2];
       ids.sort();
@@ -81,11 +83,11 @@ class _ListScreenState extends State<ListScreen> {
           stream: getOtherLocations(),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
-              return Center(child: CircularProgressIndicator());
+              return const Center(child: CircularProgressIndicator());
             }
 
             if (snapshot.hasError) {
-              return Center(child: Text("⚠️ Hata: ${snapshot.error}"));
+              return Center(child: Text("Hata: ${snapshot.error}"));
             }
             if (!snapshot.hasData) {
               return Padding(
@@ -116,21 +118,28 @@ class _ListScreenState extends State<ListScreen> {
               stream: _firestore.collection('Users').snapshots(),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
-                  return Center(child: CircularProgressIndicator());
+                  return const Center(child: CircularProgressIndicator());
                 }
                 if (snapshot.hasError) {
-                  return Center(child: Text("⚠️ Hata: ${snapshot.error}"));
+                  return Center(child: Text("Hata: ${snapshot.error}"));
                 }
                 if (!snapshot.hasData) {
-                  return Center(child: Text("No data available"));
+                  return const Center(child: Text("No data available"));
                 }
                 return ListView.builder(
                   itemCount: userIDs.length,
                   itemBuilder: (context, index) {
                     final userId = userIDs[index];
-                    final userData = snapshot.data?.docs
-                        .firstWhere((doc) => doc.id == userId)
-                        .data();
+                    final userDoc = snapshot.data?.docs
+                        .where((doc) => doc.id == userId)
+                        .firstOrNull;
+
+                    if (userDoc == null) {
+                      return const SizedBox
+                          .shrink(); // or any other fallback widget
+                    }
+
+                    final userData = userDoc.data();
                     final messages = _firestore
                         .collection('chat_rooms')
                         .where('members', arrayContains: _userID)
@@ -146,10 +155,9 @@ class _ListScreenState extends State<ListScreen> {
                       padding: const EdgeInsets.symmetric(
                           vertical: 10, horizontal: 5),
                       child: MyProfileCard(
-                        tittleText:
-                            Text(userData?['userName'] ?? 'Anoninymous'),
+                        tittleText: Text(userData['userName'] ?? 'Anoninymous'),
                         leading: ProfileInfo(
-                          image_path: userData?['profilePhoto'] ??
+                          image_path: userData['profilePhoto'] ??
                               'assets/images/user_avatar.png',
                         ),
                         subtittleText: StreamBuilder<String>(
@@ -176,27 +184,27 @@ class _ListScreenState extends State<ListScreen> {
 
                           final exitingChatDoc = existingChat.docs
                               .where((doc) => (doc.data()['members'] as List)
-                                  .contains(userData?['id']))
+                                  .contains(userData['id']))
                               .firstOrNull;
 
                           if (exitingChatDoc != null) {
                             chatId = exitingChatDoc.id;
                           } else {
-                            chatId = createChatId(_userID, userData?['id']);
+                            chatId = createChatId(_userID, userData['id']);
                             final SingleChatModel chatModel = SingleChatModel(
                                 chatId: chatId,
-                                members: [_userID, userData?['id']]);
+                                members: [_userID, userData['id']]);
                             chatNotifier.createChat(chatModel, chatId);
                           }
                           Navigator.push(
                               context,
                               MaterialPageRoute(
                                 builder: (context) => ChatPage(
-                                    drop_down_menu_list: [],
+                                    drop_down_menu_list: const [],
                                     chatId: chatId,
                                     receiverId: userId,
-                                    title: userData?['userName'] ?? 'Anonymous',
-                                    image_path: userData?['profilePhoto'] ??
+                                    title: userData['userName'] ?? 'Anonymous',
+                                    image_path: userData['profilePhoto'] ??
                                         'assets/images/user_avatar.png'),
                               ));
                         },

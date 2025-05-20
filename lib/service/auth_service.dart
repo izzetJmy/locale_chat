@@ -66,7 +66,7 @@ class AuthService {
     User user = userCredential.user!;
     UserModel? userModel = UserModel(
         id: user.uid,
-        userName: '',
+        userName: 'Anonymous',
         isAnonymousName: user.isAnonymous,
         email: user.email!,
         createdAt: user.metadata.creationTime.toString(),
@@ -85,8 +85,11 @@ class AuthService {
 
   //Get user info from firestore
   Future<UserModel?> getUserInfo(String userId) async {
-    final user = await _firestore.collection('Users').doc(userId).get();
-    return UserModel.fromJson(user.data() as Map<String, dynamic>);
+    final doc = await _firestore.collection('Users').doc(userId).get();
+    if (doc.exists && doc.data() != null) {
+      return UserModel.fromJson(doc.data()!);
+    }
+    return null;
   }
 
 //Is user's email verified control it
@@ -115,7 +118,7 @@ class AuthService {
 
     UserModel userModel = UserModel(
         id: user.uid,
-        userName: '',
+        userName: 'Anonymous',
         isAnonymousName: user.isAnonymous,
         email: user.email!,
         createdAt: user.metadata.creationTime.toString(),
@@ -138,7 +141,7 @@ class AuthService {
 
     UserModel userModel = UserModel(
         id: user.uid,
-        userName: '',
+        userName: 'Anonymous',
         isAnonymousName: user.isAnonymous,
         email: user.email!,
         createdAt: user.metadata.creationTime.toString(),
@@ -163,7 +166,7 @@ class AuthService {
 
           UserModel userModel = UserModel(
             id: currentUser.uid,
-            userName: userData['userName'] ?? '',
+            userName: userData['userName'] ?? 'Anonymous',
             isAnonymousName:
                 userData['isAnonymousName'] ?? currentUser.isAnonymous,
             email: userData['email'] ?? currentUser.email ?? '',

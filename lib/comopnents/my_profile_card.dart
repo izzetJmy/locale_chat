@@ -9,6 +9,7 @@ class MyProfileCard extends StatelessWidget {
   final Widget? trailing;
   final double height;
   final void Function()? onTap;
+  final void Function()? onLongPress;
   final double containerRadius;
 
   const MyProfileCard({
@@ -21,6 +22,7 @@ class MyProfileCard extends StatelessWidget {
     this.onTap,
     this.profileCardTittleTextStyle,
     this.containerRadius = 20,
+    this.onLongPress,
   });
 
   @override
@@ -45,12 +47,14 @@ class MyProfileCard extends StatelessWidget {
       width: size.width * 0.9,
       child: ListTile(
         onTap: onTap,
+        onLongPress: onLongPress,
         leading: leading,
         title: tittleText,
         titleTextStyle: profileCardTittleTextStyle,
         subtitle: subtittleText,
         trailing: trailing,
         subtitleTextStyle: profileCardSubTittleTextStyle,
+        splashColor: Colors.transparent,
       ),
     );
   }

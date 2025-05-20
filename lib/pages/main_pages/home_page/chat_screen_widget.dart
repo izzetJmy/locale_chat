@@ -1,3 +1,5 @@
+// ignore_for_file: no_leading_underscores_for_local_identifiers, use_build_context_synchronously
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -132,7 +134,7 @@ class ChatScreenWidget extends StatelessWidget {
                         context,
                         MaterialPageRoute(
                           builder: (context) => ChatPage(
-                            drop_down_menu_list: [],
+                            drop_down_menu_list: const [],
                             chatId: chatId,
                             receiverId: user.id,
                             title: user.userName,
