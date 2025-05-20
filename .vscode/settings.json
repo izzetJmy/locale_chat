@@ -3,5 +3,8 @@
     "eslint.workingDirectories": [
           "./functions",
           "./anotherDirectory"
-        ]  
+        ],
+        "workbench.editor.enablePreview": false,
+        "zenMode.showTabs": "multiple",
+        "workbench.editor.focusRecentEditorAfterClose": true
 }

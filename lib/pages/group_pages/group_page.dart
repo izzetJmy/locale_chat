@@ -1,12 +1,14 @@
-// ignore_for_file: non_constant_identifier_names
+// ignore_for_file: prefer_const_literals_to_create_immutables
+
+import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:locale_chat/comopnents/chat_components/my_single_chat.dart';
-import 'package:locale_chat/comopnents/chat_components/my_single_chat_image.dart';
+import 'package:locale_chat/comopnents/chat_components/my_group_chat.dart';
+import 'package:locale_chat/comopnents/chat_components/my_group_chat_image.dart';
 import 'package:locale_chat/comopnents/image_picker_helper.dart';
 import 'package:locale_chat/comopnents/my_appbar.dart';
 import 'package:locale_chat/comopnents/my_circular_progress_Indicator.dart';
@@ -14,75 +16,56 @@ import 'package:locale_chat/comopnents/my_text_field.dart';
 import 'package:locale_chat/comopnents/profile_info.dart';
 import 'package:locale_chat/constants/colors.dart';
 import 'package:locale_chat/constants/text_style.dart';
-import 'package:locale_chat/model/messages_models/message_model.dart';
-import 'package:locale_chat/pages/chat_pages/chat_detail_page.dart';
+import 'package:locale_chat/model/messages_models/group_chat_model.dart';
+import 'package:locale_chat/model/messages_models/group_message_model.dart';
+import 'package:locale_chat/model/user_model.dart';
+import 'package:locale_chat/pages/group_pages/group_detail_page.dart';
 import 'package:locale_chat/provider/auth_change_notifier/auth_change_notifier.dart';
-import 'package:locale_chat/provider/chat_change_notifier/chat_change_notifier.dart';
-import 'package:provider/provider.dart';
+import 'package:locale_chat/provider/group_change_notifier/group_change_notifier.dart';
 import 'package:uuid/uuid.dart';
-import 'dart:io';
 
-class ChatPage extends StatefulWidget {
-  final String? title;
-  final String? image_path;
-  final String? chatId;
-  final String? receiverId;
-
-  //Widget for drop down menu at the top right
-  final List<PopupMenuEntry<String>> drop_down_menu_list;
-  final void Function(String)? onSelected;
-  const ChatPage({
-    super.key,
-    this.title,
-    this.image_path,
-    required this.drop_down_menu_list,
-    this.onSelected,
-    this.chatId,
-    this.receiverId,
-  });
+class GroupPage extends StatefulWidget {
+  final GroupChatModel group;
+  const GroupPage({super.key, required this.group});
 
   @override
-  State<ChatPage> createState() => _ChatPageState();
+  State<GroupPage> createState() => _GroupPageState();
 }
 
-class _ChatPageState extends State<ChatPage> {
+class _GroupPageState extends State<GroupPage> {
   TextEditingController controller = TextEditingController();
-  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final String? currentUserId = FirebaseAuth.instance.currentUser?.uid;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final Uuid _uuid = const Uuid();
-  late ChatChangeNotifier _chatChangeNotifier;
-  late AuthChangeNotifier authChangeNotifier;
+  late GroupChangeNotifier _groupChangeNotifier;
+  late AuthChangeNotifier _authChangeNotifier;
+
   @override
   void initState() {
     super.initState();
-    _chatChangeNotifier = ChatChangeNotifier();
-    authChangeNotifier =
-        Provider.of<AuthChangeNotifier>(context, listen: false);
+    _groupChangeNotifier = GroupChangeNotifier();
+    _authChangeNotifier = AuthChangeNotifier();
+    _loadCurrentUser();
   }
 
-  List<MessageModel> messages = [];
+  List<GroupMessageModel> messages = [];
   bool isLoading = true;
 
-  void _sendMessage() {
-    if (controller.text.trim().isEmpty ||
-        widget.chatId == null ||
-        widget.receiverId == null) {
-      return;
-    }
-
+  Future<void> _sendMessage() async {
+    if (controller.text.trim().isEmpty) return;
     final String messageId = _uuid.v4();
-    final String currentUserId = _auth.currentUser!.uid;
-
-    final MessageModel message = MessageModel(
-      content: controller.text.trim(),
-      createdTime: DateTime.now(),
-      senderId: currentUserId,
+    UserModel? user = _authChangeNotifier.user;
+    final GroupMessageModel message = GroupMessageModel(
       messageId: messageId,
-      receiverId: widget.receiverId!,
+      groupId: widget.group.groupId,
+      content: controller.text.trim(),
+      sender: user!,
+      createdTime: DateTime.now(),
       type: MessageType.TEXT,
     );
+    debugPrint(user.toJson().toString());
+    _groupChangeNotifier.sendGroupMessage(message, widget.group.groupId);
 
-    _chatChangeNotifier.sendMessage(message, widget.chatId!);
     controller.clear();
   }
 
@@ -99,28 +82,32 @@ class _ChatPageState extends State<ChatPage> {
 
   // Method to pick and upload profile image
   Future<void> _pickProfileImage(ImageSource source) async {
-    if (widget.chatId == null || widget.receiverId == null) return;
-
-    final File? selectedImagePath = await _chatChangeNotifier.getImage(source);
+    final File? selectedImagePath =
+        await _groupChangeNotifier.getGroupImage(source);
     if (selectedImagePath == null) return;
 
     final String messageId = _uuid.v4();
-    final String currentUserId = _auth.currentUser!.uid;
-
-    final MessageModel message = MessageModel(
-      content: '', // Resim mesajları için content boş olabilir
-      createdTime: DateTime.now(),
-      senderId: currentUserId,
+    UserModel? user = _authChangeNotifier.user;
+    GroupMessageModel message = GroupMessageModel(
       messageId: messageId,
-      receiverId: widget.receiverId!,
+      groupId: widget.group.groupId,
+      content: '',
+      sender: user!,
+      createdTime: DateTime.now(),
       type: MessageType.PHOTO,
     );
-
-    final String? imageUrl = await _chatChangeNotifier.uploadImage(
-        message, selectedImagePath, widget.chatId!);
+    final String? imageUrl = await _groupChangeNotifier.uploadGroupImage(
+        message, selectedImagePath, widget.group.groupId);
     if (imageUrl != null) {
       message.content = imageUrl;
-      await _chatChangeNotifier.sendMessage(message, widget.chatId!);
+      await _groupChangeNotifier.sendGroupMessage(
+          message, widget.group.groupId);
+    }
+  }
+
+  Future<void> _loadCurrentUser() async {
+    if (currentUserId != null) {
+      await _authChangeNotifier.getUserInfo(currentUserId!);
     }
   }
 
@@ -139,58 +126,38 @@ class _ChatPageState extends State<ChatPage> {
             ),
             const SizedBox(width: 5),
             ProfileInfo(
-              image_path: widget.image_path ?? 'assets/images/user_avatar.png',
+              image_path: widget.group.groupProfilePhoto ??
+                  'assets/images/group_avatar.png',
               image_radius: 17,
-              onTap: () => Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => ChatDetailPage(
-                    chatId: widget.chatId,
-                    receiverId: widget.receiverId,
-                  ),
-                ),
-              ),
             ),
             const SizedBox(width: 10),
             InkWell(
               onTap: () => Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => ChatDetailPage(
-                    chatId: widget.chatId,
-                    receiverId: widget.receiverId,
-                  ),
+                  builder: (context) => GroupDetailPage(group: widget.group),
                 ),
               ),
               child: Text(
-                widget.title ?? 'Chat',
+                widget.group.groupName,
                 style: appBarTitleTextStyle,
               ),
             ),
           ],
         ),
-        actions: [
-          PopupMenuButton<String>(
-            icon: const Icon(Icons.more_vert),
-            itemBuilder: (context) => widget.drop_down_menu_list,
-            onSelected: widget.onSelected,
-          ),
-        ],
+        actions: [],
       ),
       body: Column(
         children: [
-          // Messages list
           Expanded(
-            child: StreamBuilder<QuerySnapshot>(
-              stream: widget.chatId != null
-                  ? _firestore
-                      .collection("chat_rooms")
-                      .doc(widget.chatId)
-                      .collection("messages")
-                      .orderBy("createdTime", descending: true)
-                      .limit(50)
-                      .snapshots()
-                  : null,
+            child: StreamBuilder(
+              stream: _firestore
+                  .collection('group_rooms')
+                  .doc(widget.group.groupId)
+                  .collection('messages')
+                  .orderBy('createdTime', descending: true)
+                  .limit(50)
+                  .snapshots(),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return Center(
@@ -209,8 +176,7 @@ class _ChatPageState extends State<ChatPage> {
                   );
                 }
                 messages = snapshot.data!.docs
-                    .map((doc) => MessageModel.fromJson(
-                        doc.data() as Map<String, dynamic>))
+                    .map((doc) => GroupMessageModel.fromJson(doc.data()))
                     .toList();
 
                 return ListView.builder(
@@ -219,25 +185,23 @@ class _ChatPageState extends State<ChatPage> {
                   itemCount: messages.length,
                   itemBuilder: (context, index) {
                     final message = messages[index];
-
-                    authChangeNotifier.getUserInfo(message.senderId);
-
-                    final bool isMe =
-                        message.senderId == _auth.currentUser!.uid;
+                    final bool isMe = message.sender?.id == currentUserId;
                     if (message.type == MessageType.TEXT) {
-                      return MySingleChat(
+                      return MyGroupChat(
                         leftOrRight: isMe,
                         title: message.content,
                         time: _formatTime(message.createdTime),
+                        userImage: message.sender?.profilePhoto ?? '',
+                        userName: message.sender?.userName ?? '',
                       );
                     }
                     if (message.type == MessageType.PHOTO) {
-                      return MySingleChatImage(
+                      return MyGroupChatImage(
                         leftOrRight: isMe,
                         imagePath: message.content,
                         time: _formatTime(message.createdTime),
-                        userImage: authChangeNotifier.user?.profilePhoto ?? '',
-                        userName: authChangeNotifier.user?.userName ?? '',
+                        userImage: message.sender?.profilePhoto ?? '',
+                        userName: message.sender?.userName ?? '',
                       );
                     }
                     return null;
@@ -246,7 +210,6 @@ class _ChatPageState extends State<ChatPage> {
               },
             ),
           ),
-          // Message input
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
             decoration: BoxDecoration(
@@ -267,11 +230,11 @@ class _ChatPageState extends State<ChatPage> {
                     hintText: 'Type a message...',
                     obscureText: false,
                     suffixIcon: IconButton(
+                      onPressed: _showImageSourceSelectionDialog,
                       icon: const Icon(
                         CupertinoIcons.camera,
                         color: Colors.grey,
                       ),
-                      onPressed: _showImageSourceSelectionDialog,
                     ),
                     prefixIcon: const Icon(Icons.emoji_emotions_outlined,
                         color: Colors.grey),

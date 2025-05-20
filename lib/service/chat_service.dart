@@ -142,4 +142,29 @@ class SingleChatService {
     }
     return null;
   }
+
+  Future<List<String>> getAllImagesFromFolder(String folderPath) async {
+    try {
+      if (_auth.currentUser == null) {
+        throw Exception('User not authenticated');
+      }
+      final storageRef = FirebaseStorage.instance.ref();
+      final folderRef = storageRef.child(folderPath);
+      final result = await folderRef.listAll();
+      List<String> imageUrls = [];
+      for (var item in result.items) {
+        try {
+          final downloadUrl = await item.getDownloadURL();
+          imageUrls.add(downloadUrl);
+        } catch (e) {
+          debugPrint("Error getting download URL for ${item.name}: $e");
+          continue;
+        }
+      }
+      return imageUrls;
+    } catch (e) {
+      debugPrint("Error getting images from folder: $e");
+      rethrow;
+    }
+  }
 }

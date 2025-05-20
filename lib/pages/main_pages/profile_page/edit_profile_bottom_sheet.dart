@@ -154,24 +154,6 @@ class _EditProfileBottomSheetState extends State<EditProfileBottomSheet> {
   }
 }
 
-// Helper function to show the edit profile bottom sheet
-Future<dynamic> showEditProfileBottomSheet(
-    BuildContext context, TextEditingController editController) {
-  return showModalBottomSheet(
-    useRootNavigator: true,
-    shape: const RoundedRectangleBorder(
-      borderRadius: BorderRadius.only(
-        topLeft: Radius.circular(20),
-        topRight: Radius.circular(20),
-      ),
-    ),
-    context: context,
-    builder: (BuildContext context) {
-      return EditProfileBottomSheet(editController: editController);
-    },
-  );
-}
-
 // Firebase timestamp'inden sadece gün.ay.yıl formatını çıkaran fonksiyon
 String formatDate(String? timestamp) {
   if (timestamp == null || timestamp.isEmpty) return '12.12.2032';

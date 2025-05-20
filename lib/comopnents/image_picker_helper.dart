@@ -84,6 +84,7 @@ class ImagePickerHelper {
     // Show loading indicator if enabled
     if (showLoadingIndicator) {
       showDialog(
+        // ignore: use_build_context_synchronously
         context: context,
         barrierDismissible: false,
         builder: (BuildContext context) {

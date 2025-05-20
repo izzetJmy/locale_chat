@@ -1,12 +1,15 @@
 // ignore_for_file: constant_identifier_names
 
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:locale_chat/model/user_model.dart';
+
 enum MessageType { PHOTO, TEXT }
 
 class GroupMessageModel {
   String messageId;
   String groupId;
   String content;
-  String senderId;
+  UserModel? sender;
   DateTime createdTime;
   MessageType type;
 
@@ -14,7 +17,7 @@ class GroupMessageModel {
     required this.messageId,
     required this.groupId,
     required this.content,
-    required this.senderId,
+    required this.sender,
     required this.createdTime,
     required this.type,
   });
@@ -24,8 +27,17 @@ class GroupMessageModel {
         messageId: map['messageId'],
         groupId: map['groupId'],
         content: map['content'],
-        senderId: map['senderId'],
-        createdTime: map['createdTime'],
+        sender: map['sender'] != null
+            ? UserModel.fromJson(map['sender'] as Map<String, dynamic>)
+            : UserModel(
+                id: '',
+                userName: '',
+                isAnonymousName: false,
+                email: '',
+                profilePhoto: '',
+                isOnline: false,
+                createdAt: ''),
+        createdTime: (map['createdTime'] as Timestamp).toDate(),
         type: MessageType.values[map['type']]);
   }
 
@@ -34,7 +46,7 @@ class GroupMessageModel {
       'messageId': messageId,
       'groupId': groupId,
       'content': content,
-      'senderId': senderId,
+      'sender': sender?.toJson(),
       'createdTime': createdTime,
       'type': type.index,
     };

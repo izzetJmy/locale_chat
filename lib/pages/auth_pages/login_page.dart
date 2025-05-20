@@ -131,9 +131,13 @@ class _LoginPageState extends State<LoginPage> {
                               alignment: Alignment.centerRight,
                               child: TextButton(
                                 onPressed: () {
-                                  Navigator.of(context).push(MaterialPageRoute(
-                                    builder: (context) => ForgotPasswordPage(),
-                                  ));
+                                  if (mounted) {
+                                    Navigator.of(context)
+                                        .push(MaterialPageRoute(
+                                      builder: (context) =>
+                                          ForgotPasswordPage(),
+                                    ));
+                                  }
                                 },
                                 child: Text(
                                   'Forgot Password?',
@@ -168,9 +172,11 @@ class _LoginPageState extends State<LoginPage> {
                                     color: Colors.white,
                                     fontFamily: 'Roboto'),
                                 onPressed: () async {
-                                  setState(() {
-                                    _isLoading = true;
-                                  });
+                                  if (mounted) {
+                                    setState(() {
+                                      _isLoading = true;
+                                    });
+                                  }
                                   if (_formKey.currentState!.validate()) {
                                     // User Login
                                     UserModel? user =
@@ -200,13 +206,15 @@ class _LoginPageState extends State<LoginPage> {
                                                         context,
                                                         'Login succesfull',
                                                         1),
-                                                    Navigator.of(context)
-                                                        .pushReplacement(
-                                                      MaterialPageRoute(
-                                                        builder: (context) =>
-                                                            const ControlPage(),
-                                                      ),
-                                                    ),
+                                                    mounted
+                                                        ? Navigator.of(context)
+                                                            .pushReplacement(
+                                                            MaterialPageRoute(
+                                                              builder: (context) =>
+                                                                  const ControlPage(),
+                                                            ),
+                                                          )
+                                                        : null
                                                   )
                                                 : (
                                                     MySanckbar.mySnackbar(
@@ -218,9 +226,11 @@ class _LoginPageState extends State<LoginPage> {
                                             : null;
                                   }
 
-                                  setState(() {
-                                    _isLoading = false;
-                                  });
+                                  if (mounted) {
+                                    setState(() {
+                                      _isLoading = false;
+                                    });
+                                  }
                                 },
                               ),
                             ),
@@ -235,11 +245,13 @@ class _LoginPageState extends State<LoginPage> {
                                 ),
                                 InkWell(
                                   onTap: () {
-                                    Navigator.of(context).push(
-                                      MaterialPageRoute(
-                                        builder: (context) => RegisterPage(),
-                                      ),
-                                    );
+                                    if (mounted) {
+                                      Navigator.of(context).push(
+                                        MaterialPageRoute(
+                                          builder: (context) => RegisterPage(),
+                                        ),
+                                      );
+                                    }
                                   },
                                   child: Text(
                                     'Sign Up',
@@ -266,9 +278,11 @@ class _LoginPageState extends State<LoginPage> {
                             'google_icon',
                             () async {
                               // Google loading durumunu başlat
-                              setState(() {
-                                _isGoogleLoading = true;
-                              });
+                              if (mounted) {
+                                setState(() {
+                                  _isGoogleLoading = true;
+                                });
+                              }
 
                               UserModel? user =
                                   await authChangeNotifier.authWithGoogle();
@@ -290,18 +304,23 @@ class _LoginPageState extends State<LoginPage> {
                                       ? (
                                           MySanckbar.mySnackbar(context,
                                               'Google login succesfull', 1),
-                                          Navigator.of(context).pushReplacement(
-                                            MaterialPageRoute(
-                                                builder: (context) =>
-                                                    const ControlPage()),
-                                          )
+                                          mounted
+                                              ? Navigator.of(context)
+                                                  .pushReplacement(
+                                                  MaterialPageRoute(
+                                                      builder: (context) =>
+                                                          const ControlPage()),
+                                                )
+                                              : null
                                         )
                                       : null;
 
                               // Google loading durumunu bitir
-                              setState(() {
-                                _isGoogleLoading = false;
-                              });
+                              if (mounted) {
+                                setState(() {
+                                  _isGoogleLoading = false;
+                                });
+                              }
                             },
                             isLoading: _isGoogleLoading,
                           ),
@@ -310,9 +329,11 @@ class _LoginPageState extends State<LoginPage> {
                             'facebook_icon',
                             () async {
                               // Facebook loading durumunu başlat
-                              setState(() {
-                                _isFacebookLoading = true;
-                              });
+                              if (mounted) {
+                                setState(() {
+                                  _isFacebookLoading = true;
+                                });
+                              }
 
                               UserModel? user =
                                   await authChangeNotifier.authWithFacebook();
@@ -334,18 +355,23 @@ class _LoginPageState extends State<LoginPage> {
                                       ? (
                                           MySanckbar.mySnackbar(context,
                                               'Facebook login succesfull', 1),
-                                          Navigator.of(context).pushReplacement(
-                                            MaterialPageRoute(
-                                                builder: (context) =>
-                                                    const ControlPage()),
-                                          )
+                                          mounted
+                                              ? Navigator.of(context)
+                                                  .pushReplacement(
+                                                  MaterialPageRoute(
+                                                      builder: (context) =>
+                                                          const ControlPage()),
+                                                )
+                                              : null
                                         )
                                       : null;
 
                               // Facebook loading durumunu bitir
-                              setState(() {
-                                _isFacebookLoading = false;
-                              });
+                              if (mounted) {
+                                setState(() {
+                                  _isFacebookLoading = false;
+                                });
+                              }
                             },
                             isLoading: _isFacebookLoading,
                           ),

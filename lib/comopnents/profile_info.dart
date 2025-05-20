@@ -1,6 +1,7 @@
 // ignore_for_file: non_constant_identifier_names
 
 import 'package:flutter/material.dart';
+import 'package:locale_chat/comopnents/my_circular_progress_Indicator.dart';
 import 'package:locale_chat/constants/colors.dart';
 
 class ProfileInfo extends StatelessWidget {
@@ -83,18 +84,24 @@ class ProfileInfo extends StatelessWidget {
         image_path.startsWith('https://firebasestorage.googleapis.com');
     bool shouldUseNetworkImage = isFirebaseUrl || isNetworkImage;
 
-    debugPrint('ProfileInfo: image_path = $image_path');
-    debugPrint(
-        'ProfileInfo: isNetworkImage = $isNetworkImage, isFirebaseUrl = $isFirebaseUrl');
-
     if (shouldUseNetworkImage && image_path.isNotEmpty) {
       // For network images (including Firebase Storage)
       return CircleAvatar(
         radius: image_radius,
         backgroundColor: Colors.grey[200],
-        backgroundImage: NetworkImage(
+        backgroundImage: Image.network(
           image_path,
-        ),
+          loadingBuilder: (context, child, loadingProgress) {
+            if (loadingProgress == null) return child;
+            return SizedBox(
+              width: 200,
+              height: 200,
+              child: Center(
+                child: MyCircularProgressIndicator(),
+              ),
+            );
+          },
+        ).image,
         onBackgroundImageError: (exception, stackTrace) {
           debugPrint('Error loading profile image: $exception');
         },

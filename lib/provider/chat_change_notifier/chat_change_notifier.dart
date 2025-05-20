@@ -15,7 +15,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 
 class ChatChangeNotifier extends AsyncChangeNotifier with ErrorHolder {
   SingleChatService _singleChatService = SingleChatService();
-  final Uuid _uuid = Uuid();
+  final Uuid _uuid = const Uuid();
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
   List<MessageModel>? _messages;
@@ -185,5 +185,18 @@ class ChatChangeNotifier extends AsyncChangeNotifier with ErrorHolder {
       ErrorModel(
           id: "sendImageMessage", message: "Failed to send image message"),
     );
+  }
+
+  Future<List<String>> getAllImagesFromFolder(String folderPath) async {
+    List<String> imageUrls = [];
+    try {
+      imageUrls = await _singleChatService.getAllImagesFromFolder(folderPath);
+      errors.clear();
+      notifyListeners();
+    } catch (e) {
+      errors.add(ErrorModel(id: "id", message: "message"));
+      notifyListeners();
+    }
+    return imageUrls;
   }
 }

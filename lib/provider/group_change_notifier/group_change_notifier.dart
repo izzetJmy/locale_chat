@@ -22,7 +22,14 @@ class GroupChangeNotifier extends AsyncChangeNotifier with ErrorHolder {
   List<GroupMessageModel>? _messageList;
   List<GroupMessageModel>? get messageList => _messageList;
   set messageList(List<GroupMessageModel>? value) {
-    messageList = value;
+    _messageList = value;
+    notifyListeners();
+  }
+
+  GroupChatModel? _group;
+  GroupChatModel? get group => _group;
+  set group(GroupChatModel? value) {
+    _group = value;
     notifyListeners();
   }
 
@@ -44,7 +51,7 @@ class GroupChangeNotifier extends AsyncChangeNotifier with ErrorHolder {
       GroupChatModel groups, List<UserModel> selectedUser) async {
     await wrapAsync(
       () async {
-        await _groupService.createGroup(groups, selectedUser);
+        group = await _groupService.createGroup(groups, selectedUser);
         errors.clear();
         notifyListeners();
       },
@@ -52,26 +59,46 @@ class GroupChangeNotifier extends AsyncChangeNotifier with ErrorHolder {
     );
   }
 
-  //Listen to get group in firebase
-  Stream<QuerySnapshot> getGroup() {
-    late Stream<QuerySnapshot> groupSnapshot;
-    wrap(
-      () {
-        groupSnapshot = _groupService.getGroup();
-        groupSnapshot.listen(
-          (snapshot) {
-            groupList = snapshot.docs
-                .map((e) =>
-                    GroupChatModel.fromJson(e.data() as Map<String, dynamic>))
-                .toList();
-            errors.clear();
-            notifyListeners();
-          },
-        );
+  Future<void> addMemberToGroup(
+      String groupId, List<String> selectedUser) async {
+    await wrapAsync(
+      () async {
+        _group = await _groupService.addMemberToGroup(
+            _group!, groupId, selectedUser);
+        errors.clear();
+        notifyListeners();
       },
-      ErrorModel(id: userId, message: "Failed to get group"),
+      ErrorModel(id: userId, message: "Failed to add member to group"),
     );
-    return groupSnapshot;
+  }
+
+  //Listen to get group in firebase
+  Future<void> getGroup(String groupId) async {
+    try {
+      final snapshot = await _groupService.getGroup(groupId).first;
+      if (snapshot.exists) {
+        _group =
+            GroupChatModel.fromJson(snapshot.data() as Map<String, dynamic>);
+        errors.clear();
+        notifyListeners();
+      }
+    } catch (e) {
+      errors.add(ErrorModel(id: userId, message: "Failed to get group"));
+      notifyListeners();
+    }
+  }
+
+  //Listen to update group name in firebase
+  Future<void> updateGroupName(
+      String groupId, String newName, GroupChatModel oldGroup) async {
+    return wrapAsync(
+      () async {
+        await _groupService.updateGroupName(groupId, newName, oldGroup);
+        errors.clear();
+        notifyListeners();
+      },
+      ErrorModel(id: groupId, message: "Failed to update group name"),
+    );
   }
 
   //Listen to remove user from group in firebase
@@ -132,28 +159,66 @@ class GroupChangeNotifier extends AsyncChangeNotifier with ErrorHolder {
   }
 
   //Listen to upload image in firebase
-  Future<void> uploadGroupImage(
-      GroupMessageModel message, File imageFile) async {
+  Future<String?> uploadGroupImage(
+    GroupMessageModel message,
+    File imageFile,
+    String groupId,
+  ) async {
+    String? downloadURL;
     await wrapAsync(
       () async {
-        await _groupService.uploadGroupImage(message, imageFile);
+        downloadURL =
+            await _groupService.uploadGroupImage(imageFile, groupId, message);
         errors.clear();
         notifyListeners();
       },
       ErrorModel(id: userId, message: "Failed to upload image from group"),
     );
+    return downloadURL;
+  }
+
+  //Listen to upload image in firebase
+  Future<String?> uploadGroupProfileImage(
+    File imageFile,
+    String groupId,
+  ) async {
+    String? downloadURL;
+    await wrapAsync(
+      () async {
+        downloadURL =
+            await _groupService.uploadGroupProfileImage(imageFile, groupId);
+        errors.clear();
+        notifyListeners();
+      },
+      ErrorModel(id: userId, message: "Failed to upload image from group"),
+    );
+    return downloadURL;
   }
 
   //Listen to get image in firebase
   Future<File?> getGroupImage(ImageSource source) async {
-    await wrapAsync(
+    return wrapAsync(
       () async {
-        image = await _groupService.getGroupImage(source);
+        _image = await _groupService.getImage(source);
         errors.clear();
         notifyListeners();
       },
       ErrorModel(id: userId, message: "Failed to get image from group"),
-    );
-    return image;
+    ).then((_) => _image);
+  }
+
+  //Listen to get all images from folder in firebase
+  Future<List<String>> getAllImagesFromFolder(String folderPath) async {
+    List<String> imageUrls = [];
+    try {
+      imageUrls = await _groupService.getAllImagesFromFolder(folderPath);
+      errors.clear();
+      notifyListeners();
+    } catch (e) {
+      errors.add(ErrorModel(
+          id: userId, message: "Failed to get all images from folder"));
+      notifyListeners();
+    }
+    return imageUrls;
   }
 }

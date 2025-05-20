@@ -8,27 +8,24 @@ import 'package:image_picker/image_picker.dart';
 import 'package:locale_chat/model/messages_models/group_chat_model.dart';
 import 'package:locale_chat/model/messages_models/group_message_model.dart';
 import 'package:locale_chat/model/user_model.dart';
-import 'package:uuid/uuid.dart';
 
 class GroupService {
-  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final String? currentUser = FirebaseAuth.instance.currentUser?.uid;
+  final String? currentUserEmail = FirebaseAuth.instance.currentUser?.email;
+
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  final Uuid _uuid = const Uuid();
-  final DateTime _nowTime = DateTime.now();
 
   //CREATE GROUP
-  Future<void> createGroup(
+  Future<GroupChatModel?> createGroup(
       GroupChatModel groups, List<UserModel> selectedUser) async {
-    User? currentUser = _auth.currentUser!;
-
     GroupChatModel newGroup = GroupChatModel(
       groupId: groups.groupId,
       groupName: groups.groupName,
       members: _groupChatMembers(selectedUser),
-      groupPhoto: groups.groupPhoto,
-      createdTime: _nowTime,
-      createdId: currentUser.uid,
-      adminEmail: currentUser.email.toString(),
+      groupProfilePhoto: groups.groupProfilePhoto,
+      createdTime: groups.createdTime,
+      createdId: currentUser!,
+      adminEmail: currentUserEmail!,
     );
 
     try {
@@ -39,11 +36,30 @@ class GroupService {
     } catch (e) {
       debugPrint("Error creating group $e");
     }
+    return newGroup;
+  }
+
+  Future<GroupChatModel> addMemberToGroup(
+      GroupChatModel group, String groupId, List<String> selectedUser) async {
+    GroupChatModel newGroup = GroupChatModel(
+      groupId: group.groupId,
+      groupName: group.groupName,
+      members: selectedUser,
+      groupProfilePhoto: group.groupProfilePhoto,
+      createdTime: group.createdTime,
+      createdId: currentUser!,
+      adminEmail: currentUserEmail!,
+    );
+    DocumentReference groupRef =
+        _firestore.collection("group_rooms").doc(groupId);
+    await groupRef.update({'members': FieldValue.arrayUnion(selectedUser)});
+    return newGroup;
   }
 
   //SELECTED USER LIST
   List<String> _groupChatMembers(List<UserModel> selectedUser) {
     List<String> membersList = [];
+    membersList.add(currentUser!);
     for (UserModel member in selectedUser) {
       membersList.add(member.id);
     }
@@ -51,11 +67,26 @@ class GroupService {
   }
 
   //GET GROUP
-  Stream<QuerySnapshot> getGroup() {
-    return _firestore
+  Stream<DocumentSnapshot> getGroup(String groupId) {
+    return _firestore.collection("group_rooms").doc(groupId).snapshots();
+  }
+
+  Future<GroupChatModel> updateGroupName(
+      String groupId, String newName, GroupChatModel oldGroup) async {
+    await _firestore
         .collection("group_rooms")
-        .orderBy("createdTime", descending: false)
-        .snapshots();
+        .doc(groupId)
+        .update({'groupName': newName});
+    GroupChatModel group = GroupChatModel(
+      groupId: groupId,
+      groupName: newName,
+      members: oldGroup.members,
+      groupProfilePhoto: oldGroup.groupProfilePhoto,
+      createdTime: oldGroup.createdTime,
+      createdId: currentUser!,
+      adminEmail: currentUserEmail!,
+    );
+    return group;
   }
 
   //REMOVE USER FROM GROUP OR EXIT GROUP
@@ -77,13 +108,12 @@ class GroupService {
   //SEND GROUP MESSAGE
   Future<void> sendGroupMessage(
       GroupMessageModel message, String groupId) async {
-    final User currentUser = _auth.currentUser!;
     GroupMessageModel newMessage = GroupMessageModel(
         messageId: message.messageId,
         groupId: groupId,
         content: message.content,
-        senderId: currentUser.uid,
-        createdTime: _nowTime,
+        sender: message.sender,
+        createdTime: message.createdTime,
         type: message.type);
 
     try {
@@ -108,49 +138,100 @@ class GroupService {
         .snapshots();
   }
 
-  //GROUP UPLOAD IMAGE
+//Upload user profile photo to firebase storage
   Future<String?> uploadGroupImage(
-      GroupMessageModel message, File imageFile) async {
-    final User currentUser = _auth.currentUser!;
-    final String downloadUrl;
+      File imageFile, String groupId, GroupMessageModel message) async {
+    var imageName = DateTime.now().millisecondsSinceEpoch.toString();
+    final storageRef = FirebaseStorage.instance.ref();
+    final imageRef =
+        storageRef.child('groupImage/$groupId/groupImages/$imageName');
+    final uploadTask = imageRef.putFile(imageFile);
+    final TaskSnapshot taskSnapshot = await uploadTask;
+    final String downloadURL = await taskSnapshot.ref.getDownloadURL();
+    GroupMessageModel newMessage = GroupMessageModel(
+        messageId: message.messageId,
+        groupId: groupId,
+        content: downloadURL,
+        sender: message.sender,
+        createdTime: message.createdTime,
+        type: message.type);
 
-    final Reference storageRef =
-        FirebaseStorage.instance.ref().child("images").child(_uuid.v4());
-    final UploadTask uploadTask = storageRef.putFile(imageFile);
+    await _firestore
+        .collection('group_rooms')
+        .doc(groupId)
+        .collection('messages')
+        .doc(message.messageId)
+        .set(newMessage.toJson());
+    debugPrint("Group image uploaded successfully: $downloadURL");
 
-    try {
-      await uploadTask;
-      downloadUrl = await storageRef.getDownloadURL();
-
-      GroupMessageModel newMessage = GroupMessageModel(
-          messageId: message.messageId,
-          groupId: message.groupId,
-          content: downloadUrl,
-          senderId: currentUser.uid,
-          createdTime: _nowTime,
-          type: message.type);
-
-      await _firestore
-          .collection("group_rooms")
-          .doc(message.groupId)
-          .collection("messages")
-          .doc(message.messageId)
-          .set(newMessage.toJson());
-    } catch (e) {
-      debugPrint("Error adding image: $e");
-    }
-    return null;
+    return downloadURL;
   }
 
-  //GROUP GET IMAGE
-  Future<File?> getGroupImage(ImageSource source) async {
+//Upload user profile photo to firebase storage
+  Future<String?> uploadGroupProfileImage(
+      File imageFile, String groupId) async {
+    var imageName = DateTime.now().millisecondsSinceEpoch.toString();
+    final storageRef = FirebaseStorage.instance.ref();
+    final imageRef =
+        storageRef.child('groupImage/$groupId/groupProfilePhoto/$imageName');
+    final uploadTask = imageRef.putFile(imageFile);
+    final TaskSnapshot taskSnapshot = await uploadTask;
+    final String downloadURL = await taskSnapshot.ref.getDownloadURL();
+
+    debugPrint("Group image uploaded successfully: $downloadURL");
+
+    return downloadURL;
+  }
+
+  //GET GROUP IMAGE
+  Future<File?> getImage(ImageSource source) async {
     final picker = ImagePicker();
     try {
-      final pickedFile = await picker.pickImage(source: source);
-      return File(pickedFile!.path);
+      final pickedFile = await picker.pickImage(
+          source: source, maxWidth: 800, maxHeight: 800, imageQuality: 80);
+      if (pickedFile == null) {
+        debugPrint('Resim seçilmedi veya seçim iptal edildi');
+        return null;
+      }
+      debugPrint('pickedFile: ${pickedFile.path}');
+      return File(pickedFile.path);
     } catch (e) {
       debugPrint("Error picking image: $e");
     }
     return null;
+  }
+
+  //GET ALL IMAGES FROM FOLDER
+  Future<List<String>> getAllImagesFromFolder(String folderPath) async {
+    try {
+      // Check if user is authenticated
+      if (currentUser == null) {
+        throw Exception('User not authenticated');
+      }
+
+      final storageRef = FirebaseStorage.instance.ref();
+      final folderRef = storageRef.child(folderPath);
+
+      // Get all items in the folder
+      final result = await folderRef.listAll();
+
+      // Get download URLs for all items
+      List<String> imageUrls = [];
+      for (var item in result.items) {
+        try {
+          final downloadUrl = await item.getDownloadURL();
+          imageUrls.add(downloadUrl);
+        } catch (e) {
+          debugPrint("Error getting download URL for ${item.name}: $e");
+          // Continue with next item if one fails
+          continue;
+        }
+      }
+
+      return imageUrls;
+    } catch (e) {
+      debugPrint("Error getting images from folder: $e");
+      rethrow;
+    }
   }
 }
