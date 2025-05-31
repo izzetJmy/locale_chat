@@ -52,9 +52,9 @@ class MyProfileCard extends StatelessWidget {
         onLongPress: onLongPress,
         leading: leading,
         title: MyMarquee(
-          child: tittleText!,
           textToMeasure: tittleText?.toString() ?? '',
           textStyleToMeasure: profileCardTittleTextStyle,
+          child: tittleText!,
         ),
         titleTextStyle: profileCardTittleTextStyle,
         subtitle: subtittleText,

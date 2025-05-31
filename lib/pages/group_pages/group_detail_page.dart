@@ -1,10 +1,11 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:locale_chat/comopnents/my_grid_images.dart';
 import 'package:locale_chat/comopnents/my_marquee.dart';
 import 'package:locale_chat/constants/languages_keys.dart';
 import 'package:locale_chat/helper/localization_extention.dart';
-import 'package:locale_chat/helper/ui_helper.dart';
 import 'package:locale_chat/model/messages_models/group_chat_model.dart';
 import 'package:locale_chat/comopnents/my_appbar.dart';
 import 'package:locale_chat/comopnents/profile_info.dart';
@@ -119,7 +120,6 @@ class _GroupDetailPageState extends State<GroupDetailPage>
       ),
     );
     if (widget.group.adminEmail == user.email) {
-      // ignore: use_build_context_synchronously
       MySanckbar.mySnackbar(
           context, LocaleKeys.groupAdminCannotBeRemoved.locale(context), 2);
       return;
@@ -132,7 +132,6 @@ class _GroupDetailPageState extends State<GroupDetailPage>
           members.removeWhere((member) => member.id == user.id);
         });
       } catch (e) {
-        // ignore: use_build_context_synchronously
         MySanckbar.mySnackbar(context, 'Üye çıkarılırken hata: $e', 2);
       }
     }
@@ -167,7 +166,6 @@ class _GroupDetailPageState extends State<GroupDetailPage>
           Navigator.pop(context);
         }
       } catch (e) {
-        // ignore: use_build_context_synchronously
         MySanckbar.mySnackbar(context,
             LocaleKeys.errorsGroupErrorCreatingGroup.locale(context), 2);
       }
@@ -475,7 +473,6 @@ class MembersTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    double width = UIHelper.getDeviceWith(context);
     return ListView.builder(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
@@ -541,7 +538,6 @@ class MembersTab extends StatelessWidget {
                 }
 
                 Navigator.push(
-                  // ignore: use_build_context_synchronously
                   context,
                   MaterialPageRoute(
                       builder: (context) => ChatDetailPage(

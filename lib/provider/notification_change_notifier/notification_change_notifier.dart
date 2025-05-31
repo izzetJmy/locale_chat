@@ -5,7 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 class NotificationChangeNotifier extends ChangeNotifier {
   bool _isNotificationEnabled = true;
   String? _fcmToken;
-  List<RemoteMessage> _notificationHistory = [];
+  final List<RemoteMessage> _notificationHistory = [];
   final _firebaseMessaging = FirebaseMessaging.instance;
 
   bool get isNotificationEnabled => _isNotificationEnabled;
@@ -34,7 +34,7 @@ class NotificationChangeNotifier extends ChangeNotifier {
 
     // FCM token'ı al
     _fcmToken = await _firebaseMessaging.getToken();
-    print('FCM Token: $_fcmToken');
+    debugPrint('FCM Token: $_fcmToken');
 
     // Arka planda bildirim gösterme izni
     await _firebaseMessaging.setForegroundNotificationPresentationOptions(
@@ -75,13 +75,13 @@ class NotificationChangeNotifier extends ChangeNotifier {
 
     // Bildirim içeriğini kontrol et
     if (message.notification != null) {
-      print('Bildirim başlığı: ${message.notification?.title}');
-      print('Bildirim içeriği: ${message.notification?.body}');
+      debugPrint('Bildirim başlığı: ${message.notification?.title}');
+      debugPrint('Bildirim içeriği: ${message.notification?.body}');
     }
 
     // Mesaj verilerini kontrol et
     if (message.data.isNotEmpty) {
-      print('Mesaj verileri: ${message.data}');
+      debugPrint('Mesaj verileri: ${message.data}');
     }
   }
 

@@ -20,7 +20,7 @@ import 'package:locale_chat/comopnents/network_check_widget.dart';
 // Arka plan mesaj işleyici
 @pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  print('main.dart: Arka planda mesaj alındı: ${message.messageId}');
+  debugPrint('main.dart: Arka planda mesaj alındı: ${message.messageId}');
 }
 
 void main() async {

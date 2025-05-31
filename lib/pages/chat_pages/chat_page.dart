@@ -20,10 +20,10 @@ import 'package:locale_chat/model/messages_models/message_model.dart';
 import 'package:locale_chat/pages/chat_pages/chat_detail_page.dart';
 import 'package:locale_chat/provider/auth_change_notifier/auth_change_notifier.dart';
 import 'package:locale_chat/provider/chat_change_notifier/chat_change_notifier.dart';
+import 'package:locale_chat/provider/notification_change_notifier/notification_change_notifier.dart';
 import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
 import 'dart:io';
-import 'package:locale_chat/service/notification_service.dart';
 
 class ChatPage extends StatefulWidget {
   final String? title;
@@ -55,7 +55,7 @@ class _ChatPageState extends State<ChatPage> {
   final Uuid _uuid = const Uuid();
   late ChatChangeNotifier _chatChangeNotifier;
   late AuthChangeNotifier authChangeNotifier;
-  final NotificationService _notificationService = NotificationService();
+  late NotificationChangeNotifier _notificationChangeNotifier;
 
   @override
   void initState() {
@@ -63,17 +63,18 @@ class _ChatPageState extends State<ChatPage> {
     _chatChangeNotifier = ChatChangeNotifier();
     authChangeNotifier =
         Provider.of<AuthChangeNotifier>(context, listen: false);
+    _notificationChangeNotifier = NotificationChangeNotifier();
     _subscribeToNotifications();
   }
 
   Future<void> _subscribeToNotifications() async {
     if (widget.chatId != null) {
-      print('ChatPage: Bildirimlere abone olunuyor...');
-      print('ChatPage: Chat ID: ${widget.chatId}');
-      print('ChatPage: Receiver ID: ${widget.receiverId}');
+      debugPrint('ChatPage: Bildirimlere abone olunuyor...');
+      debugPrint('ChatPage: Chat ID: ${widget.chatId}');
+      debugPrint('ChatPage: Receiver ID: ${widget.receiverId}');
 
-      await _notificationService.subscribeToChat(widget.chatId!);
-      print(
+      await _notificationChangeNotifier.subscribeToChat(widget.chatId!);
+      debugPrint(
           'ChatPage: Bildirimlere başarıyla abone olundu: chat_${widget.chatId}');
     }
   }
@@ -81,8 +82,8 @@ class _ChatPageState extends State<ChatPage> {
   @override
   void dispose() {
     if (widget.chatId != null) {
-      _notificationService.unsubscribeFromTopic('chat_${widget.chatId}');
-      print('Bildirim aboneliği kaldırıldı: chat_${widget.chatId}');
+      _notificationChangeNotifier.unsubscribeFromChat(widget.chatId!);
+      debugPrint('Bildirim aboneliği kaldırıldı: chat_${widget.chatId}');
     }
     super.dispose();
   }
@@ -94,22 +95,22 @@ class _ChatPageState extends State<ChatPage> {
     if (controller.text.trim().isEmpty ||
         widget.chatId == null ||
         widget.receiverId == null) {
-      print('ChatPage: Mesaj gönderilemedi - Eksik bilgiler');
-      print('ChatPage: Mesaj içeriği: ${controller.text.trim()}');
-      print('ChatPage: Chat ID: ${widget.chatId}');
-      print('ChatPage: Receiver ID: ${widget.receiverId}');
+      debugPrint('ChatPage: Mesaj gönderilemedi - Eksik bilgiler');
+      debugPrint('ChatPage: Mesaj içeriği: ${controller.text.trim()}');
+      debugPrint('ChatPage: Chat ID: ${widget.chatId}');
+      debugPrint('ChatPage: Receiver ID: ${widget.receiverId}');
       return;
     }
 
-    print('ChatPage: Mesaj gönderiliyor...');
+    debugPrint('ChatPage: Mesaj gönderiliyor...');
     final String messageId = _uuid.v4();
     final String currentUserId = _auth.currentUser!.uid;
 
-    print('ChatPage: Mesaj detayları:');
-    print('ChatPage: Message ID: $messageId');
-    print('ChatPage: Sender ID: $currentUserId');
-    print('ChatPage: Receiver ID: ${widget.receiverId}');
-    print('ChatPage: Content: ${controller.text.trim()}');
+    debugPrint('ChatPage: Mesaj detayları:');
+    debugPrint('ChatPage: Message ID: $messageId');
+    debugPrint('ChatPage: Sender ID: $currentUserId');
+    debugPrint('ChatPage: Receiver ID: ${widget.receiverId}');
+    debugPrint('ChatPage: Content: ${controller.text.trim()}');
 
     final MessageModel message = MessageModel(
       content: controller.text.trim(),
@@ -121,7 +122,7 @@ class _ChatPageState extends State<ChatPage> {
     );
 
     _chatChangeNotifier.sendMessage(message, widget.chatId!);
-    print('ChatPage: Mesaj başarıyla gönderildi');
+    debugPrint('ChatPage: Mesaj başarıyla gönderildi');
     controller.clear();
   }
 

@@ -24,6 +24,7 @@ import 'package:locale_chat/model/user_model.dart';
 import 'package:locale_chat/pages/group_pages/group_detail_page.dart';
 import 'package:locale_chat/provider/auth_change_notifier/auth_change_notifier.dart';
 import 'package:locale_chat/provider/group_change_notifier/group_change_notifier.dart';
+import 'package:locale_chat/provider/notification_change_notifier/notification_change_notifier.dart';
 import 'package:uuid/uuid.dart';
 
 class GroupPage extends StatefulWidget {
@@ -41,13 +42,15 @@ class _GroupPageState extends State<GroupPage> {
   final Uuid _uuid = const Uuid();
   late GroupChangeNotifier _groupChangeNotifier;
   late AuthChangeNotifier _authChangeNotifier;
-
+  late NotificationChangeNotifier _notificationChangeNotifier;
   @override
   void initState() {
     super.initState();
     _groupChangeNotifier = GroupChangeNotifier();
     _authChangeNotifier = AuthChangeNotifier();
+    _notificationChangeNotifier = NotificationChangeNotifier();
     _loadCurrentUser();
+    _subscribeToNotifications();
   }
 
   List<GroupMessageModel> messages = [];
@@ -108,6 +111,20 @@ class _GroupPageState extends State<GroupPage> {
     if (currentUserId != null) {
       await _authChangeNotifier.getUserInfo(currentUserId!);
     }
+  }
+
+  Future<void> _subscribeToNotifications() async {
+    debugPrint('GroupPage: Bildirimlere abone olunuyor...');
+    debugPrint('GroupPage: Group ID: ${widget.group.groupId}');
+    await _notificationChangeNotifier.subscribeToGroup(widget.group.groupId);
+    debugPrint(
+        'GroupPage: Bildirimlere başarıyla abone olundu: group_${widget.group.groupId}');
+  }
+
+  @override
+  void dispose() {
+    _notificationChangeNotifier.unsubscribeFromGroup(widget.group.groupId);
+    super.dispose();
   }
 
   @override

@@ -11,7 +11,7 @@ Color darkButtonColor = const Color.fromARGB(255, 53, 53, 53);
 Color lightAppBarColor = Colors.white;
 Color darkAppBarColor = const Color.fromARGB(255, 53, 53, 53);
 
-Color lightProfileCardColor = Color.fromARGB(208, 255, 255, 255);
+Color lightProfileCardColor = const Color.fromARGB(208, 255, 255, 255);
 Color darkProfileCardColor = const Color.fromARGB(255, 53, 53, 53);
 
 Color lightDefaultTextColor = const Color(0xff939393);

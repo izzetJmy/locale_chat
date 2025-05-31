@@ -1,4 +1,5 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -12,7 +13,7 @@ class NotificationService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
   Future<void> initialize() async {
-    print('NotificationService: initialize başladı');
+    debugPrint('NotificationService: initialize başladı');
 
     // Check if we've already requested notification permissions
     final prefs = await SharedPreferences.getInstance();
@@ -31,7 +32,7 @@ class NotificationService {
       // Save that we've requested permission
       await prefs.setBool('hasRequestedNotificationPermission', true);
 
-      print(
+      debugPrint(
           'NotificationService: FCM izinleri durumu: ${settings.authorizationStatus}');
     }
 
@@ -49,80 +50,81 @@ class NotificationService {
     await _flutterLocalNotificationsPlugin.initialize(
       initializationSettings,
       onDidReceiveNotificationResponse: (NotificationResponse response) {
-        print('NotificationService: Bildirime tıklandı: ${response.payload}');
+        debugPrint(
+            'NotificationService: Bildirime tıklandı: ${response.payload}');
       },
     );
 
     // FCM token'ı al ve Firestore'a kaydet
     String? token = await _firebaseMessaging.getToken();
-    print('NotificationService: FCM Token alındı: $token');
+    debugPrint('NotificationService: FCM Token alındı: $token');
 
     if (token != null && _auth.currentUser != null) {
-      print('NotificationService: Token Firestore\'a kaydediliyor...');
+      debugPrint('NotificationService: Token Firestore\'a kaydediliyor...');
       await _firestore
           .collection('Users')
           .doc(_auth.currentUser!.uid)
           .update({'token': token});
-      print('NotificationService: Token başarıyla kaydedildi');
+      debugPrint('NotificationService: Token başarıyla kaydedildi');
     }
 
     // Token yenilendiğinde güncelle
     _firebaseMessaging.onTokenRefresh.listen((String token) async {
-      print('NotificationService: FCM Token yenilendi: $token');
+      debugPrint('NotificationService: FCM Token yenilendi: $token');
       if (_auth.currentUser != null) {
         await _firestore
             .collection('Users')
             .doc(_auth.currentUser!.uid)
             .update({'token': token});
-        print('NotificationService: Yeni token Firestore\'a kaydedildi');
+        debugPrint('NotificationService: Yeni token Firestore\'a kaydedildi');
       }
     });
 
     // Ön planda bildirim gösterme
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-      print('NotificationService: Ön planda bildirim alındı:');
-      print('NotificationService: Başlık: ${message.notification?.title}');
-      print('NotificationService: İçerik: ${message.notification?.body}');
-      print('NotificationService: Veri: ${message.data}');
+      debugPrint('NotificationService: Ön planda bildirim alındı:');
+      debugPrint('NotificationService: Başlık: ${message.notification?.title}');
+      debugPrint('NotificationService: İçerik: ${message.notification?.body}');
+      debugPrint('NotificationService: Veri: ${message.data}');
       _showNotification(message);
     });
 
     // Arka planda bildirim geldiğinde
     FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
 
-    print('NotificationService: initialize tamamlandı');
+    debugPrint('NotificationService: initialize tamamlandı');
   }
 
   // Sohbet topic'ine abone ol
   Future<void> subscribeToChat(String chatId) async {
-    print('NotificationService: Sohbete abone olunuyor: chat_$chatId');
+    debugPrint('NotificationService: Sohbete abone olunuyor: chat_$chatId');
     await _firebaseMessaging.subscribeToTopic('chat_$chatId');
-    print('NotificationService: Sohbete başarıyla abone olundu');
+    debugPrint('NotificationService: Sohbete başarıyla abone olundu');
   }
 
   // Grup topic'ine abone ol
   Future<void> subscribeToGroup(String groupId) async {
-    print('NotificationService: Gruba abone olunuyor: group_$groupId');
+    debugPrint('NotificationService: Gruba abone olunuyor: group_$groupId');
     await _firebaseMessaging.subscribeToTopic('group_$groupId');
-    print('NotificationService: Gruba başarıyla abone olundu');
+    debugPrint('NotificationService: Gruba başarıyla abone olundu');
   }
 
   // Topic'ten çık
   Future<void> unsubscribeFromTopic(String topic) async {
-    print('NotificationService: Topic\'ten çıkılıyor: $topic');
+    debugPrint('NotificationService: Topic\'ten çıkılıyor: $topic');
     await _firebaseMessaging.unsubscribeFromTopic(topic);
-    print('NotificationService: Topic\'ten başarıyla çıkıldı');
+    debugPrint('NotificationService: Topic\'ten başarıyla çıkıldı');
   }
 
   // Yerel bildirim göster
   Future<void> _showNotification(RemoteMessage message) async {
-    print('NotificationService: Yerel bildirim gösteriliyor');
+    debugPrint('NotificationService: Yerel bildirim gösteriliyor');
     RemoteNotification? notification = message.notification;
 
     if (notification != null) {
-      print('NotificationService: Bildirim detayları:');
-      print('NotificationService: Başlık: ${notification.title}');
-      print('NotificationService: İçerik: ${notification.body}');
+      debugPrint('NotificationService: Bildirim detayları:');
+      debugPrint('NotificationService: Başlık: ${notification.title}');
+      debugPrint('NotificationService: İçerik: ${notification.body}');
 
       await _flutterLocalNotificationsPlugin.show(
         notification.hashCode,
@@ -144,7 +146,7 @@ class NotificationService {
         ),
         payload: message.data.toString(),
       );
-      print('NotificationService: Yerel bildirim başarıyla gösterildi');
+      debugPrint('NotificationService: Yerel bildirim başarıyla gösterildi');
     }
   }
 }
@@ -152,9 +154,9 @@ class NotificationService {
 // Arka plan mesaj işleyici
 @pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  print('NotificationService: Arka planda mesaj alındı:');
-  print('NotificationService: Mesaj ID: ${message.messageId}');
-  print('NotificationService: Başlık: ${message.notification?.title}');
-  print('NotificationService: İçerik: ${message.notification?.body}');
-  print('NotificationService: Veri: ${message.data}');
+  debugPrint('NotificationService: Arka planda mesaj alındı:');
+  debugPrint('NotificationService: Mesaj ID: ${message.messageId}');
+  debugPrint('NotificationService: Başlık: ${message.notification?.title}');
+  debugPrint('NotificationService: İçerik: ${message.notification?.body}');
+  debugPrint('NotificationService: Veri: ${message.data}');
 }

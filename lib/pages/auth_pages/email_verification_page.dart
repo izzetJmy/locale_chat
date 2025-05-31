@@ -112,7 +112,7 @@ class _EmailVerificationPageState extends State<EmailVerificationPage> {
                                 TextSpan(
                                   text: LocaleKeys.emailVerificationEmailSent
                                       .locale(context),
-                                  style: TextStyle(color: Colors.black),
+                                  style: const TextStyle(color: Colors.black),
                                 ),
                                 TextSpan(
                                     text: FirebaseAuth

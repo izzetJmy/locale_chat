@@ -1,6 +1,5 @@
-// ignore_for_file: use_build_context_synchronously
+// ignore_for_file: use_build_context_synchronously, control_flow_in_finally
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:locale_chat/comopnents/login_card.dart';
 import 'package:locale_chat/comopnents/my_button.dart';

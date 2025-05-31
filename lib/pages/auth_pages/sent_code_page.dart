@@ -91,7 +91,8 @@ class _SentCodePageState extends State<SentCodePage> {
                                   2);
                               Navigator.of(context).push(
                                 MaterialPageRoute(
-                                  builder: (context) => ResetPasswordPage(),
+                                  builder: (context) =>
+                                      const ResetPasswordPage(),
                                 ),
                               );
                             } else {

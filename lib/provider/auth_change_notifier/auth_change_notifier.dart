@@ -11,7 +11,6 @@ import 'package:locale_chat/model/async_change_notifier.dart';
 import 'package:locale_chat/model/error_model.dart';
 import 'package:locale_chat/model/user_model.dart';
 import 'package:locale_chat/service/auth_service.dart';
-import 'package:flutter/foundation.dart';
 
 class AuthChangeNotifier extends AsyncChangeNotifier with ErrorHolder {
   UserModel? _user;

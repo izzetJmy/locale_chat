@@ -134,11 +134,11 @@ class AuthService {
       // Kullanıcı işlemi iptal etti
       return null;
     }
-    final GoogleSignInAuthentication? googleAuth =
+    final GoogleSignInAuthentication googleAuth =
         await googleUser.authentication;
     final credential = GoogleAuthProvider.credential(
-      accessToken: googleAuth?.accessToken,
-      idToken: googleAuth?.idToken,
+      accessToken: googleAuth.accessToken,
+      idToken: googleAuth.idToken,
     );
     UserCredential userCredential =
         await _auth.signInWithCredential(credential);

@@ -34,7 +34,7 @@ class GeneralChangeNotifier extends ChangeNotifier {
         await _loadLanguageFile(languageCode);
       }
     } catch (e) {
-      print('Dil yüklenirken hata: $e');
+      debugPrint('Dil yüklenirken hata: $e');
       await _loadLanguageFile('en'); // Varsayılan olarak İngilizce
     }
   }
@@ -48,7 +48,7 @@ class GeneralChangeNotifier extends ChangeNotifier {
       _currentLocale = Locale(languageCode);
       notifyListeners();
     } catch (e) {
-      print('Dil dosyası yüklenirken hata: $e');
+      debugPrint('Dil dosyası yüklenirken hata: $e');
     }
   }
 
@@ -75,7 +75,7 @@ class GeneralChangeNotifier extends ChangeNotifier {
 
       return value?.toString() ?? key;
     } catch (e) {
-      print('Çeviri bulunamadı: $key');
+      debugPrint('Çeviri bulunamadı: $key');
       return key;
     }
   }
