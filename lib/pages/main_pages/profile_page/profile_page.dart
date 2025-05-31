@@ -8,8 +8,9 @@ import 'package:locale_chat/comopnents/my_profile_card.dart';
 import 'package:locale_chat/comopnents/profile_info.dart';
 import 'package:locale_chat/comopnents/image_picker_helper.dart';
 import 'package:locale_chat/constants/colors.dart';
-import 'package:locale_chat/constants/image_path.dart';
+import 'package:locale_chat/constants/languages_keys.dart';
 import 'package:locale_chat/constants/text_style.dart';
+import 'package:locale_chat/helper/localization_extention.dart';
 import 'package:locale_chat/helper/ui_helper.dart';
 import 'package:locale_chat/pages/auth_pages/login_page.dart';
 import 'package:locale_chat/pages/create_group_pages/create_group_page.dart';
@@ -54,13 +55,13 @@ class _ProfilePageState extends State<ProfilePage> {
     return Scaffold(
       appBar: MyAppBar(
         title: Text(
-          'Profile',
+          LocaleKeys.profilePageTitle.locale(context),
           style: homePageTitleTextStyle,
         ),
         actions: [
           IconButton(
             icon: const Icon(CupertinoIcons.create),
-            color: backgroundColor,
+            color: iconColor,
             onPressed: () {
               _showEditProfileBottomSheet();
             },
@@ -74,92 +75,133 @@ class _ProfilePageState extends State<ProfilePage> {
                 vertical: UIHelper.getDeviceHeight(context) * 0.06),
             child: Consumer<AuthChangeNotifier>(
               builder: (context, authChangeNotifier, child) {
-                return Column(
-                  children: [
-                    //User name and avatar
-                    ProfileInfo(
-                      image_path: authChangeNotifier.user?.profilePhoto ??
-                          ImagePath.user_avatar,
-                      image_radius: 35,
-                      showName: true,
-                      showDate: true,
-                      name: authChangeNotifier.user?.userName.isEmpty ?? true
-                          ? 'Anonymous'
-                          : authChangeNotifier.user?.userName ?? 'Anonymous',
-                      profileNameTextStyle: profileInfoNameTextStyle,
-                      profileInfoDateTextStyle: profileInfoDateTextStyle,
-                      date: formatDate(authChangeNotifier.user?.createdAt),
-                      onTap: _showImageSourceSelectionDialog,
-                    ),
-                    SizedBox(height: UIHelper.getDeviceHeight(context) * 0.04),
-                    //User email
-                    MyProfileCard(
-                      height: 60,
-                      containerRadius: 10,
-                      leading: Icon(
-                        Icons.email,
-                        color: backgroundColor,
-                      ),
-                      tittleText: Text(_auth.currentUser?.email ?? ''),
-                      profileCardTittleTextStyle: profilePageListTileTextStyle,
-                    ),
-                    SizedBox(height: UIHelper.getDeviceHeight(context) * 0.02),
-                    //Create group
-                    MyProfileCard(
-                      height: 60,
-                      containerRadius: 10,
-                      leading: Icon(
-                        Icons.group,
-                        color: backgroundColor,
-                      ),
-                      tittleText: const Text('Create Group'),
-                      profileCardTittleTextStyle: profilePageListTileTextStyle,
-                      trailing: Icon(
-                        Icons.arrow_forward_ios,
-                        color: backgroundColor,
-                      ),
-                      onTap: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const CreateGroupPage(),
+                return FutureBuilder<String>(
+                  future: authChangeNotifier
+                      .getImageFromFirebaseStorage('user_avatar.png'),
+                  builder: (context, snapshot) {
+                    String imagePath = 'assets/images/user_avatar.png';
+                    bool isNetworkImage = false;
+
+                    if (authChangeNotifier.user?.profilePhoto != null &&
+                        authChangeNotifier.user!.profilePhoto.isNotEmpty) {
+                      imagePath = authChangeNotifier.user!.profilePhoto;
+                      isNetworkImage = true;
+                    } else if (snapshot.hasData &&
+                        snapshot.data != null &&
+                        snapshot.data!.isNotEmpty) {
+                      imagePath = snapshot.data!;
+                      isNetworkImage = true;
+                    }
+
+                    return Column(
+                      children: [
+                        //User name and avatar
+                        ProfileInfo(
+                          image_path: imagePath,
+                          image_radius: 35,
+                          showName: true,
+                          showDate: true,
+                          name:
+                              authChangeNotifier.user?.userName ?? 'Anonymous',
+                          profileNameTextStyle: profileInfoNameTextStyle,
+                          profileInfoDateTextStyle: profileInfoDateTextStyle,
+                          date: formatDate(authChangeNotifier.user?.createdAt),
+                          isNetworkImage: isNetworkImage,
+                          onTap: _showImageSourceSelectionDialog,
                         ),
-                      ),
-                    ),
-                    SizedBox(height: UIHelper.getDeviceHeight(context) * 0.02),
-                    //Settings
-                    MyProfileCard(
-                      height: 60,
-                      containerRadius: 10,
-                      leading: Icon(
-                        CupertinoIcons.settings,
-                        color: backgroundColor,
-                      ),
-                      tittleText: const Text('Settings'),
-                      profileCardTittleTextStyle: profilePageListTileTextStyle,
-                      trailing: Icon(
-                        Icons.arrow_forward_ios,
-                        color: backgroundColor,
-                      ),
-                      onTap: () => _showSettingsBottomSheet(),
-                    ),
-                    SizedBox(height: UIHelper.getDeviceHeight(context) * 0.02),
-                    //Logout
-                    MyProfileCard(
-                      height: 60,
-                      containerRadius: 10,
-                      leading: Icon(
-                        Icons.exit_to_app,
-                        color: Colors.red.withOpacity(0.8),
-                      ),
-                      tittleText: const Text('Sign Out'),
-                      profileCardTittleTextStyle: exitTitleTextStyle,
-                      trailing: Icon(
-                        Icons.arrow_forward_ios,
-                        color: Colors.red.withOpacity(0.8),
-                      ),
-                      onTap: () => _handleSignOut(context, authChangeNotifier),
-                    ),
-                  ],
+                        SizedBox(
+                            height: UIHelper.getDeviceHeight(context) * 0.04),
+                        //User email
+                        MyProfileCard(
+                          height: 60,
+                          containerRadius: 10,
+                          leading: Icon(
+                            Icons.email,
+                            color: iconColor,
+                          ),
+                          tittleText: Text(_auth.currentUser?.email ?? ''),
+                          profileCardTittleTextStyle:
+                              profilePageListTileTextStyle,
+                        ),
+                        SizedBox(
+                            height: UIHelper.getDeviceHeight(context) * 0.02),
+                        //Create group
+                        MyProfileCard(
+                          height: 60,
+                          containerRadius: 10,
+                          leading: Icon(
+                            Icons.group,
+                            color: iconColor,
+                          ),
+                          tittleText: SizedBox(
+                            width: UIHelper.getDeviceWith(context),
+                            child: Text(
+                              LocaleKeys.groupAddMember.locale(context),
+                              style: profilePageListTileTextStyle,
+                            ),
+                          ),
+                          profileCardTittleTextStyle:
+                              profilePageListTileTextStyle,
+                          trailing: Icon(
+                            Icons.arrow_forward_ios,
+                            color: iconColor,
+                          ),
+                          onTap: () => Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const CreateGroupPage(),
+                            ),
+                          ),
+                        ),
+                        SizedBox(
+                            height: UIHelper.getDeviceHeight(context) * 0.02),
+                        //Settings
+                        MyProfileCard(
+                          height: 60,
+                          containerRadius: 10,
+                          leading: Icon(
+                            CupertinoIcons.settings,
+                            color: iconColor,
+                          ),
+                          tittleText: SizedBox(
+                            width: UIHelper.getDeviceWith(context),
+                            child: Text(
+                                LocaleKeys.profileSettings.locale(context)),
+                          ),
+                          profileCardTittleTextStyle:
+                              profilePageListTileTextStyle,
+                          trailing: Icon(
+                            Icons.arrow_forward_ios,
+                            color: iconColor,
+                          ),
+                          onTap: () => _showSettingsBottomSheet(),
+                        ),
+                        SizedBox(
+                            height: UIHelper.getDeviceHeight(context) * 0.02),
+                        //Logout
+                        MyProfileCard(
+                          height: 60,
+                          containerRadius: 10,
+                          leading: Icon(
+                            Icons.exit_to_app,
+                            color: Colors.red.withOpacity(0.8),
+                          ),
+                          tittleText: SizedBox(
+                            width: UIHelper.getDeviceWith(context),
+                            child:
+                                Text(LocaleKeys.profileLogout.locale(context)),
+                          ),
+                          profileCardTittleTextStyle: exitTitleTextStyle,
+                          trailing: Icon(
+                            Icons.arrow_forward_ios,
+                            color: Colors.red.withOpacity(0.8),
+                          ),
+                          onTap: () =>
+                              _handleSignOut(context, authChangeNotifier),
+                        ),
+                      ],
+                    );
+                  },
                 );
               },
             ),

@@ -7,7 +7,9 @@ import 'package:locale_chat/comopnents/my_circular_progress_Indicator.dart';
 import 'package:locale_chat/comopnents/my_profile_card.dart';
 import 'package:locale_chat/comopnents/profile_info.dart';
 import 'package:locale_chat/constants/colors.dart';
+import 'package:locale_chat/constants/languages_keys.dart';
 import 'package:locale_chat/constants/text_style.dart';
+import 'package:locale_chat/helper/localization_extention.dart';
 import 'package:locale_chat/model/async_change_notifier.dart';
 import 'package:locale_chat/model/messages_models/single_chat_model.dart';
 import 'package:locale_chat/model/user_model.dart';
@@ -55,11 +57,11 @@ class ChatScreenWidget extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     Text(
-                      'Henüz biriyle tanışmadın',
+                      LocaleKeys.errorsSearchNoOneToChat.locale(context),
                       style: homePageTitleTextStyle,
                     ),
                     Text(
-                      'Hemen arama yap!',
+                      LocaleKeys.errorsSearchSearchForPeople.locale(context),
                       style: homePageSubtitleTextStyle,
                     )
                   ],
@@ -99,7 +101,9 @@ class ChatScreenWidget extends StatelessWidget {
                         stream: messages,
                         builder: (context, snapshot) {
                           if (!snapshot.hasData) {
-                            return const Text('New Chat');
+                            return Text(
+                              LocaleKeys.chatNewChat.locale(context),
+                            );
                           }
                           return Text(snapshot.data!);
                         }),

@@ -13,7 +13,9 @@ import 'package:locale_chat/comopnents/my_circular_progress_Indicator.dart';
 import 'package:locale_chat/comopnents/my_text_field.dart';
 import 'package:locale_chat/comopnents/profile_info.dart';
 import 'package:locale_chat/constants/colors.dart';
+import 'package:locale_chat/constants/languages_keys.dart';
 import 'package:locale_chat/constants/text_style.dart';
+import 'package:locale_chat/helper/localization_extention.dart';
 import 'package:locale_chat/model/messages_models/message_model.dart';
 import 'package:locale_chat/pages/chat_pages/chat_detail_page.dart';
 import 'package:locale_chat/provider/auth_change_notifier/auth_change_notifier.dart';
@@ -21,6 +23,7 @@ import 'package:locale_chat/provider/chat_change_notifier/chat_change_notifier.d
 import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
 import 'dart:io';
+import 'package:locale_chat/service/notification_service.dart';
 
 class ChatPage extends StatefulWidget {
   final String? title;
@@ -52,12 +55,36 @@ class _ChatPageState extends State<ChatPage> {
   final Uuid _uuid = const Uuid();
   late ChatChangeNotifier _chatChangeNotifier;
   late AuthChangeNotifier authChangeNotifier;
+  final NotificationService _notificationService = NotificationService();
+
   @override
   void initState() {
     super.initState();
     _chatChangeNotifier = ChatChangeNotifier();
     authChangeNotifier =
         Provider.of<AuthChangeNotifier>(context, listen: false);
+    _subscribeToNotifications();
+  }
+
+  Future<void> _subscribeToNotifications() async {
+    if (widget.chatId != null) {
+      print('ChatPage: Bildirimlere abone olunuyor...');
+      print('ChatPage: Chat ID: ${widget.chatId}');
+      print('ChatPage: Receiver ID: ${widget.receiverId}');
+
+      await _notificationService.subscribeToChat(widget.chatId!);
+      print(
+          'ChatPage: Bildirimlere başarıyla abone olundu: chat_${widget.chatId}');
+    }
+  }
+
+  @override
+  void dispose() {
+    if (widget.chatId != null) {
+      _notificationService.unsubscribeFromTopic('chat_${widget.chatId}');
+      print('Bildirim aboneliği kaldırıldı: chat_${widget.chatId}');
+    }
+    super.dispose();
   }
 
   List<MessageModel> messages = [];
@@ -67,11 +94,22 @@ class _ChatPageState extends State<ChatPage> {
     if (controller.text.trim().isEmpty ||
         widget.chatId == null ||
         widget.receiverId == null) {
+      print('ChatPage: Mesaj gönderilemedi - Eksik bilgiler');
+      print('ChatPage: Mesaj içeriği: ${controller.text.trim()}');
+      print('ChatPage: Chat ID: ${widget.chatId}');
+      print('ChatPage: Receiver ID: ${widget.receiverId}');
       return;
     }
 
+    print('ChatPage: Mesaj gönderiliyor...');
     final String messageId = _uuid.v4();
     final String currentUserId = _auth.currentUser!.uid;
+
+    print('ChatPage: Mesaj detayları:');
+    print('ChatPage: Message ID: $messageId');
+    print('ChatPage: Sender ID: $currentUserId');
+    print('ChatPage: Receiver ID: ${widget.receiverId}');
+    print('ChatPage: Content: ${controller.text.trim()}');
 
     final MessageModel message = MessageModel(
       content: controller.text.trim(),
@@ -83,6 +121,7 @@ class _ChatPageState extends State<ChatPage> {
     );
 
     _chatChangeNotifier.sendMessage(message, widget.chatId!);
+    print('ChatPage: Mesaj başarıyla gönderildi');
     controller.clear();
   }
 
@@ -91,9 +130,6 @@ class _ChatPageState extends State<ChatPage> {
     await ImagePickerHelper.showImageSourceSelectionDialog(
       context: context,
       onImageSourceSelected: (source) => _pickProfileImage(source),
-      dialogTitle: 'Resim Gön5er',
-      galleryOptionText: 'Galeriden Seç',
-      cameraOptionText: 'Kamera ile Çek',
     );
   }
 
@@ -127,6 +163,7 @@ class _ChatPageState extends State<ChatPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: true,
       appBar: MyAppBar(
         title: Row(
           children: [
@@ -134,7 +171,7 @@ class _ChatPageState extends State<ChatPage> {
               onPressed: () => Navigator.pop(context),
               icon: Icon(
                 Icons.arrow_back_ios,
-                color: backgroundColor,
+                color: iconColor,
               ),
             ),
             const SizedBox(width: 5),
@@ -163,19 +200,12 @@ class _ChatPageState extends State<ChatPage> {
                 ),
               ),
               child: Text(
-                widget.title ?? 'Chat',
+                widget.title ?? LocaleKeys.navigationChat.locale(context),
                 style: appBarTitleTextStyle,
               ),
             ),
           ],
         ),
-        actions: [
-          PopupMenuButton<String>(
-            icon: const Icon(Icons.more_vert),
-            itemBuilder: (context) => widget.drop_down_menu_list,
-            onSelected: widget.onSelected,
-          ),
-        ],
       ),
       body: Column(
         children: [
@@ -198,10 +228,10 @@ class _ChatPageState extends State<ChatPage> {
                   );
                 }
                 if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-                  return const Center(
+                  return Center(
                     child: Text(
-                      'No messages yet',
-                      style: TextStyle(
+                      LocaleKeys.chatNoMessages.locale(context),
+                      style: const TextStyle(
                         color: Colors.grey,
                         fontSize: 16,
                       ),
@@ -250,7 +280,7 @@ class _ChatPageState extends State<ChatPage> {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: profileCardColor,
               boxShadow: [
                 BoxShadow(
                   color: Colors.grey.withOpacity(0.3),
@@ -264,7 +294,7 @@ class _ChatPageState extends State<ChatPage> {
                 Expanded(
                   child: MyTextField(
                     controller: controller,
-                    hintText: 'Type a message...',
+                    hintText: LocaleKeys.chatTypeMessage.locale(context),
                     obscureText: false,
                     suffixIcon: IconButton(
                       icon: const Icon(
@@ -280,7 +310,7 @@ class _ChatPageState extends State<ChatPage> {
                 IconButton(
                   icon: Icon(
                     Icons.send,
-                    color: backgroundColor,
+                    color: iconColor,
                   ),
                   onPressed: _sendMessage,
                 ),

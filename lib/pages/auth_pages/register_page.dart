@@ -8,6 +8,8 @@ import 'package:locale_chat/comopnents/my_button.dart';
 import 'package:locale_chat/comopnents/my_circular_progress_Indicator.dart';
 import 'package:locale_chat/comopnents/my_snackbar.dart';
 import 'package:locale_chat/comopnents/my_text_field.dart';
+import 'package:locale_chat/constants/languages_keys.dart';
+import 'package:locale_chat/helper/localization_extention.dart';
 import 'package:locale_chat/model/user_model.dart';
 import 'package:locale_chat/pages/auth_pages/email_verification_page.dart';
 import 'package:locale_chat/pages/auth_pages/login_page.dart';
@@ -60,7 +62,7 @@ class _RegisterPageState extends State<RegisterPage> {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     Text(
-                      'WELCOME',
+                      LocaleKeys.loginRegisterWelcome.locale(context),
                       style: TextStyle(
                           fontSize: size.height * 0.05,
                           fontFamily: 'Roboto',
@@ -77,7 +79,8 @@ class _RegisterPageState extends State<RegisterPage> {
                             Padding(
                               padding: const EdgeInsets.only(bottom: 15.0),
                               child: Text(
-                                'REGISTER',
+                                LocaleKeys.loginRegisterRegister
+                                    .locale(context),
                                 style: TextStyle(
                                     fontSize: size.height * 0.04,
                                     fontFamily: 'Roboto',
@@ -88,7 +91,8 @@ class _RegisterPageState extends State<RegisterPage> {
                             MyTextField(
                               controller: emailController,
                               prefixIcon: const Icon(CupertinoIcons.mail),
-                              hintText: 'Email',
+                              hintText:
+                                  LocaleKeys.loginRegisterEmail.locale(context),
                               obscureText: false,
                               validatorFunction: (value) {
                                 if (value != null) {
@@ -97,7 +101,8 @@ class _RegisterPageState extends State<RegisterPage> {
                                       value.endsWith('.com')) {
                                     return null;
                                   }
-                                  return 'Enter valid email';
+                                  return LocaleKeys.loginRegisterEnterValidEmail
+                                      .locale(context);
                                 }
                                 return null;
                               },
@@ -105,7 +110,8 @@ class _RegisterPageState extends State<RegisterPage> {
                             MyTextField(
                               controller: passwordController,
                               prefixIcon: const Icon(CupertinoIcons.lock),
-                              hintText: 'Password',
+                              hintText: LocaleKeys.loginRegisterPassword
+                                  .locale(context),
                               obscureText: _obscureText,
                               suffixIcon: IconButton(
                                 highlightColor: Colors.transparent,
@@ -120,10 +126,13 @@ class _RegisterPageState extends State<RegisterPage> {
                               ),
                               validatorFunction: (value) {
                                 if (value!.isEmpty) {
-                                  return 'Enter password';
+                                  return LocaleKeys.loginRegisterEnterPassword
+                                      .locale(context);
                                 }
                                 if (value.length < 6) {
-                                  return 'Enter 6 digit password';
+                                  return LocaleKeys
+                                      .loginRegisterEnter6DigitPassword
+                                      .locale(context);
                                 }
                                 return null;
                               },
@@ -131,7 +140,8 @@ class _RegisterPageState extends State<RegisterPage> {
                             MyTextField(
                               controller: confirmPasswordController,
                               prefixIcon: const Icon(CupertinoIcons.lock),
-                              hintText: 'Confirm Password',
+                              hintText: LocaleKeys.loginRegisterConfirmPassword
+                                  .locale(context),
                               obscureText: _obscureTextAgain,
                               suffixIcon: IconButton(
                                 highlightColor: Colors.transparent,
@@ -146,10 +156,13 @@ class _RegisterPageState extends State<RegisterPage> {
                               ),
                               validatorFunction: (value) {
                                 if (value!.isEmpty) {
-                                  return 'Enter password';
+                                  return LocaleKeys.loginRegisterEnterPassword
+                                      .locale(context);
                                 }
                                 if (value != passwordController.text) {
-                                  return 'two passwords must be the same';
+                                  return LocaleKeys
+                                      .loginRegisterPasswordsMustMatch
+                                      .locale(context);
                                 }
                                 return null;
                               },
@@ -164,7 +177,8 @@ class _RegisterPageState extends State<RegisterPage> {
                                         progressIndicatorColor: Colors.white,
                                       )
                                     : Text(
-                                        'Register',
+                                        LocaleKeys.loginRegisterRegister
+                                            .locale(context),
                                         style: TextStyle(
                                             fontSize: size.height * 0.028,
                                             color: Colors.white,
@@ -217,7 +231,8 @@ class _RegisterPageState extends State<RegisterPage> {
                                     },
                                   );
                                 },
-                                buttonText: 'Register',
+                                buttonText: LocaleKeys.loginRegisterRegister
+                                    .locale(context),
                                 textStyle: TextStyle(
                                     fontSize: size.height * 0.028,
                                     color: Colors.white,
@@ -228,7 +243,8 @@ class _RegisterPageState extends State<RegisterPage> {
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 Text(
-                                  'Already you have acoount ',
+                                  LocaleKeys.loginRegisterAlreadyHaveAccount
+                                      .locale(context),
                                   style: TextStyle(
                                       color: Color(0xffB7B7B7),
                                       fontSize: size.height * 0.015),
@@ -242,7 +258,8 @@ class _RegisterPageState extends State<RegisterPage> {
                                     );
                                   },
                                   child: Text(
-                                    'Sign In',
+                                    LocaleKeys.loginRegisterSignIn
+                                        .locale(context),
                                     style: TextStyle(
                                         color: Color(0xff00A3FF),
                                         fontSize: size.height * 0.015),

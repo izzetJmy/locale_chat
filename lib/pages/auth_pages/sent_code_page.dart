@@ -6,6 +6,8 @@ import 'package:locale_chat/comopnents/my_button.dart';
 import 'package:locale_chat/comopnents/my_circular_progress_Indicator.dart';
 import 'package:locale_chat/comopnents/my_snackbar.dart';
 import 'package:locale_chat/comopnents/pin_put.dart';
+import 'package:locale_chat/constants/languages_keys.dart';
+import 'package:locale_chat/helper/localization_extention.dart';
 import 'package:locale_chat/pages/auth_pages/reset_password.dart';
 import 'package:locale_chat/provider/auth_change_notifier/auth_change_notifier.dart';
 import 'package:provider/provider.dart';
@@ -47,7 +49,8 @@ class _SentCodePageState extends State<SentCodePage> {
                     column: Column(
                       children: [
                         Text(
-                          'Enter the email you want to change your password',
+                          LocaleKeys.forgotPasswordEnterEmailForReset
+                              .locale(context),
                           textAlign: TextAlign.center,
                           style: TextStyle(
                               fontFamily: 'Roboto',
@@ -64,7 +67,8 @@ class _SentCodePageState extends State<SentCodePage> {
                                   progressIndicatorColor: Colors.white,
                                 )
                               : Text(
-                                  'Verify',
+                                  LocaleKeys.forgotPasswordVerify
+                                      .locale(context),
                                   style: TextStyle(
                                       fontSize: size.height * 0.028,
                                       color: Colors.white,
@@ -81,20 +85,28 @@ class _SentCodePageState extends State<SentCodePage> {
                             await authChangeNotifier.verifyOtp();
                             if (authChangeNotifier.isOtpVerified) {
                               MySanckbar.mySnackbar(
-                                  context, 'Otp is verified', 2);
+                                  context,
+                                  LocaleKeys.errorsAuthOtpIsVerified
+                                      .locale(context),
+                                  2);
                               Navigator.of(context).push(
                                 MaterialPageRoute(
                                   builder: (context) => ResetPasswordPage(),
                                 ),
                               );
                             } else {
-                              MySanckbar.mySnackbar(context, 'Invalid OTP', 2);
+                              MySanckbar.mySnackbar(
+                                  context,
+                                  LocaleKeys.errorsAuthInvalidOtp
+                                      .locale(context),
+                                  2);
                             }
                             setState(() {
                               _isLoading = false;
                             });
                           },
-                          buttonText: 'Verify',
+                          buttonText:
+                              LocaleKeys.forgotPasswordVerify.locale(context),
                           textStyle: TextStyle(
                               color: Colors.white,
                               fontSize: size.height * 0.028,

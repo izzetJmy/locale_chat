@@ -1,7 +1,6 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:flutter/material.dart';
 import 'package:locale_chat/comopnents/profile_info.dart';
-import 'package:locale_chat/constants/colors.dart';
 import 'package:locale_chat/constants/text_style.dart';
 
 class MyGroupChat extends StatelessWidget {
@@ -29,13 +28,13 @@ class MyGroupChat extends StatelessWidget {
             children: [
               contentText(size),
               const SizedBox(width: 10),
-              profileInfo(),
+              profileInfo(size.width * 0.12),
             ],
           )
         : Row(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              profileInfo(),
+              profileInfo(size.width * 0.12),
               const SizedBox(width: 10),
               contentText(size),
             ],
@@ -63,7 +62,7 @@ class MyGroupChat extends StatelessWidget {
                     ? const Radius.circular(0)
                     : const Radius.circular(10)),
             color: leftOrRight
-                ? backgroundColor
+                ? const Color(0xffAAD9BB)
                 : const Color(0xff939393).withOpacity(0.6),
           ),
           child: Text(
@@ -81,7 +80,7 @@ class MyGroupChat extends StatelessWidget {
   }
 
 //Profile info part of the chat
-  Padding profileInfo() {
+  Padding profileInfo(double? width) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 3),
       child: ProfileInfo(
@@ -91,6 +90,7 @@ class MyGroupChat extends StatelessWidget {
         showName: true,
         name: userName,
         profileNameTextStyle: groupChatCardProfileNameTextStyle,
+        width: width,
       ),
     );
   }

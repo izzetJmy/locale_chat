@@ -3,9 +3,12 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:locale_chat/comopnents/my_appbar.dart';
 import 'package:locale_chat/comopnents/my_button.dart';
+import 'package:locale_chat/comopnents/my_marquee.dart';
 import 'package:locale_chat/comopnents/profile_info.dart';
 import 'package:locale_chat/constants/colors.dart';
+import 'package:locale_chat/constants/languages_keys.dart';
 import 'package:locale_chat/constants/text_style.dart';
+import 'package:locale_chat/helper/localization_extention.dart';
 import 'package:locale_chat/helper/ui_helper.dart';
 import 'package:locale_chat/pages/main_pages/home_page/chat_screen_widget.dart';
 import 'package:locale_chat/pages/main_pages/home_page/group_screen_widget.dart';
@@ -83,16 +86,20 @@ class _HomePageState extends State<HomePage> {
                       'assets/images/user_avatar.png',
                   image_radius: 17,
                 ),
-                title: Text(
-                  authChangeNotifier.user?.userName ?? 'Anonymus',
-                  style: appBarTitleTextStyle,
+                title: MyMarquee(
+                  textToMeasure:
+                      authChangeNotifier.user?.userName ?? 'Anonymus',
+                  child: Text(
+                    authChangeNotifier.user?.userName ?? 'Anonymus',
+                    style: appBarTitleTextStyle,
+                  ),
                 ),
                 subtitle: Text(
-                  authChangeNotifier.getTimeOfDay(),
+                  authChangeNotifier.getTimeOfDay(context),
                   style: appBarSubTitleTextStyle,
                 ),
                 trailing: IconButton(
-                  color: backgroundColor,
+                  color: iconColor,
                   icon: const Icon(CupertinoIcons.bell_fill),
                   onPressed: () => Navigator.push(
                     context,
@@ -120,14 +127,14 @@ class _HomePageState extends State<HomePage> {
                       width: width * 0.42,
                       height: hegiht * 0.048,
                       buttonColor: selectedIndex == 0
-                          ? backgroundColor
-                          : const Color(0xffDDF0E4),
+                          ? const Color(0xffAAD9BB)
+                          : profileCardColor,
                       onPressed: () {
                         setState(() {
                           navigateToPage(0);
                         });
                       },
-                      buttonText: 'Chat',
+                      buttonText: LocaleKeys.navigationChat.locale(context),
                       textStyle: homePageButtontitleTextStyle),
                   const Spacer(),
                   //Map Button
@@ -135,8 +142,8 @@ class _HomePageState extends State<HomePage> {
                       width: width * 0.42,
                       height: hegiht * 0.048,
                       buttonColor: selectedIndex == 1
-                          ? backgroundColor
-                          : const Color(0xffDDF0E4),
+                          ? const Color(0xffAAD9BB)
+                          : profileCardColor,
                       onPressed: () {
                         setState(
                           () {
@@ -144,7 +151,7 @@ class _HomePageState extends State<HomePage> {
                           },
                         );
                       },
-                      buttonText: 'Group',
+                      buttonText: LocaleKeys.navigationGroup.locale(context),
                       textStyle: homePageButtontitleTextStyle)
                 ],
               ),
@@ -167,7 +174,10 @@ class _HomePageState extends State<HomePage> {
                     padding: EdgeInsets.symmetric(horizontal: width * 0.02),
                     child: const ChatScreenWidget(),
                   ),
-                  const GroupScreenWidget(),
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: width * 0.02),
+                    child: const GroupScreenWidget(),
+                  ),
                 ],
               ),
             ),

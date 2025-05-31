@@ -48,6 +48,7 @@ class MyTextField extends StatelessWidget {
         ],
       ),
       child: TextFormField(
+        style: const TextStyle(color: Colors.grey),
         controller: controller,
         validator: validatorFunction,
         cursorColor: Colors.grey,

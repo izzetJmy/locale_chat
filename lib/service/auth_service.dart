@@ -37,7 +37,8 @@ class AuthService {
           email: userData['email'] ?? user.email!,
           createdAt:
               userData['createdAt'] ?? user.metadata.creationTime.toString(),
-          profilePhoto: userData['profilePhoto'] ?? '',
+          profilePhoto:
+              userData['profilePhoto'] ?? 'assets/images/user_avatar.png',
           isOnline: userData['isOnline'] ?? false,
         );
       }
@@ -52,7 +53,7 @@ class AuthService {
         isAnonymousName: user.isAnonymous,
         email: user.email!,
         createdAt: user.metadata.creationTime.toString(),
-        profilePhoto: '',
+        profilePhoto: 'assets/images/user_avatar.png',
         isOnline: false);
 
     return userModel;
@@ -70,7 +71,7 @@ class AuthService {
         isAnonymousName: user.isAnonymous,
         email: user.email!,
         createdAt: user.metadata.creationTime.toString(),
-        profilePhoto: "",
+        profilePhoto: 'assets/images/user_avatar.png',
         isOnline: false);
 
     await _firestore.collection('Users').doc(user.uid).set(userModel.toJson());
@@ -99,15 +100,42 @@ class AuthService {
     }
   }
 
-//Send to user email a link to reset password
-  Future<void> updatePassword(
-      {required String email, required String newPassword}) async {}
+  Future<void> updatePassword(String email) async {
+    try {
+      // Firestore'da kontrol et
+      final userDoc = await _firestore
+          .collection('Users')
+          .where('email', isEqualTo: email.toLowerCase().trim())
+          .get();
+
+      debugPrint(
+          'AuthService: Firestore check result: ${userDoc.docs.length} documents found');
+
+      if (userDoc.docs.isEmpty) {
+        throw Exception('Bu e-posta adresi ile kayıtlı kullanıcı bulunamadı');
+      }
+
+      // Basit şifre sıfırlama e-postası gönder
+      await _auth.sendPasswordResetEmail(
+        email: email.toLowerCase().trim(),
+      );
+
+      debugPrint('AuthService: Password reset email sent successfully');
+    } catch (e) {
+      debugPrint('AuthService: Password reset email error: $e');
+      rethrow;
+    }
+  }
 
 //Provide Google authenticate
   Future<UserModel?> authWithGoogle() async {
     final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+    if (googleUser == null) {
+      // Kullanıcı işlemi iptal etti
+      return null;
+    }
     final GoogleSignInAuthentication? googleAuth =
-        await googleUser?.authentication;
+        await googleUser.authentication;
     final credential = GoogleAuthProvider.credential(
       accessToken: googleAuth?.accessToken,
       idToken: googleAuth?.idToken,
@@ -122,7 +150,7 @@ class AuthService {
         isAnonymousName: user.isAnonymous,
         email: user.email!,
         createdAt: user.metadata.creationTime.toString(),
-        profilePhoto: user.phoneNumber!,
+        profilePhoto: 'assets/images/user_avatar.png',
         isOnline: false);
 
     await _firestore.collection('Users').doc(user.uid).set(userModel.toJson());
@@ -324,5 +352,12 @@ class AuthService {
       debugPrint("Error picking image: $e");
       return null;
     }
+  }
+
+  Future<String> getImageFromFirebaseStorage(String imageName) async {
+    final storageRef = FirebaseStorage.instance.ref();
+    final imageRef = storageRef.child('defualtPhotos/$imageName');
+    final downloadURL = await imageRef.getDownloadURL();
+    return downloadURL;
   }
 }

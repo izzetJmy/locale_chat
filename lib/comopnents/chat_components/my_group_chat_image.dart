@@ -56,10 +56,12 @@ class MyGroupChatImage extends StatelessWidget {
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: profileCardColor,
             borderRadius: BorderRadius.circular(10),
             border: Border.all(
-                color: leftOrRight ? backgroundColor : const Color(0xff939393),
+                color: leftOrRight
+                    ? const Color(0xffAAD9BB)
+                    : const Color(0xff939393),
                 width: 2),
           ),
           child: InkWell(

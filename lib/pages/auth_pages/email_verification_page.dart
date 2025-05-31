@@ -9,6 +9,8 @@ import 'package:locale_chat/comopnents/my_button.dart';
 import 'package:locale_chat/comopnents/my_circular_progress_Indicator.dart';
 import 'package:locale_chat/comopnents/my_snackbar.dart';
 import 'package:locale_chat/constants/colors.dart';
+import 'package:locale_chat/constants/languages_keys.dart';
+import 'package:locale_chat/helper/localization_extention.dart';
 import 'package:locale_chat/pages/auth_pages/login_page.dart';
 import 'package:locale_chat/provider/auth_change_notifier/auth_change_notifier.dart';
 import 'package:provider/provider.dart';
@@ -38,7 +40,8 @@ class _EmailVerificationPageState extends State<EmailVerificationPage> {
     });
 
     if (isEmailVerified) {
-      MySanckbar.mySnackbar(context, 'Email Successfully Verified', 2);
+      MySanckbar.mySnackbar(
+          context, LocaleKeys.errorsAuthEmailVerified.locale(context), 2);
 
       timer?.cancel();
 
@@ -96,17 +99,19 @@ class _EmailVerificationPageState extends State<EmailVerificationPage> {
                             ),
                           ),
                           const SizedBox(height: 15),
-                          const Text(
-                            'Please Check Your Email',
-                            style: TextStyle(
+                          Text(
+                            LocaleKeys.emailVerificationCheckEmail
+                                .locale(context),
+                            style: const TextStyle(
                                 fontSize: 20, fontWeight: FontWeight.bold),
                           ),
                           const SizedBox(height: 15),
                           RichText(
                             text: TextSpan(
                               children: [
-                                const TextSpan(
-                                  text: 'We have sent you a email on ',
+                                TextSpan(
+                                  text: LocaleKeys.emailVerificationEmailSent
+                                      .locale(context),
                                   style: TextStyle(color: Colors.black),
                                 ),
                                 TextSpan(
@@ -132,7 +137,8 @@ class _EmailVerificationPageState extends State<EmailVerificationPage> {
                                 width: size.width * 0.3,
                                 height: size.height * 0.05,
                                 buttonColor: Colors.red.shade400,
-                                buttonText: 'Back',
+                                buttonText: LocaleKeys.emailVerificationBack
+                                    .locale(context),
                                 textStyle: TextStyle(
                                     fontSize: size.height * 0.028,
                                     color: Colors.white,
@@ -147,7 +153,8 @@ class _EmailVerificationPageState extends State<EmailVerificationPage> {
                                 width: size.width * 0.3,
                                 height: size.height * 0.05,
                                 buttonColor: buttonColor,
-                                buttonText: 'Resend',
+                                buttonText: LocaleKeys.emailVerificationResend
+                                    .locale(context),
                                 textStyle: TextStyle(
                                     fontSize: size.height * 0.028,
                                     color: Colors.white,

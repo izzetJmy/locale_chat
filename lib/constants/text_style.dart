@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:locale_chat/constants/colors.dart';
 
 TextStyle profileInfoNameTextStyle = const TextStyle(
     fontFamily: 'Roboto', fontSize: 28, color: Color(0xff939393));
@@ -28,18 +29,18 @@ TextStyle singleChatCardTitleTextStyle = const TextStyle(
   fontSize: 18,
   color: Colors.white,
 );
-TextStyle singleChatCardTimeTextStyle = const TextStyle(
+TextStyle singleChatCardTimeTextStyle = TextStyle(
   fontFamily: 'Roboto',
   fontSize: 10,
   fontWeight: FontWeight.w600,
-  color: Color(0xff939393),
+  color: defaultTextColor,
 );
 
-TextStyle groupChatCardProfileNameTextStyle = const TextStyle(
+TextStyle groupChatCardProfileNameTextStyle = TextStyle(
   fontFamily: 'Roboto',
   fontSize: 12,
   fontWeight: FontWeight.w600,
-  color: Color(0xff939393),
+  color: defaultTextColor,
 );
 
 TextStyle profileCardTittleTextStyle = const TextStyle(
@@ -48,50 +49,50 @@ TextStyle profileCardTittleTextStyle = const TextStyle(
   fontWeight: FontWeight.w600,
   color: Color.fromARGB(255, 149, 146, 146),
 );
-TextStyle profileCardSubTittleTextStyle = const TextStyle(
+TextStyle profileCardSubTittleTextStyle = TextStyle(
   fontFamily: 'Roboto',
   fontSize: 16,
   fontWeight: FontWeight.w100,
-  color: Color(0xff939393),
+  color: defaultTextColor,
 );
 
-TextStyle appBarTitleTextStyle = const TextStyle(
+TextStyle appBarTitleTextStyle = TextStyle(
   fontFamily: 'Roboto',
   fontSize: 18,
-  color: Color.fromARGB(255, 117, 116, 116),
+  color: defaultTextColor,
 );
-TextStyle appBarSubTitleTextStyle = const TextStyle(
+TextStyle appBarSubTitleTextStyle = TextStyle(
   fontFamily: 'Roboto',
   fontSize: 12,
   fontWeight: FontWeight.w100,
-  color: Color(0xff939393),
+  color: defaultTextColor,
 );
 
-TextStyle homePageButtontitleTextStyle = const TextStyle(
+TextStyle homePageButtontitleTextStyle = TextStyle(
   fontFamily: 'Roboto',
   fontSize: 20,
   fontWeight: FontWeight.w600,
-  color: Color(0xff939393),
+  color: defaultTextColor,
 );
-TextStyle homePageTitleTextStyle = const TextStyle(
+TextStyle homePageTitleTextStyle = TextStyle(
   fontFamily: 'Roboto',
   fontSize: 20,
-  color: Color(0xff939393),
+  color: defaultTextColor,
 );
-TextStyle homePageSubtitleTextStyle = const TextStyle(
+TextStyle homePageSubtitleTextStyle = TextStyle(
   fontFamily: 'Roboto',
   fontSize: 20,
   fontWeight: FontWeight.w600,
-  color: Color(0xff939393),
+  color: defaultTextColor,
 );
 
 TextStyle myTextFieldTextStyle =
     const TextStyle(color: Color(0xff939393), fontSize: 20);
 
-TextStyle profilePageListTileTextStyle = const TextStyle(
+TextStyle profilePageListTileTextStyle = TextStyle(
   fontFamily: 'Roboto',
   fontSize: 20,
-  color: Color(0xff939393),
+  color: defaultTextColor,
 );
 TextStyle exitTitleTextStyle = TextStyle(
   fontFamily: 'Roboto',

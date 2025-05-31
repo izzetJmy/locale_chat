@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:locale_chat/comopnents/my_marquee.dart';
+import 'package:locale_chat/constants/colors.dart';
 import 'package:locale_chat/constants/text_style.dart';
 
 class MyProfileCard extends StatelessWidget {
@@ -31,9 +33,9 @@ class MyProfileCard extends StatelessWidget {
     return Container(
       alignment: Alignment.center,
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: profileCardColor,
         borderRadius: BorderRadius.circular(containerRadius),
-        border: Border.all(width: 0, color: Colors.white),
+        border: Border.all(width: 0, color: profileCardColor),
         boxShadow: [
           BoxShadow(
             blurRadius: 5,
@@ -49,7 +51,11 @@ class MyProfileCard extends StatelessWidget {
         onTap: onTap,
         onLongPress: onLongPress,
         leading: leading,
-        title: tittleText,
+        title: MyMarquee(
+          child: tittleText!,
+          textToMeasure: tittleText?.toString() ?? '',
+          textStyleToMeasure: profileCardTittleTextStyle,
+        ),
         titleTextStyle: profileCardTittleTextStyle,
         subtitle: subtittleText,
         trailing: trailing,

@@ -5,6 +5,7 @@ import 'package:locale_chat/constants/colors.dart';
 import 'package:locale_chat/pages/main_pages/home_page/home_page.dart';
 import 'package:locale_chat/pages/main_pages/profile_page/profile_page.dart';
 import 'package:locale_chat/pages/main_pages/search_page/search_page.dart';
+import 'package:locale_chat/provider/general_change_notifier.dart';
 import 'package:provider/provider.dart';
 import 'package:locale_chat/provider/auth_change_notifier/auth_change_notifier.dart';
 
@@ -17,7 +18,7 @@ class ControlPage extends StatefulWidget {
 
 class _ControlPageState extends State<ControlPage> {
   late PageController _pageController;
-  int selectedTap = 0;
+  int selectedTap = 2;
 
   @override
   void initState() {
@@ -79,48 +80,59 @@ class _ControlPageState extends State<ControlPage> {
     );
   }
 
-  Stack bottomNavigatorBar(Size size) {
-    return Stack(
-      children: [
-        //BottomAppBar was created here
-        Align(
-          alignment: Alignment.bottomCenter,
-          child: MyNavigatorBar(
-            pageIndex: selectedTap,
-            onTap: navigateToPage,
-          ),
-        ),
-        //Search button created here
-        Positioned(
-          left: size.width / 2.5,
-          right: size.width / 2.5,
-          top: size.height * 0.85,
-          child: InkWell(
-            splashColor: Colors.transparent,
-            highlightColor: Colors.transparent,
-            onTap: () {
-              setState(() {
-                navigateToPage(0);
-              });
-            },
-            child: Container(
-              height: 60,
-              width: 60,
-              decoration: BoxDecoration(
-                  boxShadow: searchButtonBoxShadow,
-                  shape: BoxShape.circle,
-                  color: backgroundColor),
-              child: Icon(
-                CupertinoIcons.search,
-                color: selectedTap == 0
-                    ? Colors.black.withOpacity(0.8)
-                    : Colors.white,
-                size: 30,
+  Consumer<GeneralChangeNotifier> bottomNavigatorBar(Size size) {
+    return Consumer<GeneralChangeNotifier>(
+      builder: (context, generalChangeNotifier, child) {
+        return Stack(
+          children: [
+            //BottomAppBar was created here
+            Align(
+              alignment: Alignment.bottomCenter,
+              child: MyNavigatorBar(
+                pageIndex: selectedTap,
+                onTap: navigateToPage,
               ),
             ),
-          ),
-        ),
-      ],
+            //Search button created here
+            Positioned(
+              left: size.width / 2.5,
+              right: size.width / 2.5,
+              top: size.height * 0.85,
+              child: InkWell(
+                splashColor: Colors.transparent,
+                highlightColor: Colors.transparent,
+                onTap: () {
+                  setState(() {
+                    navigateToPage(0);
+                  });
+                },
+                child: Container(
+                  height: 60,
+                  width: 60,
+                  decoration: BoxDecoration(
+                    boxShadow: searchButtonBoxShadow,
+                    shape: BoxShape.circle,
+                    color: generalChangeNotifier.isDarkMode
+                        ? const Color(0xFF1F1F1F)
+                        : const Color(0xffAAD9BB),
+                  ),
+                  child: Icon(
+                    CupertinoIcons.search,
+                    color: generalChangeNotifier.isDarkMode
+                        ? selectedTap == 0
+                            ? Colors.black
+                            : Colors.white
+                        : selectedTap == 0
+                            ? Colors.black
+                            : Colors.white,
+                    size: 30,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        );
+      },
     );
   }
 }

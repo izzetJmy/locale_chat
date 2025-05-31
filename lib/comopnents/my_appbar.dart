@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:locale_chat/constants/colors.dart';
 
 class MyAppBar extends StatelessWidget implements PreferredSizeWidget {
   final Widget? leading;
@@ -22,10 +23,12 @@ class MyAppBar extends StatelessWidget implements PreferredSizeWidget {
       centerTitle: true,
       actions: actions,
       elevation: elevation,
-      surfaceTintColor: Colors.white,
+      surfaceTintColor: appBarColor,
       shadowColor: Colors.grey.shade400,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(0),
+          topRight: Radius.circular(0),
           bottomLeft: Radius.circular(10),
           bottomRight: Radius.circular(10),
         ),

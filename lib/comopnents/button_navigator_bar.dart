@@ -63,9 +63,7 @@ class _MyNavigatorBarState extends State<MyNavigatorBar> {
       onTap: onTap,
       child: Icon(
         icon,
-        color: selected
-            ? Colors.black.withOpacity(0.8)
-            : const Color.fromARGB(255, 175, 173, 173),
+        color: selected ? Colors.black : Colors.white,
         size: 25,
       ),
     ));

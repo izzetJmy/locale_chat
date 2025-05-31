@@ -15,7 +15,9 @@ import 'package:locale_chat/comopnents/my_circular_progress_Indicator.dart';
 import 'package:locale_chat/comopnents/my_text_field.dart';
 import 'package:locale_chat/comopnents/profile_info.dart';
 import 'package:locale_chat/constants/colors.dart';
+import 'package:locale_chat/constants/languages_keys.dart';
 import 'package:locale_chat/constants/text_style.dart';
+import 'package:locale_chat/helper/localization_extention.dart';
 import 'package:locale_chat/model/messages_models/group_chat_model.dart';
 import 'package:locale_chat/model/messages_models/group_message_model.dart';
 import 'package:locale_chat/model/user_model.dart';
@@ -74,9 +76,6 @@ class _GroupPageState extends State<GroupPage> {
     await ImagePickerHelper.showImageSourceSelectionDialog(
       context: context,
       onImageSourceSelected: (source) => _pickProfileImage(source),
-      dialogTitle: 'Resim Gön5er',
-      galleryOptionText: 'Galeriden Seç',
-      cameraOptionText: 'Kamera ile Çek',
     );
   }
 
@@ -114,15 +113,16 @@ class _GroupPageState extends State<GroupPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: true,
       appBar: MyAppBar(
         title: Row(
           children: [
             IconButton(
-              onPressed: () => Navigator.pop(context),
               icon: Icon(
                 Icons.arrow_back_ios,
-                color: backgroundColor,
+                color: iconColor,
               ),
+              onPressed: () => Navigator.pop(context),
             ),
             const SizedBox(width: 5),
             ProfileInfo(
@@ -165,10 +165,10 @@ class _GroupPageState extends State<GroupPage> {
                   );
                 }
                 if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-                  return const Center(
+                  return Center(
                     child: Text(
-                      'No messages yet',
-                      style: TextStyle(
+                      LocaleKeys.chatNoMessages.locale(context),
+                      style: const TextStyle(
                         color: Colors.grey,
                         fontSize: 16,
                       ),
@@ -213,7 +213,7 @@ class _GroupPageState extends State<GroupPage> {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: profileCardColor,
               boxShadow: [
                 BoxShadow(
                   color: Colors.grey.withOpacity(0.3),
@@ -227,7 +227,7 @@ class _GroupPageState extends State<GroupPage> {
                 Expanded(
                   child: MyTextField(
                     controller: controller,
-                    hintText: 'Type a message...',
+                    hintText: LocaleKeys.chatTypeMessage.locale(context),
                     obscureText: false,
                     suffixIcon: IconButton(
                       onPressed: _showImageSourceSelectionDialog,
@@ -243,7 +243,7 @@ class _GroupPageState extends State<GroupPage> {
                 IconButton(
                   icon: Icon(
                     Icons.send,
-                    color: backgroundColor,
+                    color: iconColor,
                   ),
                   onPressed: _sendMessage,
                 ),

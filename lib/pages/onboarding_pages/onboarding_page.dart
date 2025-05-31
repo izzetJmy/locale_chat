@@ -5,7 +5,9 @@ import 'package:flutter/material.dart';
 import 'package:locale_chat/comopnents/my_button.dart';
 import 'package:locale_chat/comopnents/my_circular_progress_Indicator.dart';
 import 'package:locale_chat/constants/colors.dart';
+import 'package:locale_chat/constants/languages_keys.dart';
 import 'package:locale_chat/constants/text_style.dart';
+import 'package:locale_chat/helper/localization_extention.dart';
 import 'package:locale_chat/model/onboarding_model.dart';
 import 'package:locale_chat/pages/auth_pages/login_page.dart';
 import 'package:locale_chat/pages/control_page.dart';
@@ -99,8 +101,9 @@ class _OnboardingPageState extends State<OnboardingPage> {
       width: size.width * 0.5,
       height: size.height * 0.065,
       buttonColor: backgroundColor,
-      buttonText:
-          currentIndex == onboardingContent.length - 1 ? 'Devam et' : 'Sonraki',
+      buttonText: currentIndex == onboardingContent.length - 1
+          ? LocaleKeys.onboardingContinue.locale(context)
+          : LocaleKeys.onboardingNext.locale(context),
       textStyle: onboardingPageButtonTextTextStyle,
       onPressed: () async {
         if (currentIndex == onboardingContent.length - 1) {

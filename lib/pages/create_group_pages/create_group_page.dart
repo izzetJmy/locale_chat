@@ -14,7 +14,9 @@ import 'package:locale_chat/comopnents/my_text_field.dart';
 import 'package:locale_chat/comopnents/profile_info.dart';
 import 'package:locale_chat/constants/colors.dart';
 import 'package:locale_chat/constants/image_path.dart';
+import 'package:locale_chat/constants/languages_keys.dart';
 import 'package:locale_chat/constants/text_style.dart';
+import 'package:locale_chat/helper/localization_extention.dart';
 import 'package:locale_chat/helper/ui_helper.dart';
 import 'package:locale_chat/model/messages_models/group_chat_model.dart';
 import 'package:locale_chat/model/user_model.dart';
@@ -51,9 +53,6 @@ class _CreateGroupPageState extends State<CreateGroupPage> {
     await ImagePickerHelper.showImageSourceSelectionDialog(
       context: context,
       onImageSourceSelected: (source) => _pickProfileImage(source),
-      dialogTitle: 'Resim Seç',
-      galleryOptionText: 'Galeriden Seç',
-      cameraOptionText: 'Kamera ile Çek',
     );
   }
 
@@ -69,17 +68,22 @@ class _CreateGroupPageState extends State<CreateGroupPage> {
 
   Future<void> _createGroup() async {
     if (controller.text.trim().isEmpty) {
-      MySanckbar.mySnackbar(context, 'Lütfen grup adı giriniz', 2);
+      MySanckbar.mySnackbar(context,
+          LocaleKeys.errorsGroupPleaseEnterAGroupName.locale(context), 2);
       return;
     }
 
     if (imageURL == null) {
-      MySanckbar.mySnackbar(context, 'Lütfen grup resmi seçiniz', 2);
+      MySanckbar.mySnackbar(context,
+          LocaleKeys.errorsGroupPleaseSelectAGroupImage.locale(context), 2);
       return;
     }
 
     if (selectedMembers.isEmpty) {
-      MySanckbar.mySnackbar(context, 'Lütfen en az bir üye seçiniz', 2);
+      MySanckbar.mySnackbar(
+          context,
+          LocaleKeys.errorsGroupPleaseSelectAtLeastOneMember.locale(context),
+          2);
 
       return;
     }
@@ -109,7 +113,8 @@ class _CreateGroupPageState extends State<CreateGroupPage> {
       }
     } catch (e) {
       if (mounted) {
-        MySanckbar.mySnackbar(context, 'Grup oluşturulurken hata: $e', 2);
+        MySanckbar.mySnackbar(context,
+            LocaleKeys.errorsGroupErrorCreatingGroup.locale(context), 2);
       }
     } finally {
       if (mounted) {
@@ -142,7 +147,8 @@ class _CreateGroupPageState extends State<CreateGroupPage> {
           ),
           onPressed: () => Navigator.pop(context),
         ),
-        title: Text('Grup Oluştur', style: homePageTitleTextStyle),
+        title: Text(LocaleKeys.groupCreateGroup.locale(context),
+            style: homePageTitleTextStyle),
         elevation: 0,
       ),
       body: Center(
@@ -168,7 +174,7 @@ class _CreateGroupPageState extends State<CreateGroupPage> {
                   color: backgroundColor,
                 ),
                 controller: controller,
-                hintText: 'Grup adı',
+                hintText: LocaleKeys.groupGroupName.locale(context),
                 borderRadius: 10,
                 borderSideColor: Colors.transparent,
               ),
@@ -198,7 +204,8 @@ class _CreateGroupPageState extends State<CreateGroupPage> {
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
                             Text(
-                              'Henüz biriyle tanışmadın',
+                              LocaleKeys.errorsGroupNoUsersFound
+                                  .locale(context),
                               style: homePageTitleTextStyle,
                             ),
                           ],
@@ -238,7 +245,7 @@ class _CreateGroupPageState extends State<CreateGroupPage> {
                 height: UIHelper.getDeviceHeight(context) * 0.06,
                 width: UIHelper.getDeviceHeight(context) * 0.25,
                 buttonColor: backgroundColor,
-                buttonText: 'Oluştur',
+                buttonText: LocaleKeys.groupCreate.locale(context),
                 textStyle: onboardingPageButtonTextTextStyle,
                 onPressed: _createGroup,
                 button: isLoading ? MyCircularProgressIndicator() : null,
