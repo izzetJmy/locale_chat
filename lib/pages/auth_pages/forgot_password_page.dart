@@ -7,6 +7,8 @@ import 'package:locale_chat/comopnents/my_button.dart';
 import 'package:locale_chat/comopnents/my_circular_progress_Indicator.dart';
 import 'package:locale_chat/comopnents/my_snackbar.dart';
 import 'package:locale_chat/comopnents/my_text_field.dart';
+import 'package:locale_chat/constants/languages_keys.dart';
+import 'package:locale_chat/helper/localization_extention.dart';
 import 'package:locale_chat/pages/auth_pages/sent_code_page.dart';
 import 'package:locale_chat/provider/auth_change_notifier/auth_change_notifier.dart';
 import 'package:provider/provider.dart';
@@ -27,6 +29,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       body: Container(
         decoration: const BoxDecoration(
           image: DecorationImage(
@@ -50,7 +53,8 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                       child: Column(
                         children: [
                           Text(
-                            'Enter the email you want to change your password',
+                            LocaleKeys.forgotPasswordEnterEmailForReset
+                                .locale(context),
                             textAlign: TextAlign.center,
                             style: TextStyle(
                                 fontFamily: 'Roboto',
@@ -63,17 +67,21 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                             child: MyTextField(
                               controller: emailController,
                               prefixIcon: const Icon(CupertinoIcons.mail),
-                              hintText: 'Email',
+                              hintText: LocaleKeys.emailVerificationEmail
+                                  .locale(context),
                               obscureText: false,
                               validatorFunction: (value) {
                                 if (value == null || value.isEmpty) {
-                                  return 'Email is required';
+                                  return LocaleKeys.errorsAuthEmailRequired
+                                      .locale(context);
                                 }
                                 // More comprehensive email validation
                                 final emailRegex = RegExp(
                                     r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$');
                                 if (!emailRegex.hasMatch(value)) {
-                                  return 'Enter a valid email address';
+                                  return LocaleKeys
+                                      .errorsAuthEnterAFValidEmailAddress
+                                      .locale(context);
                                 }
                                 return null;
                               },
@@ -87,7 +95,8 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                                     progressIndicatorColor: Colors.white,
                                   )
                                 : Text(
-                                    'Send Code',
+                                    LocaleKeys.emailVerificationSendCode
+                                        .locale(context),
                                     style: TextStyle(
                                         fontSize: size.height * 0.028,
                                         color: Colors.white,
@@ -122,7 +131,10 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                                 } else {
                                   // Only show success message and navigate if no errors
                                   MySanckbar.mySnackbar(
-                                      context, 'OTP has been sent', 2);
+                                      context,
+                                      LocaleKeys.errorsAuthOtpHasBeenSent
+                                          .locale(context),
+                                      2);
 
                                   Navigator.of(context).push(
                                     MaterialPageRoute(
@@ -133,15 +145,19 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                                 }
                               } catch (e) {
                                 // Handle any unexpected errors
-                                MySanckbar.mySnackbar(context,
-                                    'Failed to send OTP: ${e.toString()}', 2);
+                                MySanckbar.mySnackbar(
+                                    context,
+                                    LocaleKeys.errorsAuthFailedToSendOtp
+                                        .locale(context),
+                                    2);
                               } finally {
                                 setState(() {
                                   _isLoading = false;
                                 });
                               }
                             },
-                            buttonText: 'Send Code',
+                            buttonText: LocaleKeys.emailVerificationSendCode
+                                .locale(context),
                             textStyle: TextStyle(
                                 color: Colors.white,
                                 fontSize: size.height * 0.028,

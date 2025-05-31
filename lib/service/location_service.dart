@@ -5,6 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:locale_chat/model/location_model.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LocationService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -15,6 +16,18 @@ class LocationService {
   //LOCATION PERMISSIONS
   Future<bool> handleLocationPermissions() async {
     try {
+      // Check SharedPreferences first
+      final prefs = await SharedPreferences.getInstance();
+      final hasRequestedLocationPermission =
+          prefs.getBool('hasRequestedLocationPermission') ?? false;
+
+      if (hasRequestedLocationPermission) {
+        // If we've already requested permission, just check the current status
+        LocationPermission permission = await Geolocator.checkPermission();
+        return permission != LocationPermission.denied &&
+            permission != LocationPermission.deniedForever;
+      }
+
       LocationPermission permission;
 
       // Check if location services are enabled
@@ -32,6 +45,9 @@ class LocationService {
       if (permission == LocationPermission.denied) {
         permission = await Geolocator.requestPermission();
         debugPrint("Requested permission: $permission");
+
+        // Save that we've requested permission
+        await prefs.setBool('hasRequestedLocationPermission', true);
 
         if (permission == LocationPermission.denied) {
           debugPrint("Location permissions are denied.");

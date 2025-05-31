@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:locale_chat/constants/languages_keys.dart';
+import 'package:locale_chat/helper/localization_extention.dart';
 import 'package:locale_chat/helper/ui_helper.dart';
 
 class MyDivider extends StatelessWidget {
@@ -18,7 +20,7 @@ class MyDivider extends StatelessWidget {
           ),
         ),
         Text(
-          'OR',
+          LocaleKeys.loginRegisterOr.locale(context),
           style: TextStyle(
               fontSize: UIHelper.getDeviceHeight(context) * 0.023,
               color: const Color(0xffD7D7D7),

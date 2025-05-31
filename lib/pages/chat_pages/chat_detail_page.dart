@@ -1,6 +1,8 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:flutter/material.dart';
 import 'package:locale_chat/comopnents/my_grid_images.dart';
+import 'package:locale_chat/constants/languages_keys.dart';
+import 'package:locale_chat/helper/localization_extention.dart';
 import 'package:locale_chat/pages/chat_pages/chat_page.dart';
 import 'package:locale_chat/provider/auth_change_notifier/auth_change_notifier.dart';
 import 'package:provider/provider.dart';
@@ -70,14 +72,15 @@ class _ChatDetailPageState extends State<ChatDetailPage>
     final currentUser = authChangeNotifier.user;
     return Scaffold(
       appBar: MyAppBar(
-        title: Text('Chat Details', style: homePageTitleTextStyle),
+        title: Text(LocaleKeys.chatDetails.locale(context),
+            style: homePageTitleTextStyle),
         leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios, color: backgroundColor),
+          icon: Icon(Icons.arrow_back_ios, color: iconColor),
           onPressed: () => Navigator.pop(context),
         ),
         actions: [
           IconButton(
-            icon: Icon(Icons.message, color: backgroundColor),
+            icon: Icon(Icons.message, color: iconColor),
             onPressed: () => Navigator.push(
               context,
               MaterialPageRoute(
@@ -133,15 +136,15 @@ class _ChatDetailPageState extends State<ChatDetailPage>
                   tabAlignment: TabAlignment.start,
                   isScrollable: true,
                   controller: tabController,
-                  tabs: const [
-                    Tab(text: 'Images'),
+                  tabs: [
+                    Tab(text: LocaleKeys.chatImages.locale(context)),
                   ],
-                  labelColor: backgroundColor,
+                  labelColor: iconColor,
                   labelStyle: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
                   ),
-                  indicatorColor: backgroundColor,
+                  indicatorColor: iconColor,
                 ),
                 Expanded(
                   child: TabBarView(
@@ -186,8 +189,9 @@ class ImagesTab extends StatelessWidget {
       padding: const EdgeInsets.only(top: 10, left: 5, right: 5),
       child: images.isNotEmpty
           ? MyGridImages(images: images)
-          : const Center(
-              child: Text('No images uploaded yet'),
+          : Center(
+              child:
+                  Text(LocaleKeys.errorsChatNoImagesUploaded.locale(context)),
             ),
     );
   }

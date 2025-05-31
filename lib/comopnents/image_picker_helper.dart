@@ -4,6 +4,8 @@ import 'package:image_picker/image_picker.dart';
 import 'package:locale_chat/comopnents/my_circular_progress_Indicator.dart';
 import 'package:locale_chat/comopnents/my_snackbar.dart';
 import 'package:locale_chat/constants/colors.dart';
+import 'package:locale_chat/constants/languages_keys.dart';
+import 'package:locale_chat/helper/localization_extention.dart';
 import 'package:locale_chat/provider/auth_change_notifier/auth_change_notifier.dart';
 import 'package:provider/provider.dart';
 
@@ -12,9 +14,6 @@ class ImagePickerHelper {
   static Future<void> showImageSourceSelectionDialog({
     required BuildContext context,
     required Function(ImageSource) onImageSourceSelected,
-    String dialogTitle = 'Profil Resmi Seç',
-    String galleryOptionText = 'Galeriden Seç',
-    String cameraOptionText = 'Kamera ile Çek',
     Color? iconColor,
     Color? titleColor,
     double borderRadius = 15,
@@ -27,7 +26,7 @@ class ImagePickerHelper {
             borderRadius: BorderRadius.circular(borderRadius),
           ),
           title: Text(
-            dialogTitle,
+            LocaleKeys.profileSelectProfileImage.locale(context),
             style: TextStyle(
               color: titleColor ?? backgroundColor,
               fontWeight: FontWeight.bold,
@@ -39,7 +38,8 @@ class ImagePickerHelper {
               ListTile(
                 leading: Icon(Icons.photo_library,
                     color: iconColor ?? backgroundColor),
-                title: Text(galleryOptionText),
+                title: Text(
+                    LocaleKeys.imagePickerSelectFromGallery.locale(context)),
                 onTap: () {
                   Navigator.pop(context);
                   onImageSourceSelected(ImageSource.gallery);
@@ -48,7 +48,7 @@ class ImagePickerHelper {
               ListTile(
                 leading:
                     Icon(Icons.camera_alt, color: iconColor ?? backgroundColor),
-                title: Text(cameraOptionText),
+                title: Text(LocaleKeys.imagePickerTakePhoto.locale(context)),
                 onTap: () {
                   Navigator.pop(context);
                   onImageSourceSelected(ImageSource.camera);
@@ -65,8 +65,6 @@ class ImagePickerHelper {
   static Future<void> pickAndUploadImage({
     required BuildContext context,
     required ImageSource source,
-    String successMessage = 'Resim başarıyla yüklendi',
-    String errorMessage = 'Resim yüklenirken hata oluştu',
     String? loadingMessage,
     bool showLoadingIndicator = true,
     bool showSnackbar = true,
@@ -77,7 +75,7 @@ class ImagePickerHelper {
     final File? selectedImagePath = await authChangeNotifier.getImage(source);
     debugPrint('selectedImagePath: ${selectedImagePath?.path ?? 'null'}');
     if (selectedImagePath == null) {
-      debugPrint("🚨 Kullanıcı resim seçmedi.");
+      debugPrint("🚨 User did not select an image.");
       return;
     }
 
@@ -122,7 +120,8 @@ class ImagePickerHelper {
 
       // Show success message if enabled
       if (showSnackbar && context.mounted) {
-        MySanckbar.mySnackbar(context, successMessage, 2);
+        MySanckbar.mySnackbar(
+            context, LocaleKeys.imagePickerImageUploaded.locale(context), 2);
       }
     } catch (e) {
       // Close loading dialog if it was shown
@@ -132,7 +131,8 @@ class ImagePickerHelper {
 
       // Show error message if enabled
       if (showSnackbar && context.mounted) {
-        MySanckbar.mySnackbar(context, errorMessage, 2);
+        MySanckbar.mySnackbar(
+            context, LocaleKeys.imagePickerUploadError.locale(context), 2);
       }
       debugPrint('Error uploading image: $e');
     }

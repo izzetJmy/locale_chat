@@ -1,5 +1,186 @@
 {
-    "login_register":{
-        "welcome": "WELCOME"
+    "login_register": {
+        "welcome": "WELCOME",
+        "login": "LOGIN",
+        "register": "REGISTER",
+        "email": "Email",
+        "password": "Password",
+        "confirm_password": "Confirm Password",
+        "enter_valid_email": "Enter valid email",
+        "enter_password": "Enter password",
+        "enter_6_digit_password": "Enter 6 digit password",
+        "passwords_must_match": "two passwords must be the same",
+        "email_required": "Email is required",
+        "enter_valid_email_address": "Enter a valid email address",
+        "dont_have_account": "Don't have an account?",
+        "sign_up": "Sign Up",
+        "or": "OR",
+        "forgot_password": "Forgot Password",
+        "already_have_account": "Already have an account?",
+        "sign_in": "Sign In"
+    },
+    "forgot_password": {
+        "enter_email_for_reset": "Enter the email you want to change your password",
+        "send_code": "Send Code",
+        "verify": "Verify"
+    },
+    "reset_password": {
+        "enter_new_password": "Enter the password you want to update",
+        "new_password": "New password",
+        "update": "Update",
+        "check_email": "Check your email for a link to reset your password",
+        "back_to_login": "Back to Login",
+        "link_sent": "Link sent to your email"
+    },
+    "email_verification": {
+        "check_email": "Please Check Your Email",
+        "email_sent": "We have sent you a email on",
+        "back": "Back",
+        "resend": "Resend",
+        "email": "Email",
+        "send_code": "Send Code"
+    },
+    "onboarding": {
+        "continue": "Continue",
+        "next": "Next",
+        "done": "Done"
+    },
+    "chat": {
+        "type_message": "Type a message...",
+        "no_messages": "No messages yet",
+        "single_chat": "Single Chat",
+        "group_chat": "Group Chat",
+        "message_sent": "Message sent",
+        "message_error": "Error sending message",
+        "new_chat": "New Chat",
+        "chat_details": "Chat Details",
+        "images": "Images"
+    },
+    "image_picker": {
+        "gallery": "Gallery",
+        "camera": "Camera",
+        "image_uploaded": "Image uploaded successfully",
+        "upload_error": "Error uploading image",
+        "send_image": "Send Image",
+        "select_from_gallery": "Select from Gallery",
+        "take_photo": "Take Photo",
+        "image_not_selected": "Image not selected or selection cancelled",
+        "error_picking_image": "Error picking image"
+    },
+    "group": {
+        "add_member": "Add Member",
+        "remove_member": "Remove Member",
+        "remove_member_confirmation": "Are you sure you want to remove this member from the group?",
+        "delete_group": "Delete Group",
+        "delete_group_confirmation": "Are you sure you want to delete this group?",
+        "cancel": "Cancel",
+        "delete": "Delete",
+        "admin_cannot_be_removed": "Group admin cannot be removed",
+        "group_details": "Group Details",
+        "members": "Members",
+        "images": "Images",
+        "admin": "Admin",
+        "add": "Add",
+        "group_select_group_image": "Select Group Image",
+        "name": "Name",
+        "change": "Change",
+        "create_group": "Create Group",
+        "group_name": "Group Name",
+        "create": "Create"
+
+    },
+    "navigation": {
+        "chat": "Chat",
+        "group": "Group",
+        "list": "List",
+        "map": "Map"
+    },
+    "profile": {
+        "profile_page_title": "Profile",
+        "edit_profile": "Edit",
+        "settings": "Settings",
+        "logout": "Logout",
+        "change_photo": "Change Photo",
+        "change_name": "Name",
+        "change_email": "Change Email",
+        "change_password": "Change Password",
+        "delete_account": "Delete Account",
+        "delete_account_confirmation": "Are you sure you want to delete your account? This action cannot be undone.",
+        "dark_mode": "Dark Mode",
+        "languages": "Languages",
+        "select_profile_image": "Select Profile Image"
+    },
+    "time": {
+        "good_morning": "Good Morning",
+        "good_afternoon": "Good Afternoon",
+        "good_evening": "Good Evening",
+        "good_night": "Good Night"
+    },
+    "errors": {
+        "auth": {
+            "user_not_found": "User not found",
+            "wrong_password": "Wrong password",
+            "email_already_in_use": "Email is already in use",
+            "weak_password": "Password is too weak",
+            "invalid_email": "Invalid email address",
+            "email_verified": "Email verified successfully",
+            "please_check_your_email": "Please check your email",
+            "we_have_sent_you_an_email_on": "We have sent you an email on",
+            "enter_email_for_reset": "Enter the email you want to change your password",
+            "email_required": "Email is required",
+            "enter_a_valid_email_address": "Enter a valid email address",
+            "otp_has_been_sent": "OTP has been sent",
+            "failed_to_send_otp": "Failed to send OTP",
+            "enter_password": "Enter password",
+            "enter_6_digit_password": "Enter 6 digit password",
+            "login_success": "Login success",
+            "please_verify_your_email": "Please verify your email",
+            "google_login_success": "Google login success",
+            "google_login_error": "Google login error",
+            "password_changed_to_successful": "Password changed to successful",
+            "otp_is_verified": "OTP is verified",
+            "invalid_otp": "Invalid OTP"
+
+        },
+        "profile": {
+            "error_updating_username": "Please enter a username",
+            "error_updating_password": "Please enter a password",
+            "update_success": "Update success",
+            "success_updating_username": "Username updated successfully",
+            "success_updating_password": "Password updated successfully"
+        },
+        "search": {
+            "no_one_to_chat": "You haven't met anyone yet",
+            "search_for_people": "Search for people",
+            "no_data_available": "No data available",
+            "new_chat": "New Chat"
+        },
+        "location": {
+            "location_permission_not_granted": "Location permission not granted",
+            "location_permission_granted": "Location permission granted",
+            "location_permission_denied": "Location permission denied",
+            "location_permission_denied_forever": "Location permission denied forever"
+        },
+        "group": {
+            "no_users_found": "No users found",
+            "no_available_users_to_add": "No available users to add",
+            "you_cannot_chat_with_yourself": "You cannot chat with yourself",
+            "no_images_uploaded": "No images uploaded yet",
+            "group_image_uploaded": "Group image uploaded successfully",
+            "group_image_upload_error": "Error uploading group image",
+            "please_enter_a_username": "Please enter a username",
+            "updated_successfully": "Updated successfully",
+            "error_updating_username": "Error updating username",
+            "please_enter_a_group_name": "Please enter a group name",
+            "please_select_a_group_image": "Please select a group image",
+            "please_select_at_least_one_member": "Please select at least one member",
+            "error_creating_group": "Error creating group"
+        },
+        "chat": {
+            "no_images_uploaded": "No images uploaded yet"
+        },
+        "noInternetConnection": "No Internet Connection",
+        "retry": "Retry",
+        "exit": "Exit"
     }
 }

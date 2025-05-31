@@ -2,7 +2,10 @@ import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:locale_chat/constants/languages_keys.dart';
+import 'package:locale_chat/helper/localization_extention.dart';
 import 'package:locale_chat/mixin/error_holder.dart';
 import 'package:locale_chat/model/async_change_notifier.dart';
 import 'package:locale_chat/model/error_model.dart';
@@ -144,38 +147,35 @@ class AuthChangeNotifier extends AsyncChangeNotifier with ErrorHolder {
   }
 
 //Listens for the link emailed to the user to reset password
-  Future<void> updatePassword(
-      {required String email, required String password}) async {
-    String errorMessage;
-    await wrapAsync(
-      () async {
-        try {
-          await _authService.updatePassword(
-              email: email, newPassword: password);
+  Future<void> updatePassword({required String email}) async {
+    try {
+      state = AsyncChangeNotifierState.busy;
+      notifyListeners();
 
-          notifyListeners();
-        } on FirebaseAuthException catch (error) {
-          if (error.code == 'wrong-password') {
-            errorMessage = 'Current password is incorrect.';
-          } else {
-            errorMessage = 'Failed to change password';
-          }
-          errors.clear();
-          addError(ErrorModel(
-              id: 'firebaseAuthUpdatePassword', message: errorMessage));
-          notifyListeners();
-          throw Exception(errorMessage);
-        }
-      },
-      ErrorModel(
+      await _authService.updatePassword(email);
+      notifyListeners();
+    } on FirebaseAuthException {
+      String errorMessage = 'Failed to send password reset link';
+      errors.clear();
+      addError(
+          ErrorModel(id: 'firebaseAuthUpdatePassword', message: errorMessage));
+      notifyListeners();
+      throw Exception(errorMessage);
+    } catch (e) {
+      addError(ErrorModel(
           id: user?.userName ?? 'Anonymous',
-          message: 'Failed to send a restart link'),
-    );
+          message: 'Failed to send a restart link'));
+      notifyListeners();
+      rethrow;
+    } finally {
+      state = AsyncChangeNotifierState.idle;
+      notifyListeners();
+    }
   }
 
 //Listens Google authenticate in firebase
   Future<UserModel?> authWithGoogle() async {
-    await wrapAsync(
+    return wrapAsync(
       () async {
         try {
           user = await _authService.authWithGoogle();
@@ -194,12 +194,12 @@ class AuthChangeNotifier extends AsyncChangeNotifier with ErrorHolder {
           addError(ErrorModel(id: 'firebaseAuthGoogle', message: errorMessage));
           notifyListeners();
         }
+        return user;
       },
       ErrorModel(
           id: user?.userName ?? 'Anonymous',
           message: 'Failed to connection google account'),
     );
-    return user;
   }
 
 //Listens Facebook authenticate in firebase
@@ -208,6 +208,10 @@ class AuthChangeNotifier extends AsyncChangeNotifier with ErrorHolder {
       () async {
         try {
           user = await _authService.authWithFacebook();
+          if (user == null) {
+            // Kullanıcı işlemi iptal etti, hata ekleme veya notifyListeners yapma
+            return null;
+          }
           notifyListeners();
         } on FirebaseAuthException catch (error) {
           String errorMessage;
@@ -309,7 +313,6 @@ class AuthChangeNotifier extends AsyncChangeNotifier with ErrorHolder {
 
   // Mevcut getFirebaseAuthErrors metodu
   List<ErrorModel> getFirebaseAuthErrors(String errorName) {
-    notifyListeners();
     return errors.where((error) => error.id == errorName).toList();
   }
 
@@ -380,15 +383,19 @@ class AuthChangeNotifier extends AsyncChangeNotifier with ErrorHolder {
     return imagePath;
   }
 
-  String getTimeOfDay() {
+  String getTimeOfDay(BuildContext context) {
     double nowTime = DateTime.now().hour.toDouble();
     if (nowTime >= 6 && nowTime < 11) {
-      return 'Good Morning';
+      return LocaleKeys.timeGoodMorning.locale(context);
     } else if (nowTime >= 11 && nowTime < 16) {
-      return 'Good Afternoon';
+      return LocaleKeys.timeGoodAfternoon.locale(context);
     } else if (nowTime >= 16 && nowTime < 22) {
-      return 'Good Evening';
+      return LocaleKeys.timeGoodEvening.locale(context);
     }
-    return 'Good Night';
+    return LocaleKeys.timeGoodNight.locale(context);
+  }
+
+  Future<String> getImageFromFirebaseStorage(String imageName) async {
+    return await _authService.getImageFromFirebaseStorage(imageName);
   }
 }

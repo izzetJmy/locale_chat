@@ -1,6 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:locale_chat/comopnents/my_grid_images.dart';
+import 'package:locale_chat/comopnents/my_marquee.dart';
+import 'package:locale_chat/constants/languages_keys.dart';
+import 'package:locale_chat/helper/localization_extention.dart';
+import 'package:locale_chat/helper/ui_helper.dart';
 import 'package:locale_chat/model/messages_models/group_chat_model.dart';
 import 'package:locale_chat/comopnents/my_appbar.dart';
 import 'package:locale_chat/comopnents/profile_info.dart';
@@ -100,24 +104,24 @@ class _GroupDetailPageState extends State<GroupDetailPage>
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Üye Çıkarma'),
-        content:
-            const Text('Bu üyeyi gruptan çıkarmak istediğinize emin misiniz?'),
+        title: Text(LocaleKeys.groupRemoveMember.locale(context)),
+        content: Text(LocaleKeys.groupRemoveMemberConfirmation.locale(context)),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('İptal'),
+            child: Text(LocaleKeys.groupCancel.locale(context)),
           ),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
-            child: const Text('Sil'),
+            child: Text(LocaleKeys.groupDelete.locale(context)),
           ),
         ],
       ),
     );
     if (widget.group.adminEmail == user.email) {
       // ignore: use_build_context_synchronously
-      MySanckbar.mySnackbar(context, 'Grup yöneticisi silinemez', 2);
+      MySanckbar.mySnackbar(
+          context, LocaleKeys.groupAdminCannotBeRemoved.locale(context), 2);
       return;
     }
     if (confirmed == true) {
@@ -140,16 +144,16 @@ class _GroupDetailPageState extends State<GroupDetailPage>
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Grubu Sil'),
-        content: const Text('Bu grubu silmek istediğinizden emin misiniz?'),
+        title: Text(LocaleKeys.groupDeleteGroup.locale(context)),
+        content: Text(LocaleKeys.groupDeleteGroupConfirmation.locale(context)),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('İptal'),
+            child: Text(LocaleKeys.groupCancel.locale(context)),
           ),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
-            child: const Text('Sil'),
+            child: Text(LocaleKeys.groupDelete.locale(context)),
           ),
         ],
       ),
@@ -164,7 +168,8 @@ class _GroupDetailPageState extends State<GroupDetailPage>
         }
       } catch (e) {
         // ignore: use_build_context_synchronously
-        MySanckbar.mySnackbar(context, 'Grup silinirken hata: $e', 2);
+        MySanckbar.mySnackbar(context,
+            LocaleKeys.errorsGroupErrorCreatingGroup.locale(context), 2);
       }
     }
   }
@@ -197,7 +202,8 @@ class _GroupDetailPageState extends State<GroupDetailPage>
       builder: (context) => StatefulBuilder(
         builder: (context, setDialogState) {
           return AlertDialog(
-            title: const Center(child: Text('Add Member')),
+            title:
+                Center(child: Text(LocaleKeys.groupAddMember.locale(context))),
             content: SizedBox(
               width: double.maxFinite,
               height: double.maxFinite,
@@ -210,7 +216,9 @@ class _GroupDetailPageState extends State<GroupDetailPage>
                   }
 
                   if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-                    return const Center(child: Text('No users found'));
+                    return Center(
+                        child: Text(LocaleKeys.errorsGroupNoUsersFound
+                            .locale(context)));
                   }
                   List<String> memberIds = members.map((e) => e.id).toList();
                   List<UserModel?> availableUsers = snapshot.data!.docs
@@ -218,8 +226,9 @@ class _GroupDetailPageState extends State<GroupDetailPage>
                       .map((doc) => UserModel.fromJson(doc.data()))
                       .toList();
                   if (availableUsers.isEmpty) {
-                    return const Center(
-                        child: Text('No available users to add'));
+                    return Center(
+                        child: Text(LocaleKeys.errorsGroupNoAvailableUsersToAdd
+                            .locale(context)));
                   }
 
                   return ListView.builder(
@@ -255,10 +264,10 @@ class _GroupDetailPageState extends State<GroupDetailPage>
             actions: [
               TextButton(
                 onPressed: _addMemberToGroup,
-                child: const Text('Add'),
+                child: Text(LocaleKeys.groupAdd.locale(context)),
               ),
               TextButton(
-                child: const Text('Cancel'),
+                child: Text(LocaleKeys.groupCancel.locale(context)),
                 onPressed: () => Navigator.pop(context),
               ),
             ],
@@ -312,20 +321,21 @@ class _GroupDetailPageState extends State<GroupDetailPage>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: MyAppBar(
-        title: Text('Group Details', style: homePageTitleTextStyle),
+        title: Text(LocaleKeys.groupGroupDetails.locale(context),
+            style: homePageTitleTextStyle),
         leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios, color: backgroundColor),
+          icon: Icon(Icons.arrow_back_ios, color: iconColor),
           onPressed: () => Navigator.pop(context),
         ),
         actions: [
           if (isAdmin)
             IconButton(
-              icon: Icon(Icons.person_add_alt, color: backgroundColor),
+              icon: Icon(Icons.person_add_alt, color: iconColor),
               onPressed: _addMember,
             ),
           if (isAdmin)
             IconButton(
-              icon: Icon(Icons.edit, color: backgroundColor),
+              icon: Icon(Icons.edit, color: iconColor),
               onPressed: () {
                 _showEditProfileBottomSheet();
               },
@@ -369,7 +379,7 @@ class _GroupDetailPageState extends State<GroupDetailPage>
                           ),
                           const SizedBox(height: 5),
                           Text(
-                            '${members.length} members',
+                            '${members.length} ${LocaleKeys.groupMembers.locale(context)}',
                             style: const TextStyle(
                                 color: Colors.grey,
                                 fontWeight: FontWeight.bold),
@@ -381,16 +391,16 @@ class _GroupDetailPageState extends State<GroupDetailPage>
                     // TabBar ve TabBarView
                     TabBar(
                       controller: tabController,
-                      tabs: const [
-                        Tab(text: 'Members'),
-                        Tab(text: 'Images'),
+                      tabs: [
+                        Tab(text: LocaleKeys.groupMembers.locale(context)),
+                        Tab(text: LocaleKeys.groupImages.locale(context)),
                       ],
-                      labelColor: backgroundColor,
+                      labelColor: iconColor,
                       labelStyle: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
                       ),
-                      indicatorColor: backgroundColor,
+                      indicatorColor: iconColor,
                     ),
                     Expanded(
                       child: TabBarView(
@@ -422,7 +432,8 @@ class _GroupDetailPageState extends State<GroupDetailPage>
                           height: 50,
                           width: double.infinity,
                           buttonColor: Colors.red,
-                          buttonText: 'Delete Group',
+                          buttonText:
+                              LocaleKeys.groupDeleteGroup.locale(context),
                           textStyle: const TextStyle(color: Colors.white),
                           onPressed: _deleteGroup,
                         ),
@@ -464,6 +475,7 @@ class MembersTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    double width = UIHelper.getDeviceWith(context);
     return ListView.builder(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
@@ -477,20 +489,23 @@ class MembersTab extends StatelessWidget {
           child: MyProfileCard(
               leading: ProfileInfo(
                   image_path: member.profilePhoto, image_radius: 18),
-              tittleText: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(member.userName),
-                  if (isAdmin)
-                    Text(
-                      'Admin',
-                      style: TextStyle(
-                        color: backgroundColor,
-                        fontSize: 12,
-                        fontWeight: FontWeight.bold,
+              tittleText: MyMarquee(
+                textToMeasure: member.userName,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(member.userName),
+                    if (isAdmin)
+                      Text(
+                        LocaleKeys.groupAdmin.locale(context),
+                        style: TextStyle(
+                          color: backgroundColor,
+                          fontSize: 12,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
-                    ),
-                ],
+                  ],
+                ),
               ),
               trailing: Icon(
                 Icons.arrow_forward_ios,
@@ -501,7 +516,10 @@ class MembersTab extends StatelessWidget {
               onTap: () async {
                 if (member.id == currentUserID) {
                   MySanckbar.mySnackbar(
-                      context, 'You cannot chat with yourself', 2);
+                      context,
+                      LocaleKeys.errorsGroupYouCannotChatWithYourself
+                          .locale(context),
+                      2);
                   return;
                 }
                 final String chatId;
@@ -563,8 +581,9 @@ class ImagesTab extends StatelessWidget {
       padding: const EdgeInsets.only(top: 10, left: 5, right: 5),
       child: images.isNotEmpty
           ? MyGridImages(images: images)
-          : const Center(
-              child: Text('No images uploaded yet'),
+          : Center(
+              child:
+                  Text(LocaleKeys.errorsChatNoImagesUploaded.locale(context)),
             ),
     );
   }

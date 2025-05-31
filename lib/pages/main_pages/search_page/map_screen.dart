@@ -4,6 +4,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:locale_chat/comopnents/my_circular_progress_Indicator.dart';
+import 'package:locale_chat/constants/languages_keys.dart';
+import 'package:locale_chat/helper/localization_extention.dart';
 import 'package:locale_chat/model/location_model.dart';
 import 'package:locale_chat/provider/auth_change_notifier/auth_change_notifier.dart';
 import 'package:locale_chat/provider/location_change_notifier/locaiton_change_notifier.dart';
@@ -187,7 +189,7 @@ class _MapScreenState extends State<MapScreen> {
                     markerId: MarkerId(currentPosition.id),
                     position: initialPosition,
                     infoWindow: InfoWindow(
-                      title: 'Current Location',
+                      title: LocaleKeys.mapCurrentLocation.locale(context),
                       snippet:
                           '${currentPosition.latitude}, ${currentPosition.longitude}',
                     ),

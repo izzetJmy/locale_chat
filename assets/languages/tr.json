@@ -1,0 +1,189 @@
+{
+    "login_register": {
+        "welcome": "Hoşgeldiniz",
+        "login": "Giriş Yap",
+        "register": "Kayıt Ol",
+        "email": "E-posta",
+        "password": "Şifre",
+        "confirm_password": "Şifreyi Onayla",
+        "enter_valid_email": "Geçerli bir e-posta girin",
+        "enter_password": "Şifre girin",
+        "enter_6_digit_password": "6 haneli şifre girin",
+        "passwords_must_match": "iki şifre aynı olmalıdır",
+        "email_required": "E-posta gerekli",
+        "enter_valid_email_address": "Geçerli bir e-posta adresi girin",
+        "dont_have_account": "Hesabınız yok mu?",
+        "sign_up": "Kayıt Ol",
+        "or": "VEYA",
+        "forgot_password": "Şifremi Unuttum",
+        "already_have_account": "Zaten hesabınız var mı?",
+        "sign_in": "Giriş Yap"
+    },
+    "forgot_password": {
+        "enter_email_for_reset": "Şifrenizi değiştirmek istediğiniz e-postayı girin",
+        "send_code": "Kod Gönder",
+        "verify": "Doğrula",
+        "update": "Güncelle"
+    },
+    "reset_password": {
+        "enter_new_password": "Güncellemek istediğiniz şifreyi girin",
+        "new_password": "Yeni şifre",
+        "update": "Güncelle",
+        "check_email": "Şifrenizi sıfırlamak için e-postanıza bir bağlantı gönderildi",
+        "back_to_login": "Geri Dön",
+        "link_sent": "Şifrenizi sıfırlamak için e-postanıza bir bağlantı gönderildi"
+    },
+    "email_verification": {
+        "check_email": "Lütfen E-postanızı Kontrol Edin",
+        "email_sent": "Size bir e-posta gönderdik",
+        "back": "Geri",
+        "resend": "Tekrar Gönder",
+        "email": "E-posta",
+        "send_code": "Kod Gönder"
+        
+    },
+    "onboarding": {
+        "continue": "Devam et",
+        "next": "Sonraki",
+        "done": "Tamam"
+    },
+    "chat": {
+        "type_message": "Bir mesaj yazın...",
+        "no_messages": "Henüz mesaj yok",
+        "single_chat": "Birebir Sohbet",
+        "group_chat": "Grup Sohbeti",
+        "message_sent": "Mesaj gönderildi",
+        "message_error": "Mesaj gönderilirken hata oluştu",
+        "new_chat": "Yeni Sohbet",
+        "chat_details": "Sohbet Detayları",
+        "images": "Resimler"
+    },
+    "image_picker": {
+        "gallery": "Galeri",
+        "camera": "Kamera",
+        "image_uploaded": "Resim başarıyla yüklendi",
+        "upload_error": "Resim yüklenirken hata oluştu",
+        "send_image": "Resim Gönder",
+        "select_from_gallery": "Galeriden Seç",
+        "take_photo": "Fotoğraf Çek",
+        "image_not_selected": "Resim seçilmedi veya seçim iptal edildi",
+        "error_picking_image": "Resim seçilirken hata oluştu"
+    },
+    "group": {
+        "add_member": "Üye Ekle",
+        "remove_member": "Üye Çıkarma",
+        "remove_member_confirmation": "Bu üyeyi gruptan çıkarmak istediğinize emin misiniz?",
+        "delete_group": "Grubu Sil",
+        "delete_group_confirmation": "Bu grubu silmek istediğinizden emin misiniz?",
+        "add": "Ekle",
+        "cancel": "İptal",
+        "delete": "Sil",
+        "group_details": "Grup Detayları",
+        "members": "Üyeler",
+        "images": "Resimler",
+        "admin": "Yönetici",
+        "admin_cannot_be_removed": "Grup yöneticisi silinemez",
+        "group_select_group_image": "Grup Fotoğrafı Seç",
+        "name": "İsim",
+        "change": "Değiştir",
+        "create_group": "Grup Oluştur",
+        "group_name": "Grup Adı",
+        "create": "Oluştur"
+    },
+    "navigation": {
+        "chat": "Sohbet",
+        "group": "Grup",
+        "list": "Liste",
+        "map": "Harita"
+    },
+    "map": {
+        "current_location": "Mevcut Konum"
+    },
+    "profile": {
+        "profile_page_title": "Profil",
+        "edit_profile": "Değiştir",
+        "settings": "Ayarlar",
+        "logout": "Çıkış Yap",
+        "change_photo": "Fotoğrafı Değiştir",
+        "change_name": "İsim",
+        "change_email": "E-postayı Değiştir",
+        "change_password": "Şifreyi Değiştir",
+        "delete_account": "Hesabı Sil",
+        "delete_account_confirmation": "Hesabınızı silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.",
+        "dark_mode": "Koyu Mod",
+        "languages": "Diller",
+        "select_profile_image": "Profil Fotoğrafı Seç"
+    },
+    "time": {
+        "good_morning": "Günaydın",
+        "good_afternoon": "İyi Günler",
+        "good_evening": "İyi Akşamlar",
+        "good_night": "İyi Geceler"
+    },
+    "errors": {
+        "auth": {
+            "user_not_found": "Kullanıcı bulunamadı",
+            "wrong_password": "Yanlış şifre",
+            "email_already_in_use": "Bu e-posta adresi zaten kullanımda",
+            "weak_password": "Şifre çok zayıf",
+            "invalid_email": "Geçersiz e-posta adresi",
+            "email_verified": "E-posta başarıyla doğrulandı",
+            "please_check_your_email": "Lütfen e-postanızı kontrol edin",
+            "we_have_sent_you_an_email_on": "Size bir e-posta gönderdik",
+            "enter_email_for_reset": "Şifrenizi değiştirmek istediğiniz e-postayı girin",
+            "email_required": "E-posta gerekli",
+            "enter_a_valid_email_address": "Lütfen geçerli bir e-posta adresi girin",
+            "otp_has_been_sent": "Kod başarıyla gönderildi",
+            "failed_to_send_otp": "Kod gönderilirken hata oluştu",
+            "enter_password": "Şifre girin",
+            "enter_6_digit_password": "6 haneli şifre girin",
+            "login_success": "Giriş başarılı",
+            "please_verify_your_email": "Lütfen e-postanızı doğrulayın",
+            "google_login_success": "Google ile giriş başarılı",
+            "google_login_error": "Google ile giriş hatası",
+            "password_changed_to_successful": "Şifre başarıyla güncellendi",
+            "otp_is_verified": "Kod doğrulandı",
+            "invalid_otp": "Geçersiz kod"
+        },
+        "profile": {
+            "error_updating_username": "Lütfen bir kullanıcı adı girin",
+            "error_updating_password": "Lütfen bir şifre girin",
+            "update_success": "Güncelleme başarılı",
+            "success_updating_username": "Kullanıcı adı başarıyla güncellendi",
+            "success_updating_password": "Şifre başarıyla güncellendi"
+        },
+        "search": {
+            "no_one_to_chat": "Henüz biriyle tanışmadın",
+            "search_for_people": "Hemen arama yap!",
+            "no_data_available": "Veri bulunamadı",
+            "new_chat": "Yeni Sohbet"
+        },
+        "location": {
+            "location_permission_not_granted": "Konum izni verilmedi",
+            "location_permission_granted": "Konum izni verildi",
+            "location_permission_denied": "Konum izni reddedildi",
+            "location_permission_denied_forever": "Konum izni her zaman reddedildi"
+        },
+        "group": {
+            "no_users_found": "Kullanıcı bulunamadı",
+            "no_available_users_to_add": "Eklemek için kullanılabilir kullanıcı yok",
+            "you_cannot_chat_with_yourself": "Kendinle sohbet edemezsin",
+            "no_images_uploaded": "Henüz resim yüklenmedi",
+            "group_image_uploaded": "Grup resmi başarıyla yüklendi",
+            "group_image_upload_error": "Grup resmi yüklenirken hata oluştu",
+            "please_enter_a_username": "Lütfen bir kullanıcı adı girin",
+            "updated_successfully": "Başarıyla güncellendi",
+            "error_updating_username": "Kullanıcı adı güncellenirken hata",
+            "please_enter_a_group_name": "Lütfen bir grup adı girin",
+            "please_select_a_group_image": "Lütfen bir grup resmi seçin",
+            "please_select_at_least_one_member": "Lütfen en az bir üye seçin",
+            "error_creating_group": "Grup oluşturulurken hata"
+        },
+        "chat": {
+            "no_images_uploaded": "Henüz resim yüklenmedi"
+        },
+        "noInternetConnection": "İnternet bağlantısı yok",
+        "retry": "Tekrar Dene",
+        "exit": "Çıkış Yap"
+    }
+}

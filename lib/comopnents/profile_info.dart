@@ -12,6 +12,7 @@ class ProfileInfo extends StatelessWidget {
   final bool isNetworkImage;
 
   final double height;
+  final double? width;
   final String name;
   final String date;
 
@@ -34,6 +35,7 @@ class ProfileInfo extends StatelessWidget {
       this.showDate = false,
       this.profileNameTextStyle,
       this.height = 10,
+      this.width,
       this.isNetworkImage = false,
       this.profileInfoDateTextStyle});
 
@@ -61,14 +63,23 @@ class ProfileInfo extends StatelessWidget {
                     padding: const EdgeInsets.all(5),
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      border: Border.all(color: backgroundColor),
+                      border: Border.all(color: backgroundColor, width: 2),
                     ),
                     child: _buildProfileAvatar(),
                   ),
                 ),
               SizedBox(height: height),
               if (showName) //User name
-                Text(name, style: profileNameTextStyle),
+                SizedBox(
+                  width: width,
+                  child: Text(
+                    textAlign: TextAlign.center,
+                    name,
+                    style: profileNameTextStyle,
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 1,
+                  ),
+                ),
               if (showDate) //Date the account was created
                 Text(
                   date,

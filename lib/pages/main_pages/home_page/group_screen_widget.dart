@@ -3,8 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:locale_chat/comopnents/my_circular_progress_Indicator.dart';
 import 'package:locale_chat/comopnents/my_profile_card.dart';
 import 'package:locale_chat/comopnents/profile_info.dart';
+import 'package:locale_chat/constants/colors.dart';
 import 'package:locale_chat/constants/image_path.dart';
+import 'package:locale_chat/constants/languages_keys.dart';
 import 'package:locale_chat/constants/text_style.dart';
+import 'package:locale_chat/helper/localization_extention.dart';
 import 'package:locale_chat/model/async_change_notifier.dart';
 import 'package:locale_chat/model/messages_models/group_chat_model.dart';
 import 'package:locale_chat/pages/group_pages/group_page.dart';
@@ -42,11 +45,11 @@ class GroupScreenWidget extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     Text(
-                      'Henüz biriyle tanışmadın',
+                      LocaleKeys.errorsSearchNoOneToChat.locale(context),
                       style: homePageTitleTextStyle,
                     ),
                     Text(
-                      'Hemen arama yap!',
+                      LocaleKeys.errorsSearchSearchForPeople.locale(context),
                       style: homePageSubtitleTextStyle,
                     )
                   ],
@@ -69,7 +72,14 @@ class GroupScreenWidget extends StatelessWidget {
                           group.groupProfilePhoto ?? ImagePath.group_avatar,
                     ),
                     tittleText: Text(group.groupName),
+                    subtittleText: Text(
+                      '${group.members.length} ${LocaleKeys.groupMembers.locale(context)}',
+                      style: const TextStyle(
+                          color: Colors.grey, fontWeight: FontWeight.bold),
+                    ),
                     height: 80,
+                    trailing: Icon(Icons.arrow_forward_ios,
+                        color: iconColor, size: 20),
                     onTap: () {
                       Navigator.push(
                         context,

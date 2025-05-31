@@ -24,7 +24,7 @@ class InitialControlPage extends StatelessWidget {
     return Scaffold(
       body: SafeArea(
         child: FutureBuilder(
-          future: Future.delayed(const Duration(seconds: 2))
+          future: Future.delayed(const Duration(seconds: 1))
               .then((value) => _seenOnboarding()),
           builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {

@@ -9,7 +9,9 @@ import 'package:locale_chat/comopnents/my_text_field.dart';
 import 'package:locale_chat/comopnents/profile_info.dart';
 import 'package:locale_chat/constants/colors.dart';
 import 'package:locale_chat/constants/image_path.dart';
+import 'package:locale_chat/constants/languages_keys.dart';
 import 'package:locale_chat/constants/text_style.dart';
+import 'package:locale_chat/helper/localization_extention.dart';
 import 'package:locale_chat/helper/ui_helper.dart';
 import 'package:locale_chat/provider/auth_change_notifier/auth_change_notifier.dart';
 import 'package:provider/provider.dart';
@@ -79,7 +81,7 @@ class _EditProfileBottomSheetState extends State<EditProfileBottomSheet> {
                     color: backgroundColor,
                   ),
                   controller: widget.editController,
-                  hintText: 'Name',
+                  hintText: LocaleKeys.profileChangeName.locale(context),
                   borderRadius: 10,
                   borderSideColor: Colors.transparent,
                 ),
@@ -90,7 +92,8 @@ class _EditProfileBottomSheetState extends State<EditProfileBottomSheet> {
                     Icons.lock,
                     color: backgroundColor,
                   ),
-                  tittleText: const Text('Change Password'),
+                  tittleText:
+                      Text(LocaleKeys.profileChangePassword.locale(context)),
                   profileCardTittleTextStyle: profilePageListTileTextStyle,
                   trailing: Icon(
                     Icons.arrow_forward_ios,
@@ -102,12 +105,15 @@ class _EditProfileBottomSheetState extends State<EditProfileBottomSheet> {
                   height: UIHelper.getDeviceHeight(context) * 0.06,
                   width: UIHelper.getDeviceHeight(context) * 0.25,
                   buttonColor: backgroundColor,
-                  buttonText: 'Change',
+                  buttonText: LocaleKeys.profileEditProfile.locale(context),
                   textStyle: onboardingPageButtonTextTextStyle,
                   onPressed: () async {
                     if (widget.editController.text.isEmpty) {
                       MySanckbar.mySnackbar(
-                          context, 'Please enter a username', 2);
+                          context,
+                          LocaleKeys.errorsProfileErrorUpdatingUsername
+                              .locale(context),
+                          2);
                       return;
                     }
 
@@ -130,7 +136,10 @@ class _EditProfileBottomSheetState extends State<EditProfileBottomSheet> {
                       // Show success message
                       if (context.mounted) {
                         MySanckbar.mySnackbar(
-                            context, 'Username updated successfully', 2);
+                            context,
+                            LocaleKeys.errorsProfileUpdateSuccess
+                                .locale(context),
+                            2);
                       }
                       widget.editController.clear();
                     } catch (e) {
@@ -140,7 +149,10 @@ class _EditProfileBottomSheetState extends State<EditProfileBottomSheet> {
                       // Show error message
                       if (context.mounted) {
                         MySanckbar.mySnackbar(
-                            context, 'Error updating username', 2);
+                            context,
+                            LocaleKeys.errorsProfileErrorUpdatingUsername
+                                .locale(context),
+                            2);
                       }
                     }
                   },

@@ -12,7 +12,9 @@ import 'package:locale_chat/comopnents/my_text_field.dart';
 import 'package:locale_chat/comopnents/profile_info.dart';
 import 'package:locale_chat/constants/colors.dart';
 import 'package:locale_chat/constants/image_path.dart';
+import 'package:locale_chat/constants/languages_keys.dart';
 import 'package:locale_chat/constants/text_style.dart';
+import 'package:locale_chat/helper/localization_extention.dart';
 import 'package:locale_chat/helper/ui_helper.dart';
 import 'package:locale_chat/model/messages_models/group_chat_model.dart';
 import 'package:locale_chat/provider/group_change_notifier/group_change_notifier.dart';
@@ -53,9 +55,6 @@ class _EditGroupDetailPageState extends State<EditGroupDetailPage> {
     await ImagePickerHelper.showImageSourceSelectionDialog(
       context: context,
       onImageSourceSelected: (source) => _pickProfileImage(source),
-      dialogTitle: 'Grup Fotoğrafı Seç',
-      galleryOptionText: 'Galeriden Seç',
-      cameraOptionText: 'Kamera ile Çek',
     );
   }
 
@@ -81,13 +80,14 @@ class _EditGroupDetailPageState extends State<EditGroupDetailPage> {
 
         if (mounted) {
           Navigator.pop(context);
-          MySanckbar.mySnackbar(
-              context, 'Grup fotoğrafı başarıyla güncellendi', 2);
+          MySanckbar.mySnackbar(context,
+              LocaleKeys.errorsGroupGroupImageUploaded.locale(context), 2);
         }
       }
     } catch (e) {
       if (mounted) {
-        MySanckbar.mySnackbar(context, 'Fotoğraf yüklenirken hata: $e', 2);
+        MySanckbar.mySnackbar(context,
+            LocaleKeys.errorsGroupGroupImageUploadError.locale(context), 2);
       }
     } finally {
       if (mounted) {
@@ -132,7 +132,7 @@ class _EditGroupDetailPageState extends State<EditGroupDetailPage> {
                       color: backgroundColor,
                     ),
                     controller: widget.editController,
-                    hintText: 'Name',
+                    hintText: LocaleKeys.groupName.locale(context),
                     borderRadius: 10,
                     borderSideColor: Colors.transparent,
                   ),
@@ -141,12 +141,15 @@ class _EditGroupDetailPageState extends State<EditGroupDetailPage> {
                     height: UIHelper.getDeviceHeight(context) * 0.06,
                     width: UIHelper.getDeviceHeight(context) * 0.25,
                     buttonColor: backgroundColor,
-                    buttonText: 'Change',
+                    buttonText: LocaleKeys.groupChange.locale(context),
                     textStyle: onboardingPageButtonTextTextStyle,
                     onPressed: () async {
                       if (widget.editController.text.isEmpty) {
                         MySanckbar.mySnackbar(
-                            context, 'Please enter a username', 2);
+                            context,
+                            LocaleKeys.errorsGroupPleaseEnterAUsername
+                                .locale(context),
+                            2);
                         return;
                       }
 
@@ -168,7 +171,8 @@ class _EditGroupDetailPageState extends State<EditGroupDetailPage> {
                           MySanckbar.mySnackbar(
                               // ignore: use_build_context_synchronously
                               context,
-                              'Updated successfully',
+                              LocaleKeys.errorsGroupUpdatedSuccessfully
+                                  .locale(context),
                               2);
                         }
                         widget.editController.clear();
@@ -179,7 +183,8 @@ class _EditGroupDetailPageState extends State<EditGroupDetailPage> {
                           MySanckbar.mySnackbar(
                               // ignore: use_build_context_synchronously
                               context,
-                              'Error updating username',
+                              LocaleKeys.errorsGroupErrorUpdatingUsername
+                                  .locale(context),
                               2);
                         }
                       } finally {

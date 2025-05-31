@@ -5,10 +5,13 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:locale_chat/comopnents/my_appbar.dart';
 import 'package:locale_chat/comopnents/my_button.dart';
+import 'package:locale_chat/comopnents/my_marquee.dart';
 import 'package:locale_chat/comopnents/my_snackbar.dart';
 import 'package:locale_chat/comopnents/profile_info.dart';
 import 'package:locale_chat/constants/colors.dart';
+import 'package:locale_chat/constants/languages_keys.dart';
 import 'package:locale_chat/constants/text_style.dart';
+import 'package:locale_chat/helper/localization_extention.dart';
 import 'package:locale_chat/helper/ui_helper.dart';
 import 'package:locale_chat/pages/main_pages/search_page/map_screen.dart';
 import 'package:locale_chat/pages/main_pages/search_page/list_screen.dart';
@@ -83,16 +86,20 @@ class _SearchPageState extends State<SearchPage> {
                       'assets/images/user_avatar.png',
                   image_radius: 17,
                 ),
-                title: Text(
-                  authChangeNotifier.user?.userName ?? 'Anonymus',
-                  style: appBarTitleTextStyle,
+                title: MyMarquee(
+                  textToMeasure:
+                      authChangeNotifier.user?.userName ?? 'Anonymus',
+                  child: Text(
+                    authChangeNotifier.user?.userName ?? 'Anonymus',
+                    style: appBarTitleTextStyle,
+                  ),
                 ),
                 subtitle: Text(
-                  authChangeNotifier.getTimeOfDay(),
+                  authChangeNotifier.getTimeOfDay(context),
                   style: appBarSubTitleTextStyle,
                 ),
                 trailing: IconButton(
-                  color: backgroundColor,
+                  color: iconColor,
                   icon: const Icon(CupertinoIcons.bell_fill),
                   onPressed: () => Navigator.push(
                     context,
@@ -120,14 +127,14 @@ class _SearchPageState extends State<SearchPage> {
                     width: width * 0.42,
                     height: hegiht * 0.048,
                     buttonColor: selectedIndex == 0
-                        ? backgroundColor
-                        : const Color(0xffDDF0E4),
+                        ? const Color(0xffAAD9BB)
+                        : profileCardColor,
                     onPressed: () {
                       setState(() {
                         navigateToPage(0);
                       });
                     },
-                    buttonText: 'List',
+                    buttonText: LocaleKeys.navigationList.locale(context),
                     textStyle: homePageButtontitleTextStyle,
                   ),
                   const Spacer(),
@@ -136,8 +143,8 @@ class _SearchPageState extends State<SearchPage> {
                     width: width * 0.42,
                     height: hegiht * 0.048,
                     buttonColor: selectedIndex == 1
-                        ? backgroundColor
-                        : const Color(0xffDDF0E4),
+                        ? const Color(0xffAAD9BB)
+                        : profileCardColor,
                     onPressed: () async {
                       setState(() {
                         navigateToPage(1);
@@ -148,7 +155,8 @@ class _SearchPageState extends State<SearchPage> {
                             false) {
                           MySanckbar.mySnackbar(
                             context,
-                            'Location permission not granted',
+                            LocaleKeys.errorsLocationPermissionNotGranted
+                                .locale(context),
                             2,
                           );
                           return;
@@ -158,7 +166,7 @@ class _SearchPageState extends State<SearchPage> {
                       await locationChangeNotifier.getCurrentLocaiton();
                       await locationChangeNotifier.getNearUsersLocation();
                     },
-                    buttonText: 'Map',
+                    buttonText: LocaleKeys.navigationMap.locale(context),
                     textStyle: homePageButtontitleTextStyle,
                   ),
                 ],
